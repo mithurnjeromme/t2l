@@ -1,159 +1,392 @@
 import { Router, Request, Response } from 'express';
-import { db } from '../config/supabase';
+import { supabase } from '../config/supabase';
 import jwt, { SignOptions } from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import { z } from 'zod';
+import { upload, handleMulterError, getFileUrl } from '../utils/fileUpload';
 
 const router = Router();
 
-// Validation schemas
-const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-  fullName: z.string().min(2),
-  userType: z.enum(['client', 'lawyer']),
-  phone: z.string().optional()
+// Validation schemas matching your frontend signup form
+const clientRegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  countryCode: z.string().default('+91'),
+  mobile: z.string().min(10, 'Invalid mobile number'),
+  city: z.string().min(2, 'City is required'),
+  legalIssue: z.string().min(1, 'Legal issue type is required'),
+  userType: z.literal('client')
+});
+
+const lawyerRegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  countryCode: z.string().default('+91'),
+  mobile: z.string().min(10, 'Invalid mobile number'),
+  barNumber: z.string().min(5, 'Bar registration number is required'),
+  experience: z.string().min(1, 'Experience is required'),
+  specialization: z.string().min(1, 'Specialization is required'),
+  education: z.string().min(5, 'Educational background is required'),
+  courtPractice: z.string().min(2, 'Court practice location is required'),
+  languages: z.string().min(2, 'Languages are required'),
+  bio: z.string().min(10, 'Professional bio must be at least 10 characters'),
+  consultationFee: z.string().min(1, 'Consultation fee is required'),
+  userType: z.literal('lawyer')
+  // profileImage now handled by multer, not in validation schema
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string()
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(1, 'Password is required')
 });
 
-// Register new user
-router.post('/register', async (req: Request, res: Response) => {
+// Helper function to generate JWT token
+const generateToken = (userId: string, userType: string): string => {
+  const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+  const JWT_EXPIRE_IN = process.env.JWT_EXPIRE_IN || '7d';
+  
+  return jwt.sign(
+    { userId, userType },
+    JWT_SECRET,
+    { expiresIn: JWT_EXPIRE_IN } as SignOptions
+  );
+};
+
+// Register client
+router.post('/register/client', async (req: Request, res: Response) => {
   try {
-    const validatedData = registerSchema.parse(req.body);
-    const { email, password, fullName, userType, phone } = validatedData;
+    const validatedData = clientRegisterSchema.parse(req.body);
+    const { name, email, password, countryCode, mobile, city, legalIssue } = validatedData;
 
     // Check if user already exists
-    const { data: existingUser } = await db.users
+    const { data: existingUser } = await supabase
+      .from('users')
       .select('email')
       .eq('email', email)
       .single();
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ 
+        success: false, 
+        error: 'User already exists with this email' 
+      });
     }
 
-    // Hash password
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // Create auth user first
+    const { data: authUser, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          user_type: 'client'
+        }
+      }
+    });
 
-    // Create user in Supabase
-    const { data: user, error } = await db.users
+    if (authError) {
+      console.error('Auth creation error:', authError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to create authentication' 
+      });
+    }
+
+    // Create user in database
+    const { data: user, error: userError } = await supabase
+      .from('users')
       .insert([{
+        id: authUser.user?.id,
         email,
-        password: hashedPassword,
-        full_name: fullName,
-        user_type: userType,
-        phone
+        full_name: name,
+        phone: mobile,
+        country_code: countryCode,
+        user_type: 'client',
+        city,
+        legal_issue: legalIssue
       }])
       .select()
       .single();
 
-    if (error) {
-      console.error('Database error:', error);
-      return res.status(500).json({ error: 'Failed to create user' });
+    if (userError) {
+      console.error('User creation error:', userError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to create user account' 
+      });
     }
 
-    // Generate JWT token
-    const payload = { userId: user.id, email: user.email, userType: user.user_type };
-    const secret = process.env.JWT_SECRET!;
-    const options: SignOptions = { expiresIn: '7d' };
-    const token = jwt.sign(payload, secret, options);
+    const token = generateToken(user.id, 'client');
 
     return res.status(201).json({
-      message: 'User created successfully',
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        userType: user.user_type
-      },
-      token
+      success: true,
+      message: 'Client account created successfully',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name,
+          userType: user.user_type,
+          city: user.city,
+          legalIssue: user.legal_issue
+        },
+        token
+      }
     });
 
   } catch (error) {
+    console.error('Client registration error:', error);
+    
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Validation failed', 
+        details: error.errors 
+      });
     }
-    console.error('Registration error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
   }
 });
 
-// Login user
+// Register lawyer
+router.post('/register/lawyer', upload.single('profileImage'), handleMulterError, async (req: Request, res: Response) => {
+  try {
+    const validatedData = lawyerRegisterSchema.parse(req.body);
+    const { 
+      name, email, password, countryCode, mobile, barNumber, 
+      experience, specialization, education, courtPractice, 
+      languages, bio, consultationFee 
+    } = validatedData;
+
+    // Get uploaded file URL if present
+    let profileImageUrl: string | null = null;
+    if (req.file) {
+      profileImageUrl = getFileUrl(req.file.filename);
+    }
+
+    // Check if user already exists
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('email')
+      .eq('email', email)
+      .single();
+
+    if (existingUser) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'User already exists with this email' 
+      });
+    }
+
+    // Check if bar number already exists
+    const { data: existingLawyer } = await supabase
+      .from('lawyer_profiles')
+      .select('bar_number')
+      .eq('bar_number', barNumber)
+      .single();
+
+    if (existingLawyer) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Bar registration number already registered' 
+      });
+    }
+
+    // Create auth user first
+    const { data: authUser, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+          user_type: 'lawyer'
+        }
+      }
+    });
+
+    if (authError) {
+      console.error('Auth creation error:', authError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to create authentication' 
+      });
+    }
+
+    // Create user in database
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .insert([{
+        id: authUser.user?.id,
+        email,
+        full_name: name,
+        phone: mobile,
+        country_code: countryCode,
+        user_type: 'lawyer',
+        profile_image_url: profileImageUrl
+      }])
+      .select()
+      .single();
+
+    if (userError) {
+      console.error('User creation error:', userError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to create user account' 
+      });
+    }
+
+    // Create lawyer profile
+    const { data: lawyerProfile, error: profileError } = await supabase
+      .from('lawyer_profiles')
+      .insert([{
+        user_id: user.id,
+        bar_number: barNumber,
+        experience_years: parseInt(experience),
+        specialization,
+        education,
+        court_practice: courtPractice,
+        languages,
+        bio,
+        consultation_fee: parseFloat(consultationFee),
+        profile_image_url: profileImageUrl
+      }])
+      .select()
+      .single();
+
+    if (profileError) {
+      console.error('Lawyer profile creation error:', profileError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to create lawyer profile' 
+      });
+    }
+
+    const token = generateToken(user.id, 'lawyer');
+
+    return res.status(201).json({
+      success: true,
+      message: 'Lawyer account created successfully. Profile pending verification.',
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name,
+          userType: user.user_type
+        },
+        lawyerProfile: {
+          id: lawyerProfile.id,
+          barNumber: lawyerProfile.bar_number,
+          specialization: lawyerProfile.specialization,
+          experienceYears: lawyerProfile.experience_years,
+          consultationFee: lawyerProfile.consultation_fee,
+          verified: lawyerProfile.verified
+        },
+        token
+      }
+    });
+
+  } catch (error) {
+    console.error('Lawyer registration error:', error);
+    
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Validation failed', 
+        details: error.errors 
+      });
+    }
+    
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
+  }
+});
+
+// Login endpoint
 router.post('/login', async (req: Request, res: Response) => {
   try {
     const validatedData = loginSchema.parse(req.body);
     const { email, password } = validatedData;
 
-    // Find user
-    const { data: user, error } = await db.users
+    // Sign in with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (authError) {
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Invalid email or password' 
+      });
+    }
+
+    // Get user details from database
+    const { data: user, error: userError } = await supabase
+      .from('users')
       .select('*')
       .eq('email', email)
       .single();
 
-    if (error || !user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (userError || !user) {
+      return res.status(404).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
     }
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    // Get lawyer profile if user is a lawyer
+    let lawyerProfile = null;
+    if (user.user_type === 'lawyer') {
+      const { data: profile } = await supabase
+        .from('lawyer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      
+      lawyerProfile = profile;
     }
 
-    // Generate JWT token
-    const payload = { userId: user.id, email: user.email, userType: user.user_type };
-    const secret = process.env.JWT_SECRET!;
-    const options: SignOptions = { expiresIn: '7d' };
-    const token = jwt.sign(payload, secret, options);
+    const token = generateToken(user.id, user.user_type);
 
-    return res.json({
+    return res.status(200).json({
+      success: true,
       message: 'Login successful',
-      user: {
-        id: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        userType: user.user_type
-      },
-      token
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          fullName: user.full_name,
+          userType: user.user_type,
+          city: user.city,
+          legalIssue: user.legal_issue
+        },
+        lawyerProfile,
+        token
+      }
     });
 
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Invalid input', details: error.errors });
-    }
     console.error('Login error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Get current user profile
-router.get('/profile', async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'No token provided' });
+    
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Validation failed', 
+        details: error.errors 
+      });
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as any;
-    const { data: user, error } = await db.users
-      .select('id, email, full_name, user_type, phone, created_at')
-      .eq('id', decoded.userId)
-      .single();
-
-    if (error || !user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    return res.json({ user });
-
-  } catch (error) {
-    console.error('Profile error:', error);
-    return res.status(401).json({ error: 'Invalid token' });
+    
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Internal server error' 
+    });
   }
 });
 

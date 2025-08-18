@@ -139,6 +139,8 @@ const Turn2LawTextLogo = () => (
 
 const SignupPage = () => {
   const [signupType, setSignupType] = useState<'user' | 'lawyer'>('user');
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -163,10 +165,79 @@ const SignupPage = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB');
+        return;
+      }
+      
+      setProfileImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log('Form submitted:', { signupType, formData });
+    
+    try {
+      if (signupType === 'lawyer') {
+        // Create FormData for lawyer registration with file upload
+        const formDataToSend = new FormData();
+        
+        // Add all form fields
+        Object.entries(formData).forEach(([key, value]) => {
+          formDataToSend.append(key, value);
+        });
+        
+        // Add userType
+        formDataToSend.append('userType', 'lawyer');
+        
+        // Add profile image if selected
+        if (profileImage) {
+          formDataToSend.append('profileImage', profileImage);
+        }
+        
+        console.log('Submitting lawyer registration with form data and image');
+        // Here you would typically make API call to backend
+        // const response = await fetch('/api/auth/register/lawyer', {
+        //   method: 'POST',
+        //   body: formDataToSend
+        // });
+        
+      } else {
+        // For client registration (no file upload needed)
+        const dataToSend = {
+          ...formData,
+          userType: 'client'
+        };
+        
+        console.log('Submitting client registration:', dataToSend);
+        // Here you would typically make API call to backend
+        // const response = await fetch('/api/auth/register/client', {
+        //   method: 'POST',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify(dataToSend)
+        // });
+      }
+      
+    } catch (error) {
+      console.error('Registration error:', error);
+    }
   };
 
   return (
@@ -385,6 +456,61 @@ const SignupPage = () => {
                   className="bg-white/5 border-white/20 text-white placeholder-white/50"
                   required
                 />
+                
+                {/* Profile Image Upload */}
+                <div className="space-y-3">
+                  <label className="block text-white/70 text-sm font-medium">
+                    Profile Picture (Optional)
+                  </label>
+                  <div className="flex items-center gap-4">
+                    {imagePreview ? (
+                      <div className="relative">
+                        <img
+                          src={imagePreview}
+                          alt="Profile preview"
+                          className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileImage(null);
+                            setImagePreview(null);
+                          }}
+                          className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                        id="profile-image"
+                      />
+                      <label
+                        htmlFor="profile-image"
+                        className="cursor-pointer inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 text-white text-sm rounded-lg hover:bg-white/20 transition-colors"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        Upload Image
+                      </label>
+                      <p className="text-white/50 text-xs mt-1">
+                        Max 5MB, JPG/PNG only
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 
                 <Textarea
                   placeholder="Professional Bio"
