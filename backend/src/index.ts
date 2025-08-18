@@ -24,6 +24,35 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files for uploaded images
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Root endpoint - API information
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    message: 'Turn2Law Backend API',
+    version: '1.0.0',
+    status: 'Running',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/health',
+      auth: {
+        signup: 'POST /api/auth/signup',
+        login: 'POST /api/auth/login'
+      },
+      lawyers: {
+        list: 'GET /api/lawyers',
+        profile: 'GET /api/lawyers/:id'
+      },
+      consultations: {
+        book: 'POST /api/consultations',
+        list: 'GET /api/consultations'
+      },
+      payments: {
+        create: 'POST /api/payments/create-payment'
+      }
+    }
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ 

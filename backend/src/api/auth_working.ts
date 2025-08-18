@@ -14,6 +14,7 @@ const clientRegisterSchema = z.object({
   countryCode: z.string().default('+91'),
   mobile: z.string().min(10, 'Invalid mobile number'),
   city: z.string().min(2, 'City is required'),
+  legalIssue: z.string().min(1, 'Legal issue type is required'),
   userType: z.literal('client')
 });
 
@@ -55,7 +56,7 @@ const generateToken = (userId: string, userType: string): string => {
 router.post('/register/client', async (req: Request, res: Response) => {
   try {
     const validatedData = clientRegisterSchema.parse(req.body);
-    const { name, email, password, countryCode, mobile, city } = validatedData;
+    const { name, email, password, countryCode, mobile, city, legalIssue } = validatedData;
 
     // Create auth user first
     const { data: authUser, error: authError } = await supabase.auth.signUp({
@@ -67,7 +68,8 @@ router.post('/register/client', async (req: Request, res: Response) => {
           user_type: 'client',
           phone: mobile,
           country_code: countryCode,
-          city: city
+          city: city,
+          legal_issue: legalIssue
         }
       }
     });
@@ -101,7 +103,8 @@ router.post('/register/client', async (req: Request, res: Response) => {
           email: authUser.user.email,
           fullName: name,
           userType: 'client',
-          city: city
+          city: city,
+          legalIssue: legalIssue
         },
         token
       }
@@ -248,7 +251,8 @@ router.post('/login', async (req: Request, res: Response) => {
       email: user.email!,
       fullName: user.user_metadata?.full_name || user.email,
       userType: userType,
-      city: user.user_metadata?.city
+      city: user.user_metadata?.city,
+      legalIssue: user.user_metadata?.legal_issue
     };
 
     // Create lawyer profile if user is a lawyer

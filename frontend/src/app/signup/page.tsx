@@ -149,7 +149,6 @@ const SignupPage = () => {
     mobile: '',
     // User specific
     city: '',
-    legalIssue: '',
     // Lawyer specific
     barNumber: '',
     experience: '',
@@ -213,11 +212,24 @@ const SignupPage = () => {
         }
         
         console.log('Submitting lawyer registration with form data and image');
-        // Here you would typically make API call to backend
-        // const response = await fetch('/api/auth/register/lawyer', {
-        //   method: 'POST',
-        //   body: formDataToSend
-        // });
+        
+        const response = await fetch('http://localhost:3001/api/auth/register/lawyer', {
+          method: 'POST',
+          body: formDataToSend
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Store token and redirect
+          localStorage.setItem('token', result.data.token);
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+          
+          alert('Lawyer registration successful! Redirecting to dashboard...');
+          window.location.href = '/dashboard/lawyer';
+        } else {
+          alert(result.error || 'Registration failed');
+        }
         
       } else {
         // For client registration (no file upload needed)
@@ -227,16 +239,30 @@ const SignupPage = () => {
         };
         
         console.log('Submitting client registration:', dataToSend);
-        // Here you would typically make API call to backend
-        // const response = await fetch('/api/auth/register/client', {
-        //   method: 'POST',
-        //   headers: { 'Content-Type': 'application/json' },
-        //   body: JSON.stringify(dataToSend)
-        // });
+        
+        const response = await fetch('http://localhost:3001/api/auth/register/client', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToSend)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Store token and redirect
+          localStorage.setItem('token', result.data.token);
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+          
+          alert('Client registration successful! Redirecting to dashboard...');
+          window.location.href = '/dashboard/client';
+        } else {
+          alert(result.error || 'Registration failed');
+        }
       }
       
     } catch (error) {
       console.error('Registration error:', error);
+      alert('Registration failed. Please check your connection and try again.');
     }
   };
 
@@ -366,21 +392,6 @@ const SignupPage = () => {
                   className="bg-white/5 border-white/20 text-white placeholder-white/50"
                   required
                 />
-                
-                <Select onValueChange={(value) => handleInputChange('legalIssue', value)}>
-                  <SelectTrigger className="bg-white/5 border-white/20 text-white">
-                    <SelectValue placeholder="Type of Legal Issue" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="family">Family Law</SelectItem>
-                    <SelectItem value="criminal">Criminal Law</SelectItem>
-                    <SelectItem value="corporate">Corporate Law</SelectItem>
-                    <SelectItem value="property">Property Law</SelectItem>
-                    <SelectItem value="labor">Labor Law</SelectItem>
-                    <SelectItem value="tax">Tax Law</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
               </>
             )}
 

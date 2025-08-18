@@ -60,7 +60,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
         {!hideAuthButtons && (
           <div className="flex items-center gap-4 justify-self-end">
             <Button variant="ghost" asChild className="text-white hover:bg-white/10 rounded-full">
-              <Link href="#">Login</Link>
+              <Link href="/login">Login</Link>
             </Button>
             <Button asChild className="rounded-full bg-secondary hover:bg-secondary/90 text-white px-6">
               <Link href="/signup">Signup</Link>

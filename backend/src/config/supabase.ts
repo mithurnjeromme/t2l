@@ -3,13 +3,22 @@ import { createClient } from '@supabase/supabase-js';
 // Supabase configuration
 const supabaseUrl = process.env.SUPABASE_URL || 'https://vjfpqtyinumanvpgqlbj.supabase.co';
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTEyOTIsImV4cCI6MjA3MTA2NzI5Mn0.IL4G5wXabjKdpUZGBAdAq5bvm1W6Xvb-zg9ux9uq5LY';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTQ5MTI5MiwiZXhwIjoyMDcxMDY3MjkyfQ.5lvDGZcMrE6J6rJtLpjBdZv1V0V2d0OKAkXNzlR7V8E';
 
-// Create Supabase client
+// Create Supabase client for public operations
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false
+  }
+});
+
+// Create Supabase admin client for server-side operations (bypasses RLS)
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
   }
 });
 
@@ -25,7 +34,6 @@ export interface User {
   profile_image_url?: string;
   // Client specific fields
   city?: string;
-  legal_issue?: string;
   created_at: string;
   updated_at: string;
 }
