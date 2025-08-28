@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Logo = () => (
   <svg width="32" height="40" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-300">
@@ -198,26 +199,37 @@ const LoginPage = () => {
           </div>
 
           {/* Hero Text */}
-          <div className="text-white max-w-lg">
-            <h1 className="text-4xl xl:text-5xl font-light leading-tight mb-6">
-              Welcome Back to{' '}
-              <span className="text-primary font-semibold">Legal Excellence</span>
+          <div className="flex-1 flex flex-col justify-center">
+            <h1 className="text-5xl font-bold text-white mb-8 leading-tight">
+              Welcome Back to<br />
+              <span className="text-primary">Legal Excellence</span>
             </h1>
-            <p className="text-xl text-gray-300 leading-relaxed">
+            <p className="text-xl text-white/80 leading-relaxed mb-8">
               Access your personalized legal dashboard and continue your journey with India's premier legal platform.
             </p>
+            
+            {/* Hero section image */}
+            <div className="relative">
+              <Image
+                src="/images/landingpagephoto.png"
+                alt="Legal Justice"
+                width={500}
+                height={300}
+                className="w-full h-80 object-contain object-left rounded-lg"
+              />
+            </div>
           </div>
 
-          {/* Footer */}
-          <div className="text-gray-400 text-sm">
-            <p>© 2025 Turn2Law. Empowering justice through technology.</p>
+          {/* Terms */}
+          <div className="text-white/60 text-sm">
+            By Signing in, You accept our Terms & Condition and Privacy Policy
           </div>
         </div>
       </div>
 
       {/* Right side - Login form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md space-y-8">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-12">
+        <div className="max-w-md mx-auto w-full">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
             <Link href="/" className="flex items-center gap-3">
@@ -227,48 +239,31 @@ const LoginPage = () => {
           </div>
 
           {/* Header */}
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-foreground">Welcome Back</h2>
-            <p className="mt-2 text-muted-foreground">
-              Sign in to your account to continue
-            </p>
-          </div>
+          <h2 className="text-3xl font-bold text-white mb-8">Welcome Back</h2>
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              {/* Email */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                  Email Address
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="Enter your email"
-                  className="w-full"
-                  required
-                />
-              </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <Input
+              id="email"
+              type="email"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              placeholder="Email Address"
+              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              required
+            />
 
-              {/* Password */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
-                  Password
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="Enter your password"
-                  className="w-full"
-                  required
-                />
-              </div>
-            </div>
+            {/* Password */}
+            <Input
+              id="password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              placeholder="Password"
+              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              required
+            />
 
             {/* Forgot Password Link */}
             <div className="flex items-center justify-end">
@@ -283,50 +278,40 @@ const LoginPage = () => {
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-white py-3 text-lg font-medium"
+              className="w-full bg-[#009E98] hover:bg-[#008882] text-white font-semibold py-3 rounded-xl"
               disabled={isLoading}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
-
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Don't have an account?
-                </span>
-              </div>
-            </div>
-
-            {/* Sign Up Link */}
-            <div className="text-center">
-              <p className="text-muted-foreground">
-                New to Turn2Law?{' '}
-                <Link 
-                  href="/signup" 
-                  className="text-primary hover:text-primary/80 font-medium transition-colors"
-                >
-                  Create an account
-                </Link>
-              </p>
-            </div>
           </form>
 
-          {/* Additional Info */}
-          <div className="text-center text-xs text-muted-foreground space-y-2">
-            <p>By signing in, you agree to our Terms of Service and Privacy Policy</p>
-            <div className="flex items-center justify-center gap-4">
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Help
+          <div className="mt-6 text-center">
+            <p className="text-white/60 mb-4">
+              New to Turn2Law?{' '}
+              <Link 
+                href="/signup" 
+                className="text-primary hover:text-primary/80 font-medium transition-colors"
+              >
+                Create an account
               </Link>
-              <span>•</span>
-              <Link href="#" className="hover:text-foreground transition-colors">
-                Contact
-              </Link>
+            </p>
+            
+            <div className="relative mb-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-background px-2 text-white/60">or</span>
+              </div>
             </div>
+            
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              Sign in with Google
+            </Button>
           </div>
         </div>
       </div>

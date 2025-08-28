@@ -2,11 +2,43 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Calendar, 
+  FileText, 
+  Users, 
+  DollarSign, 
+  Clock, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Search,
+  MessageCircle,
+  Scale,
+  BookOpen,
+  Settings,
+  Bell,
+  ChevronRight,
+  TrendingUp,
+  Shield,
+  Star,
+  Gavel,
+  BarChart3,
+  Target,
+  Award,
+  UserCheck,
+  Briefcase,
+  TrendingDown,
+  LogOut,
+  User,
+  ChevronDown
+} from 'lucide-react';
+import Header from '@/components/layout/header';
 
 interface User {
   id: string;
@@ -26,6 +58,12 @@ interface LawyerProfile {
   consultation_fee?: string;
   profile_image_url?: string;
 }
+
+const Logo = () => (
+  <svg width="30" height="30" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300">
+    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
+  </svg>
+);
 
 const LawyerDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -78,10 +116,10 @@ const LawyerDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading your dashboard...</p>
+          <p className="mt-4 text-muted-foreground">Loading your practice dashboard...</p>
         </div>
       </div>
     );
@@ -92,36 +130,46 @@ const LawyerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-2xl font-bold text-primary">
-                Turn2Law
-              </Link>
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                Lawyer Portal
-              </Badge>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:block text-right">
-                <p className="text-sm text-muted-foreground">Welcome back,</p>
-                <p className="font-medium text-foreground">Advocate {user.fullName}</p>
+    <div className="min-h-screen bg-background">
+      {/* Main Header */}
+      <Header hideAuthButtons={false} />
+
+      {/* Hero Welcome Section */}
+      <div className="bg-gradient-to-br from-background via-background to-card border-b border-border/50 pt-20">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex-1">
+              <h1 className="text-4xl lg:text-5xl font-headline font-semibold text-foreground mb-4">
+                Welcome, <span className="text-primary">Advocate {user.fullName.split(' ')[0]}</span>
+              </h1>
+              <p className="text-xl text-muted-foreground mb-6 max-w-2xl font-body">
+                Manage your legal practice, connect with clients, and grow your expertise. Your professional dashboard awaits.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold font-body">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Set Availability
+                </Button>
+                <Button size="lg" variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10 font-body" onClick={() => setActiveTab('earnings')}>
+                  <BarChart3 className="mr-2 h-5 w-5" />
+                  View Analytics
+                </Button>
               </div>
-              <Avatar>
-                <AvatarFallback className="bg-primary text-white">
-                  {user.fullName.split(' ').map(n => n[0]).join('').toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <Button variant="outline" onClick={handleLogout} size="sm">
-                Logout
-              </Button>
+            </div>
+            <div className="relative">
+              <div className="w-80 h-64 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-transparent to-primary/20 rounded-3xl blur-2xl"></div>
+                <Image
+                  src="/images/landingpagephoto.png"
+                  alt="Legal Practice"
+                  fill
+                  className="object-cover rounded-2xl border border-border/50"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -137,172 +185,244 @@ const LawyerDashboard = () => {
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            {/* Welcome Banner */}
-            <Card className="bg-gradient-to-r from-primary to-primary/80 text-white">
-              <CardHeader>
-                <CardTitle className="text-2xl">Welcome to Your Practice Dashboard, Advocate {user.fullName}!</CardTitle>
-                <p className="text-primary-foreground/90">
-                  Manage your consultations, connect with clients, and grow your legal practice.
-                </p>
+            {/* Modern Welcome Banner */}
+            <Card className="border-0 bg-gradient-to-br from-secondary via-secondary to-secondary/80 text-secondary-foreground relative overflow-hidden">
+              <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)]"></div>
+              </div>
+              <CardHeader className="relative">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-3xl font-headline font-semibold mb-2">
+                      Welcome to Your Practice Dashboard, Advocate {user.fullName}!
+                    </CardTitle>
+                    <p className="text-secondary-foreground/90 text-lg max-w-2xl font-body">
+                      Manage your consultations, connect with clients, and grow your legal practice with our comprehensive tools.
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                      Professional
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-3 mt-6">
+                  <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                    <Award className="mr-2 h-4 w-4" />
+                    Verify Profile
+                  </Button>
+                  <Button variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                    <Target className="mr-2 h-4 w-4" />
+                    Set Goals
+                  </Button>
+                </div>
               </CardHeader>
             </Card>
 
-            {/* Stats Cards */}
+            {/* Modern Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Total Clients</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">0</p>
+                      <p className="text-xs text-secondary mt-1">Lifetime clients served</p>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Total Clients</p>
-                      <p className="text-2xl font-bold text-foreground">0</p>
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
+                      <Users className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                      </svg>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Monthly Earnings</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">₹0</p>
+                      <p className="text-xs text-secondary mt-1">This month's revenue</p>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Monthly Earnings</p>
-                      <p className="text-2xl font-bold text-foreground">₹0</p>
+                    <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-secondary" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Consultations</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">0</p>
+                      <p className="text-xs text-muted-foreground mt-1">Sessions completed</p>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Consultations</p>
-                      <p className="text-2xl font-bold text-foreground">0</p>
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-primary" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                      </svg>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-1">Success Rating</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">5.0</p>
+                      <p className="text-xs text-secondary mt-1">Client satisfaction</p>
                     </div>
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Rating</p>
-                      <p className="text-2xl font-bold text-foreground">5.0</p>
+                    <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
+                      <Star className="w-6 h-6 text-secondary" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Quick Actions</CardTitle>
+            {/* Modern Actions & Activity Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Enhanced Quick Actions */}
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-headline">Practice Management</CardTitle>
+                  <p className="text-sm text-muted-foreground font-body">Manage your legal practice efficiently</p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Button className="h-20 flex flex-col space-y-2" onClick={() => setActiveTab('consultations')}>
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                      <span>View Consultations</span>
+                    <Button size="lg" className="h-24 flex flex-col justify-center space-y-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold font-body" onClick={() => setActiveTab('consultations')}>
+                      <Calendar className="w-6 h-6" />
+                      <span>Consultations</span>
+                      <span className="text-xs opacity-80">Manage bookings</span>
                     </Button>
                     
-                    <Button variant="outline" className="h-20 flex flex-col space-y-2" onClick={() => setActiveTab('clients')}>
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      <span>Manage Clients</span>
+                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-secondary/50 text-secondary hover:bg-secondary/10 font-body" onClick={() => setActiveTab('clients')}>
+                      <Users className="w-6 h-6" />
+                      <span>My Clients</span>
+                      <span className="text-xs opacity-70">Client management</span>
                     </Button>
                     
-                    <Button variant="outline" className="h-20 flex flex-col space-y-2">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Set Availability</span>
+                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body">
+                      <Clock className="w-6 h-6" />
+                      <span>Set Schedule</span>
+                      <span className="text-xs opacity-70">Availability hours</span>
                     </Button>
                     
-                    <Button variant="outline" className="h-20 flex flex-col space-y-2" onClick={() => setActiveTab('earnings')}>
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <span>View Earnings</span>
+                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('earnings')}>
+                      <BarChart3 className="w-6 h-6" />
+                      <span>View Analytics</span>
+                      <span className="text-xs opacity-70">Revenue reports</span>
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
+              {/* Enhanced Recent Activity */}
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-headline">Recent Activity</CardTitle>
+                  <p className="text-sm text-muted-foreground font-body">Your latest client interactions</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="text-center text-muted-foreground py-8">
-                      <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <p>No recent activity</p>
-                      <p className="text-sm mt-2">Your consultations and client interactions will appear here</p>
+                  <div className="flex flex-col items-center justify-center text-center py-12">
+                    <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
+                      <Briefcase className="w-8 h-8 text-muted-foreground" />
                     </div>
+                    <h3 className="font-headline font-semibold text-foreground mb-2">No Recent Activity</h3>
+                    <p className="text-sm text-muted-foreground mb-4 max-w-sm font-body">Your consultations, client interactions, and practice updates will appear here</p>
+                    <Button variant="outline" size="sm" className="font-body" onClick={() => setActiveTab('consultations')}>
+                      Start Taking Consultations
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Practice Insights */}
+            <Card className="border-border/50 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">Practice Insights</CardTitle>
+                <p className="text-sm text-muted-foreground">Grow your legal practice with data-driven insights</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="font-headline font-semibold mb-2">Growth Analytics</h3>
+                    <p className="text-sm text-muted-foreground">Track your practice growth and revenue trends</p>
+                  </div>
+                  
+                  <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
+                    <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
+                      <UserCheck className="w-6 h-6 text-secondary" />
+                    </div>
+                    <h3 className="font-headline font-semibold mb-2">Client Satisfaction</h3>
+                    <p className="text-sm text-muted-foreground">Monitor client feedback and ratings</p>
+                  </div>
+                  
+                  <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
+                      <Scale className="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 className="font-headline font-semibold mb-2">Case Management</h3>
+                    <p className="text-sm text-muted-foreground">Organize and track legal cases efficiently</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Consultations Tab */}
           <TabsContent value="consultations" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">My Consultations</h2>
-              <Button>Set Availability</Button>
+              <div>
+                <h2 className="text-2xl font-headline font-semibold">My Consultations</h2>
+                <p className="text-muted-foreground">Manage your scheduled appointments and client meetings</p>
+              </div>
+              <Button className="bg-primary hover:bg-primary/90">
+                <Calendar className="mr-2 h-4 w-4" />
+                Set Availability
+              </Button>
             </div>
             
-            <div className="text-center py-12">
-              <svg className="w-16 h-16 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              <h3 className="text-xl font-semibold mb-2">No Consultations Scheduled</h3>
-              <p className="text-muted-foreground mb-6">Your upcoming consultations will appear here</p>
-              <Button size="lg">Set Your Availability</Button>
+            <div className="flex flex-col items-center justify-center text-center py-16">
+              <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-6">
+                <Calendar className="w-10 h-10 text-primary" />
+              </div>
+              <h3 className="text-xl font-headline font-semibold mb-2">No Consultations Scheduled</h3>
+              <p className="text-muted-foreground mb-6 max-w-md">Your upcoming consultations will appear here. Set your availability to start receiving bookings from clients.</p>
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                <Clock className="mr-2 h-5 w-5" />
+                Set Your Availability
+              </Button>
             </div>
           </TabsContent>
 
           {/* Clients Tab */}
           <TabsContent value="clients" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">My Clients</h2>
-              <Button variant="outline">Client Management</Button>
+              <div>
+                <h2 className="text-2xl font-headline font-semibold">My Clients</h2>
+                <p className="text-muted-foreground">Manage your client relationships and case history</p>
+              </div>
+              <Button variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
+                <UserCheck className="mr-2 h-4 w-4" />
+                Client Management
+              </Button>
             </div>
             
-            <div className="text-center py-12">
-              <svg className="w-16 h-16 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 515.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 919.288 0M15 7a3 3 0 11-6 0 3 3 0 616 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <h3 className="text-xl font-semibold mb-2">No Clients Yet</h3>
-              <p className="text-muted-foreground mb-6">Your client list will appear here as you start taking consultations</p>
-              <Button size="lg" variant="outline">
+            <div className="flex flex-col items-center justify-center text-center py-16">
+              <div className="w-20 h-20 bg-secondary/20 rounded-3xl flex items-center justify-center mb-6">
+                <Users className="w-10 h-10 text-secondary" />
+              </div>
+              <h3 className="text-xl font-headline font-semibold mb-2">No Clients Yet</h3>
+              <p className="text-muted-foreground mb-6 max-w-md">Your client list will appear here as you start taking consultations. Build your practice by connecting with clients who need legal expertise.</p>
+              <Button size="lg" variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
+                <BookOpen className="mr-2 h-5 w-5" />
                 Learn About Client Management
               </Button>
             </div>
@@ -311,92 +431,146 @@ const LawyerDashboard = () => {
           {/* Earnings Tab */}
           <TabsContent value="earnings" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Earnings & Reports</h2>
-              <Button variant="outline">Download Report</Button>
+              <div>
+                <h2 className="text-2xl font-headline font-semibold">Earnings & Analytics</h2>
+                <p className="text-muted-foreground">Track your practice revenue and financial performance</p>
+              </div>
+              <Button variant="outline" className="border-border/50 hover:bg-card">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Download Report
+              </Button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>This Month</CardTitle>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-headline">This Month</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">₹0</div>
-                  <p className="text-sm text-muted-foreground">0 consultations</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
+                      <p className="text-sm text-muted-foreground">0 consultations</p>
+                      <p className="text-xs text-secondary mt-1">+0% from last month</p>
+                    </div>
+                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-primary" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
-                  <CardTitle>Last Month</CardTitle>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-headline">Last Month</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">₹0</div>
-                  <p className="text-sm text-muted-foreground">0 consultations</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
+                      <p className="text-sm text-muted-foreground">0 consultations</p>
+                      <p className="text-xs text-muted-foreground mt-1">Previous period</p>
+                    </div>
+                    <div className="w-12 h-12 bg-muted/50 rounded-2xl flex items-center justify-center">
+                      <TrendingDown className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
               
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total Earnings</CardTitle>
+              <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-headline">Total Earnings</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold">₹0</div>
-                  <p className="text-sm text-muted-foreground">All time</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
+                      <p className="text-sm text-muted-foreground">All time revenue</p>
+                      <p className="text-xs text-secondary mt-1">Your practice income</p>
+                    </div>
+                    <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-secondary" />
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Earnings Analytics */}
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">Revenue Analytics</CardTitle>
+                <p className="text-sm text-muted-foreground">Detailed breakdown of your practice earnings</p>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col items-center justify-center text-center py-12">
+                  <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center mb-6">
+                    <BarChart3 className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-headline font-semibold mb-2">No Revenue Data Yet</h3>
+                  <p className="text-muted-foreground mb-6 max-w-md">Start taking consultations to see detailed analytics about your practice revenue, client trends, and growth patterns.</p>
+                  <div className="flex gap-3">
+                    <Button onClick={() => setActiveTab('consultations')} className="bg-primary hover:bg-primary/90">
+                      Start Consulting
+                    </Button>
+                    <Button variant="outline" className="border-border/50 hover:bg-card">
+                      Learn About Analytics
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <Card>
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle>Professional Profile</CardTitle>
+                <CardTitle className="text-xl font-headline">Professional Profile</CardTitle>
+                <p className="text-sm text-muted-foreground">Manage your professional information and credentials</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
+                <div className="flex items-start gap-6">
+                  <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl flex items-center justify-center border border-border/50">
+                    <Gavel className="w-12 h-12 text-primary" />
                   </div>
                   <div className="flex-1">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                          <p className="text-lg font-medium">{user.fullName}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Full Name</label>
+                          <p className="text-lg font-semibold text-foreground">{user.fullName}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Email</label>
-                          <p className="text-lg">{user.email}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Email Address</label>
+                          <p className="text-lg text-foreground">{user.email}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Bar Number</label>
-                          <p className="text-lg">{lawyerProfile?.bar_number || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Bar Registration Number</label>
+                          <p className="text-lg text-foreground">{lawyerProfile?.bar_number || 'Not set'}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Experience</label>
-                          <p className="text-lg">{lawyerProfile?.experience || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Years of Experience</label>
+                          <p className="text-lg text-foreground">{lawyerProfile?.experience || 'Not set'}</p>
                         </div>
                       </div>
                       <div className="space-y-4">
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Specialization</label>
-                          <p className="text-lg">{lawyerProfile?.specialization || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Legal Specialization</label>
+                          <p className="text-lg text-foreground">{lawyerProfile?.specialization || 'Not set'}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Court Practice</label>
-                          <p className="text-lg">{lawyerProfile?.court_practice || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Court Practice Areas</label>
+                          <p className="text-lg text-foreground">{lawyerProfile?.court_practice || 'Not set'}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Languages</label>
-                          <p className="text-lg">{lawyerProfile?.languages || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Languages Spoken</label>
+                          <p className="text-lg text-foreground">{lawyerProfile?.languages || 'Not set'}</p>
                         </div>
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">Consultation Fee</label>
-                          <p className="text-lg">₹{lawyerProfile?.consultation_fee || 'Not set'}</p>
+                        <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                          <label className="text-sm font-medium text-muted-foreground block mb-1">Consultation Fee</label>
+                          <p className="text-lg text-foreground">₹{lawyerProfile?.consultation_fee || 'Not set'}</p>
                         </div>
                       </div>
                     </div>
@@ -404,14 +578,21 @@ const LawyerDashboard = () => {
                 </div>
                 
                 {lawyerProfile?.bio && (
-                  <div>
-                    <label className="text-sm font-medium text-muted-foreground">Bio</label>
-                    <p className="text-base mt-1">{lawyerProfile.bio}</p>
+                  <div className="p-4 rounded-xl border border-border/50 bg-background/50">
+                    <label className="text-sm font-medium text-muted-foreground block mb-2">Professional Bio</label>
+                    <p className="text-base text-foreground leading-relaxed">{lawyerProfile.bio}</p>
                   </div>
                 )}
                 
-                <div className="pt-4 border-t">
-                  <Button>Edit Profile</Button>
+                <div className="pt-6 border-t border-border/50 flex gap-4">
+                  <Button className="bg-primary hover:bg-primary/90">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                  <Button variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
+                    <Award className="mr-2 h-4 w-4" />
+                    Add Credentials
+                  </Button>
                 </div>
               </CardContent>
             </Card>
