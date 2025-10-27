@@ -1,9 +1,9 @@
-
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
 import Header from '@/components/layout/header';
 import WowAhhAnimation from "./Animation";
+import { getLegalAIResponse, type ChatMessage as AIMessage } from '@/lib/nebius-ai';
 
 // Simple skeleton loader component
 function SkeletonLoader() {
@@ -17,6 +17,7 @@ function SkeletonLoader() {
     </div>
   );
 }
+
 // Custom LawGPT Sidebar
 function LawGPTSidebar({ onClose }: { onClose: () => void }) {
   const mockChats = [
@@ -28,6 +29,7 @@ function LawGPTSidebar({ onClose }: { onClose: () => void }) {
     "Chat title",
     "Chat title"
   ];
+
   return (
     <div className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-[#202020] border-r border-[#232323] flex flex-col shadow-2xl" style={{minWidth:340}}>
       {/* Header with LawGPT icon and close button */}
@@ -54,6 +56,7 @@ function LawGPTSidebar({ onClose }: { onClose: () => void }) {
           </svg>
         </button>
       </div>
+
       {/* Chat history mockups */}
       <div className="flex-1 overflow-y-auto px-7 pt-6">
         {/* No label, just chat titles */}
@@ -90,6 +93,7 @@ function LawGPTSidebar({ onClose }: { onClose: () => void }) {
           ))}
         </div>
       </div>
+
       {/* No new chat button at bottom, just spacing */}
       <div className="py-6" />
     </div>
@@ -99,21 +103,19 @@ function LawGPTSidebar({ onClose }: { onClose: () => void }) {
 // Auto-sizing chat bubble component
 function AutoBubble({ message, messageId }: { message: string; messageId: string }) {
   const textRef = useRef<HTMLDivElement>(null);
-  const [bubbleSize, setBubbleSize] = useState({ width: 120, height: 60 }); // Reduced initial width
+  const [bubbleSize, setBubbleSize] = useState({ width: 120, height: 60 });
   const [pop, setPop] = useState(false);
   const [isCalculated, setIsCalculated] = useState(false);
 
-  // Calculate bubble size immediately when message changes
   useEffect(() => {
     const calculateSize = () => {
       const padding = 36;
       const verticalPadding = 36;
-      const minWidth = 120; // Reduced minimum width for short messages
+      const minWidth = 120;
       const minHeight = 60;
-      const maxSingleLineWidth = 400; // Slightly increased threshold
-      const wrapWidth = 380; // Increased wrap width for longer text
+      const maxSingleLineWidth = 400;
+      const wrapWidth = 380;
 
-      // Create a unique container for this specific message measurement
       const measureContainer = document.createElement('div');
       measureContainer.style.position = 'absolute';
       measureContainer.style.visibility = 'hidden';
@@ -124,7 +126,6 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
       document.body.appendChild(measureContainer);
 
       try {
-        // First, measure as single line
         const singleLineDiv = document.createElement('div');
         singleLineDiv.style.fontSize = '20px';
         singleLineDiv.style.fontFamily = 'Instrument Sans, sans-serif';
@@ -141,7 +142,6 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
         let finalWidth, finalHeight;
 
         if (singleLineWidth > maxSingleLineWidth) {
-          // Text needs wrapping
           const wrappedDiv = document.createElement('div');
           wrappedDiv.style.fontSize = '20px';
           wrappedDiv.style.fontFamily = 'Instrument Sans, sans-serif';
@@ -158,30 +158,23 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
           finalWidth = wrapWidth + padding;
           finalHeight = Math.max(minHeight, wrappedHeight + verticalPadding);
         } else {
-          // Single line - use natural width but respect minimum
           finalWidth = Math.max(singleLineWidth, minWidth);
           finalHeight = minHeight;
         }
 
         setBubbleSize({ width: finalWidth, height: finalHeight });
         setIsCalculated(true);
-
-        // Pop animation
         setPop(true);
         setTimeout(() => setPop(false), 200);
-
       } finally {
-        // Clean up measurement container
         document.body.removeChild(measureContainer);
       }
     };
 
     if (message && messageId) {
-      // Reset state for new calculation
       setIsCalculated(false);
-      setBubbleSize({ width: 120, height: 60 }); // Reduced reset width
+      setBubbleSize({ width: 120, height: 60 });
       
-      // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
         calculateSize();
       });
@@ -191,16 +184,16 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
   return (
     <div className="inline-block">
       <svg
-        key={`${messageId}-${isCalculated}`} // Force re-render when calculation completes
+        key={`${messageId}-${isCalculated}`}
         width={bubbleSize.width}
         height={bubbleSize.height}
         viewBox={`0 0 ${bubbleSize.width} ${bubbleSize.height}`}
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className={`pointer-events-auto transition-all duration-300 ${pop ? 'scale-105' : 'scale-100'}`}
-        style={{ 
-          filter: 'drop-shadow(0 4px 16px rgba(60,155,151,0.18))', 
-          borderRadius: 32, 
+        style={{
+          filter: 'drop-shadow(0 4px 16px rgba(60,155,151,0.18))',
+          borderRadius: 32,
           transition: 'all 0.3s cubic-bezier(.4,2,.6,1)',
           display: 'block'
         }}
@@ -226,7 +219,7 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
               margin: '0',
               boxSizing: 'border-box',
               overflow: 'visible',
-              whiteSpace: bubbleSize.width > 400 ? 'pre-wrap' : 'nowrap', // Updated threshold
+              whiteSpace: bubbleSize.width > 400 ? 'pre-wrap' : 'nowrap',
               overflowWrap: 'break-word',
               maxWidth: '100%'
             }}
@@ -236,7 +229,7 @@ function AutoBubble({ message, messageId }: { message: string; messageId: string
               display: 'block',
               wordBreak: 'break-word',
               overflowWrap: 'break-word',
-              whiteSpace: bubbleSize.width > 400 ? 'pre-wrap' : 'nowrap' // Updated threshold
+              whiteSpace: bubbleSize.width > 400 ? 'pre-wrap' : 'nowrap'
             }}>
               {message}
             </span>
@@ -274,7 +267,7 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
               </svg>
             )}
           </button>
-          {/* Vertical line SVG separator between main logo and green logo (centered between them) */}
+
           <svg
             width="2"
             height="45"
@@ -294,7 +287,7 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
           >
             <path d="M1 1V44" stroke="#FEFEFE" strokeOpacity="0.4" style={{stroke:'#FEFEFE',strokeOpacity:0.4}} />
           </svg>
-          {/* LawGPT green logo absolutely positioned, visually aligned with main logo */}
+
           <svg
             width="31"
             height="31"
@@ -309,7 +302,7 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              paddingRight: '0px', // visually match header padding
+              paddingRight: '0px',
             }}
             aria-label="LawGPT logo"
           >
@@ -325,7 +318,6 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
 }
 
 
-// Chat message interface
 interface ChatMessage {
   id: string;
   type: 'user' | 'ai';
@@ -343,15 +335,12 @@ export default function LawGPTPage() {
   const bottomTextareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Ensure page always starts at the top when component mounts
   useEffect(() => {
-    // Force immediate scroll to top
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-  }, []); // Run only once on mount
+  }, []);
 
-  // Auto-scroll to bottom when chat history changes
   useEffect(() => {
     if (chatHistory.length > 0 && chatContainerRef.current) {
       const scrollToBottom = () => {
@@ -360,7 +349,6 @@ export default function LawGPTPage() {
         }
       };
       
-      // Multiple scroll attempts to ensure it works with dynamic content
       scrollToBottom();
       const timeoutId1 = setTimeout(scrollToBottom, 50);
       const timeoutId2 = setTimeout(scrollToBottom, 200);
@@ -374,19 +362,15 @@ export default function LawGPTPage() {
     }
   }, [chatHistory.length]);
 
-  // Apply scroll prevention only when there's no chat history
   useEffect(() => {
-    if (chatHistory.length > 0) return; // Don't prevent scrolling if there's chat history
+    if (chatHistory.length > 0) return;
     
-    // Force scroll to top and prevent any scrolling
     const preventScroll = (e: Event) => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     };
     
-    // Temporarily prevent scrolling during initial load
     window.addEventListener('scroll', preventScroll, { passive: false });
     
-    // Remove scroll prevention after a short delay
     const timeoutId = setTimeout(() => {
       window.removeEventListener('scroll', preventScroll);
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -396,16 +380,14 @@ export default function LawGPTPage() {
       clearTimeout(timeoutId);
       window.removeEventListener('scroll', preventScroll);
     };
-  }, [chatHistory]); // Use the entire chatHistory array instead of just length
+  }, [chatHistory]);
 
-  // Additional effect to ensure the header stays visible on any layout changes
   useEffect(() => {
     const ensureTopPosition = () => {
-      if (window.scrollY === 0) return; // Already at top, no need to scroll
+      if (window.scrollY === 0) return;
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     };
     
-    // Check periodically in the first few seconds after mount
     const interval = setInterval(ensureTopPosition, 100);
     const timeout = setTimeout(() => clearInterval(interval), 2000);
     
@@ -417,56 +399,87 @@ export default function LawGPTPage() {
 
   const handleSidebarToggle = () => setSidebarOpen((open) => !open);
 
-  const handleSend = () => {
+  const getAiResponse = async (userMessage: string): Promise<string> => {
+    try {
+      const conversationHistory: AIMessage[] = chatHistory.map(chat => ({
+        role: chat.type === 'user' ? 'user' as const : 'assistant' as const,
+        content: chat.content
+      }));
+
+      const aiResponse = await getLegalAIResponse(userMessage, conversationHistory);
+      return aiResponse;
+    } catch (error) {
+      console.error('AI response error:', error);
+      return "I'm experiencing technical difficulties right now. For immediate legal assistance, please book a consultation with one of our qualified lawyers through our platform. They can provide personalized advice for your specific situation.";
+    }
+  };
+
+  const generateTitle = (msg: string): string => {
+    const lowerMsg = msg.toLowerCase();
+    if (lowerMsg.includes("copyright") || lowerMsg.includes("intellectual property")) return "Intellectual Property Law";
+    if (lowerMsg.includes("divorce") || lowerMsg.includes("marriage")) return "Family Law";
+    if (lowerMsg.includes("property") || lowerMsg.includes("real estate")) return "Property Law";
+    if (lowerMsg.includes("criminal") || lowerMsg.includes("crime")) return "Criminal Law";
+    if (lowerMsg.includes("contract") || lowerMsg.includes("agreement")) return "Contract Law";
+    if (lowerMsg.includes("employment") || lowerMsg.includes("workplace")) return "Employment Law";
+    if (lowerMsg.includes("tax") || lowerMsg.includes("taxation")) return "Tax Law";
+    if (lowerMsg.includes("consumer") || lowerMsg.includes("rights")) return "Consumer Law";
+    return "Legal Guidance";
+  };
+
+  const handleSend = async () => {
     if (message.trim() !== "") {
-      // Add user message to chat history
+      const currentMessage = message.trim();
+      
       const userMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'user',
-        content: message.trim(),
+        content: currentMessage,
         timestamp: new Date()
       };
       
       setChatHistory(prev => [...prev, userMessage]);
       setAiLoading(true);
       
-      // Simulate AI reply: set title and show skeleton, then show content
-      setTimeout(() => {
-        // For demo, just use a simple mapping or fallback
-        let title = "AI Response";
-        if (message.toLowerCase().includes("copyright")) title = "Copyright Action";
-        else if (message.toLowerCase().includes("divorce")) title = "Divorce Law";
-        else if (message.toLowerCase().includes("property")) title = "Property Dispute";
+      try {
+        const aiResponseContent = await getAiResponse(currentMessage);
         
-        setTimeout(() => {
-          const aiMessage: ChatMessage = {
-            id: (Date.now() + 1).toString(),
-            type: 'ai',
-            content: "This is a sample AI-generated answer to your question. Replace this with your actual AI response.",
-            title: title,
-            timestamp: new Date()
-          };
-          
-          setChatHistory(prev => [...prev, aiMessage]);
-          setAiLoading(false);
-        }, 1800);
-      }, 600);
+        const aiMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: aiResponseContent,
+          title: generateTitle(currentMessage),
+          timestamp: new Date()
+        };
+        
+        setChatHistory(prev => [...prev, aiMessage]);
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        const aiMessage: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: "I'm experiencing technical difficulties. For immediate legal assistance, please book a consultation with one of our qualified lawyers. You can find experienced lawyers in your area through our consultation booking system.",
+          title: "Service Unavailable",
+          timestamp: new Date()
+        };
+        
+        setChatHistory(prev => [...prev, aiMessage]);
+      } finally {
+        setAiLoading(false);
+      }
       
       setMessage("");
-      // Reset textarea for bottom input - use the appropriate ref based on current state
       const currentTextarea = chatHistory.length === 0 ? textareaRef.current : bottomTextareaRef.current;
       if (currentTextarea) {
         currentTextarea.style.height = '24px';
       }
       
-      // Scroll to bottom after message is sent  
       const scrollToBottom = () => {
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
       };
       
-      // Multiple scroll attempts
       setTimeout(scrollToBottom, 10);
       setTimeout(scrollToBottom, 100);
       setTimeout(scrollToBottom, 300);
@@ -484,14 +497,13 @@ export default function LawGPTPage() {
     <div className="relative w-screen h-screen overflow-hidden">
       <LawGPTHeader onSidebarOpen={handleSidebarToggle} sidebarOpen={sidebarOpen} />
       <WowAhhAnimation />
-      {/* Sidebar overlays the page, rest of page remains unchanged */}
+
       {sidebarOpen && (
         <LawGPTSidebar onClose={() => setSidebarOpen(false)} />
       )}
-      {/* Main LawGPT content or chat conversation */}
+
       {chatHistory.length === 0 ? (
         <div className="relative w-full h-full bg-background font-body flex flex-col items-center justify-start overflow-hidden" style={{ paddingTop: '240px' }}>
-          {/* LawGPT Logo and Title */}
           <div className="flex flex-row items-center justify-center gap-3 mb-4">
             <svg width="31" height="31" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3.35028 11.6585C5.38323 9.62556 8.67069 9.61698 10.693 11.6393L14.0619 15.0082L10.7122 18.3579C8.67927 20.3908 5.39181 20.3994 3.36946 18.377L0.000606868 15.0082L3.35028 11.6585Z" fill="#3C9B97" fillOpacity="0.6"/>
@@ -501,9 +513,9 @@ export default function LawGPTPage() {
             </svg>
             <span className="font-semibold text-[20px] leading-6 text-white/60" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>LawGPT</span>
           </div>
-          {/* Heading */}
+          
           <h1 className="font-bold text-[40px] leading-[48px] text-white mb-8 text-center" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>What can I help with</h1>
-          {/* Main Chatbox with rectangular design and rounded corners */}
+          
           <div 
             className="relative mx-auto" 
             style={{ 
@@ -512,7 +524,6 @@ export default function LawGPTPage() {
               minHeight: '132px'
             }}
           >
-            {/* Background SVG with iPhone-like rounded corners */}
             <svg 
               width="537" 
               height={Math.max(132, textareaRef.current ? textareaRef.current.scrollHeight + 80 : 132)}
@@ -529,7 +540,6 @@ export default function LawGPTPage() {
               />
             </svg>
             
-            {/* Input area */}
             <div className="absolute inset-0 flex flex-col justify-start px-8 pt-6">
               <div className="flex items-start">
                 <div className="flex-1">
@@ -540,7 +550,6 @@ export default function LawGPTPage() {
                     value={message}
                     onChange={(e) => {
                       setMessage(e.target.value);
-                      // Auto-resize logic
                       const textarea = e.target;
                       textarea.style.height = 'auto';
                       const newHeight = Math.max(24, textarea.scrollHeight);
@@ -567,7 +576,6 @@ export default function LawGPTPage() {
                 </div>
               </div>
               
-              {/* Send Button positioned at bottom-right where the curve is */}
               <div className="absolute bottom-4 right-4">
                 <button
                   className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
@@ -588,15 +596,13 @@ export default function LawGPTPage() {
         </div>
       ) : (
         <div className="relative w-full h-full bg-background font-body flex flex-col overflow-hidden">
-          {/* Content area with chat history - fixed height container */}
           <div className="flex-1 flex flex-col" style={{ paddingTop: '100px', paddingBottom: '140px' }}>
-            {/* Scrollable chat history area */}
             <div 
               ref={chatContainerRef} 
               className="w-full max-w-4xl mx-auto px-8 flex-1 overflow-y-auto scrollbar-hide" 
               style={{ 
-                paddingBottom: '60px', // More space before the input box
-                maxHeight: 'calc(100vh - 240px)' // Better height calculation
+                paddingBottom: '60px',
+                maxHeight: 'calc(100vh - 240px)'
               }}
             >
               <div className="space-y-8">
@@ -604,7 +610,7 @@ export default function LawGPTPage() {
                   <div key={chat.id} className="w-full">
                     {chat.type === 'user' ? (
                       <div className="flex justify-end w-full">
-                        <div className="max-w-lg"> {/* Increased max-width for longer messages */}
+                        <div className="max-w-lg">
                           <AutoBubble message={chat.content} messageId={chat.id} />
                         </div>
                       </div>
@@ -623,7 +629,6 @@ export default function LawGPTPage() {
                   </div>
                 ))}
                 
-                {/* Show loading state for latest AI response */}
                 {aiLoading && (
                   <div className="flex flex-col gap-4 w-full">
                     <SkeletonLoader />
@@ -633,15 +638,12 @@ export default function LawGPTPage() {
             </div>
           </div>
           
-          {/* Bottom input chatbox */}
           <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-50">
             <div className="relative" style={{ width: '537px', height: '62px' }}>
-              {/* Background SVG */}
               <svg width="537" height="62" viewBox="0 0 537 62" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0">
                 <rect width="537" height="62" rx="31" fill="#D9D9D9" fillOpacity="0.1" />
               </svg>
               
-              {/* Input area */}
               <div className="absolute inset-0 flex items-center px-6">
                 <textarea
                   ref={bottomTextareaRef}
@@ -668,7 +670,6 @@ export default function LawGPTPage() {
                   }}
                 />
                 
-                {/* Send Button */}
                 <button
                   className="ml-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer flex-shrink-0"
                   onClick={handleSend}
