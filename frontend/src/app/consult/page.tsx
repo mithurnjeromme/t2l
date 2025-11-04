@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Search, Star, MapPin, Phone, Mail, Calendar, X } from 'lucide-react';
+import { Search, Star, MapPin, Phone, Mail, Calendar, X, Sparkles, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Header from "@/components/layout/header";
 import { FlipWords } from '@/components/ui/flip-words';
+import SmartMatchModal from '@/components/SmartMatchModal';
+import { mlMatchingAPI, LawyerProfile } from '@/lib/ml-matching-api';
 
 interface Lawyer {
   id: number;
@@ -23,6 +25,8 @@ interface Lawyer {
   consultationFee: string;
   about: string;
   image: string;
+  match_score?: number;
+  match_reasons?: string[];
 }
 
 const Logo = () => (
@@ -49,6 +53,67 @@ const ConsultPage = () => {
     description: '',
     preferredDate: ''
   });
+
+  // ML Matching State
+  const [isSmartMatchOpen, setIsSmartMatchOpen] = useState(false);
+  const [mlMatchedLawyers, setMlMatchedLawyers] = useState<LawyerProfile[]>([]);
+  const [showingMLResults, setShowingMLResults] = useState(false);
+  const [isLoadingFromAPI, setIsLoadingFromAPI] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  // Convert ML API lawyer profile to legacy format
+  const convertToLegacyLawyer = (lawyer: LawyerProfile): Lawyer => {
+    return {
+      id: lawyer.id,
+      name: lawyer.name,
+      specialization: lawyer.specialization,
+      category: lawyer.category,
+      rating: lawyer.rating,
+      reviews: lawyer.reviews,
+      experience: lawyer.experience,
+      location: lawyer.location,
+      phone: lawyer.phone,
+      email: lawyer.email,
+      consultationFee: lawyer.consultation_fee_formatted,
+      about: lawyer.about,
+      image: lawyer.image,
+      match_score: lawyer.match_score,
+      match_reasons: lawyer.match_reasons,
+    };
+  };
+
+  // Handle ML match completion
+  const handleMLMatchComplete = (matchedLawyers: LawyerProfile[]) => {
+    setMlMatchedLawyers(matchedLawyers);
+    setShowingMLResults(true);
+    setApiError(null);
+    // Scroll to results
+    setTimeout(() => {
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }, 100);
+  };
+
+  // Load lawyers from API on component mount (optional - you can enable this)
+  useEffect(() => {
+    const loadLawyersFromAPI = async () => {
+      try {
+        setIsLoadingFromAPI(true);
+        const lawyers = await mlMatchingAPI.getAllLawyers(selectedCategory, 50);
+        if (lawyers && lawyers.length > 0) {
+          // Successfully loaded from API
+          console.log(`✅ Loaded ${lawyers.length} lawyers from ML API`);
+        }
+      } catch (error) {
+        console.log('ℹ️ Using static lawyer data (API not available)');
+        setApiError('Using static data - ML matching available via AI-Powered Match button');
+      } finally {
+        setIsLoadingFromAPI(false);
+      }
+    };
+
+    // Uncomment to auto-load lawyers from API
+    // loadLawyersFromAPI();
+  }, [selectedCategory]);
 
   const categories = [
     'Property and Estate',
@@ -220,6 +285,11 @@ const ConsultPage = () => {
     return matchesCategory && matchesSearch;
   });
 
+  // Determine which lawyers to display: ML matches or filtered static lawyers
+  const displayLawyers = showingMLResults 
+    ? mlMatchedLawyers.map(convertToLegacyLawyer)
+    : filteredLawyers;
+
   const handleLawyerClick = (lawyer: Lawyer) => {
     setSelectedLawyer(lawyer);
     setIsFormOpen(true);
@@ -277,7 +347,7 @@ const ConsultPage = () => {
                 </Button>
               </div>
               
-              <div className='w-full justify-between flex items-center'>
+              <div className='w-full justify-between flex items-center gap-4'>
               {/* Category Pills */}
               <div className="flex flex-wrap gap-4">
                 {categories.map((category) => (
@@ -295,6 +365,15 @@ const ConsultPage = () => {
                   </Button>
                 ))}
               </div>
+
+              {/* AI-Powered Match Button */}
+              <Button
+                onClick={() => setIsSmartMatchOpen(true)}
+                className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-8 py-6 h-12 flex items-center gap-2 whitespace-nowrap animate-pulse hover:animate-none"
+              >
+                <Sparkles className="w-5 h-5" />
+                AI-Powered Match
+              </Button>
               
                <div className="relative w-80">
                 <Input
@@ -319,16 +398,54 @@ const ConsultPage = () => {
             
           </div>
           
+          {/* ML Match Results Banner */}
+          {showingMLResults && (
+            <div className="mb-6 bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border border-yellow-400/30 rounded-xl p-6 animate-in slide-in-from-top-4 duration-500">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-black animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="text-white font-bold text-xl flex items-center gap-2">
+                      AI-Matched Lawyers
+                      <span className="text-green-400 text-sm bg-green-400/10 px-2 py-1 rounded-full">
+                        {displayLawyers.length} Perfect Matches
+                      </span>
+                    </h3>
+                    <p className="text-gray-300 text-sm mt-1">
+                      Personalized recommendations based on your requirements • Sorted by match score
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowingMLResults(false);
+                    setMlMatchedLawyers([]);
+                  }}
+                  className="border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-400 rounded-full px-6"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  View All Lawyers
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-white/70 text-sm">
-              Found {filteredLawyers.length} lawyers in {selectedCategory}
+              {showingMLResults 
+                ? `Showing ${displayLawyers.length} AI-matched lawyers` 
+                : `Found ${filteredLawyers.length} lawyers in ${selectedCategory}`
+              }
             </p>
           </div>
           
           {/* Lawyers Grid */}
           <div className="grid grid-cols-5 gap-6">
-            {filteredLawyers.map((lawyer: Lawyer) => (
+            {displayLawyers.map((lawyer: Lawyer) => (
               <div 
                 key={lawyer.id} 
                 className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
@@ -336,6 +453,14 @@ const ConsultPage = () => {
               >
                 <div className="bg-gray-400 rounded-xl aspect-[3/4] mb-3 overflow-hidden relative group-hover:shadow-2xl transition-shadow duration-300">
                   <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-500 group-hover:from-gray-300 group-hover:to-gray-400 transition-all duration-300"></div>
+                  
+                  {/* Match Score Badge */}
+                  {showingMLResults && lawyer.match_score && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3" />
+                      {Math.round(lawyer.match_score)}%
+                    </div>
+                  )}
                   
                   {/* Hover overlay */}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -363,24 +488,65 @@ const ConsultPage = () => {
                     <span>{lawyer.reviews} reviews</span>
                   </div>
                   <p className="text-yellow-400 text-sm font-semibold">{lawyer.consultationFee}</p>
+                  
+                  {/* Match Reasons */}
+                  {showingMLResults && lawyer.match_reasons && lawyer.match_reasons.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {lawyer.match_reasons.slice(0, 2).map((reason, idx) => (
+                        <div key={idx} className="text-xs text-green-400 flex items-center gap-1">
+                          <span className="w-1 h-1 bg-green-400 rounded-full"></span>
+                          {reason}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
           </div>
           
           {/* No results */}
-          {filteredLawyers.length === 0 && (
+          {displayLawyers.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-white/70 text-lg mb-4">No lawyers found matching your criteria</p>
-              <Button 
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedCategory('Property and Estate');
-                }}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black"
-              >
-                Clear Filters
-              </Button>
+              <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+              <p className="text-white/70 text-lg mb-4">
+                {showingMLResults 
+                  ? 'No matching lawyers found. Try adjusting your criteria.' 
+                  : 'No lawyers found matching your search.'}
+              </p>
+              <div className="flex gap-3 justify-center">
+                {showingMLResults ? (
+                  <Button 
+                    onClick={() => {
+                      setShowingMLResults(false);
+                      setMlMatchedLawyers([]);
+                    }}
+                    className="bg-yellow-400 hover:bg-yellow-500 text-black"
+                  >
+                    View All Lawyers
+                  </Button>
+                ) : (
+                  <>
+                    <Button 
+                      onClick={() => setIsSmartMatchOpen(true)}
+                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Try AI-Powered Match
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedCategory('Property and Estate');
+                      }}
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/10"
+                    >
+                      Clear Filters
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -567,6 +733,13 @@ const ConsultPage = () => {
           </div>
         </div>
       )}
+
+      {/* Smart Match Modal */}
+      <SmartMatchModal
+        isOpen={isSmartMatchOpen}
+        onClose={() => setIsSmartMatchOpen(false)}
+        onMatchComplete={handleMLMatchComplete}
+      />
     </div>
   );
 };

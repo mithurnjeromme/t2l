@@ -223,20 +223,27 @@ const ClientDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-1">Amount Spent</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">₹0</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total investment</p>
-                    </div>
-                    <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
-                      <DollarSign className="w-6 h-6 text-primary" />
-                    </div>
+              <Link href="/dashboard/client/wallet" className="block">
+                <Card className="border-border/50 bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer">
+                  <div className="absolute inset-0 opacity-10">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)]"></div>
                   </div>
-                </CardContent>
-              </Card>
+                  <CardContent className="p-6 relative">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium opacity-90 mb-1">Wallet Balance</p>
+                        <p className="text-3xl font-headline font-semibold">₹5,250</p>
+                        <p className="text-xs opacity-80 mt-1 flex items-center gap-1">
+                          View wallet <ChevronRight className="w-3 h-3" />
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                        <DollarSign className="w-6 h-6" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
@@ -263,7 +270,7 @@ const ClientDashboard = () => {
                   <p className="text-sm text-muted-foreground font-body">Get started with our legal services</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <Button size="lg" className="h-24 flex flex-col justify-center space-y-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold font-body" asChild>
                       <Link href="/consult">
                         <Search className="w-6 h-6" />
@@ -277,6 +284,14 @@ const ClientDashboard = () => {
                         <MessageCircle className="w-6 h-6" />
                         <span>Ask LawGPT</span>
                         <span className="text-xs opacity-70">AI Legal Assistant</span>
+                      </Link>
+                    </Button>
+
+                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-primary/50 text-primary hover:bg-primary/10 font-body" asChild>
+                      <Link href="/dashboard/client/wallet">
+                        <DollarSign className="w-6 h-6" />
+                        <span>My Wallet</span>
+                        <span className="text-xs opacity-70">Manage funds</span>
                       </Link>
                     </Button>
                     

@@ -17,7 +17,7 @@ const KnowAboutUs = () => {
     const [activeItem, setActiveItem] = useState("Channels of Instant Legal Access");
 
     return (
-        <section id="know-about-us" className="py-16 bg-background">
+        <section id="know-about-us" className="py-24 md:py-32 bg-background">
             <div className="container mx-auto px-6">
                 {/* Main dark container */}
                 <div className="bg-[#2A2A2A] rounded-[32px] p-8 relative overflow-hidden">

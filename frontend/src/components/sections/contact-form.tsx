@@ -42,7 +42,7 @@ export default function ContactForm() {
   }, [state, toast]);
 
   return (
-    <section id="find-lawyer" className="py-24 bg-background">
+    <section id="find-lawyer" className="py-24 md:py-32 bg-background">
       <div className="container mx-auto px-6">
         {state.lawyers && state.lawyers.length > 0 ? (
           <div className="text-center">

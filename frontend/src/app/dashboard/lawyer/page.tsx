@@ -36,7 +36,8 @@ import {
   TrendingDown,
   LogOut,
   User,
-  ChevronDown
+  ChevronDown,
+  Wallet
 } from 'lucide-react';
 import Header from '@/components/layout/header';
 
@@ -280,6 +281,26 @@ const LawyerDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              <Link href="/dashboard/lawyer/wallet" className="block">
+                <Card className="border-border/50 bg-gradient-to-br from-primary/10 to-secondary/10 hover:from-primary/20 hover:to-secondary/20 transition-all duration-300 cursor-pointer group">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-muted-foreground mb-1">Wallet Balance</p>
+                        <p className="text-3xl font-headline font-semibold text-foreground">₹125,000</p>
+                        <p className="text-xs text-primary mt-1 flex items-center gap-1">
+                          <TrendingUp className="w-3 h-3" />
+                          +12.5% this month
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                        <Wallet className="w-6 h-6 text-primary" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </div>
 
             {/* Modern Actions & Activity Grid */}
@@ -298,16 +319,18 @@ const LawyerDashboard = () => {
                       <span className="text-xs opacity-80">Manage bookings</span>
                     </Button>
                     
+                    <Link href="/dashboard/lawyer/wallet" className="block">
+                      <Button size="lg" variant="outline" className="w-full h-24 flex flex-col justify-center space-y-2 border-primary/50 text-primary hover:bg-primary/10 font-body">
+                        <Wallet className="w-6 h-6" />
+                        <span>My Wallet</span>
+                        <span className="text-xs opacity-70">Earnings & withdrawals</span>
+                      </Button>
+                    </Link>
+                    
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-secondary/50 text-secondary hover:bg-secondary/10 font-body" onClick={() => setActiveTab('clients')}>
                       <Users className="w-6 h-6" />
                       <span>My Clients</span>
                       <span className="text-xs opacity-70">Client management</span>
-                    </Button>
-                    
-                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body">
-                      <Clock className="w-6 h-6" />
-                      <span>Set Schedule</span>
-                      <span className="text-xs opacity-70">Availability hours</span>
                     </Button>
                     
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('earnings')}>

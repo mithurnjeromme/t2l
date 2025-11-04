@@ -1,6 +1,6 @@
 const Banner = () => {
     return (
-        <section className="py-0 bg-background">
+        <section className="py-16 md:py-20 bg-background">
             <div className="w-full bg-[#008882] py-4 overflow-hidden">
                 <div className="animate-scroll whitespace-nowrap">
                     <div className="inline-flex items-center gap-8 text-white">

@@ -3,11 +3,10 @@ import Footer from '@/components/layout/footer';
 import Hero from '@/components/sections/hero';
 import ServicesGrid from '@/components/sections/services-grid';
 import About from '@/components/sections/about';
+import ThreePillarsSection from '@/components/sections/three-pillars';
 import Stats from '@/components/sections/stats';
-import Testimonials from '@/components/sections/testimonials';
 import Banner from '@/components/sections/banner';
 import KnowAboutUs from '@/components/sections/know-about-us';
-import Pricing from '@/components/sections/pricing';
 import ContactForm from '@/components/sections/contact-form';
 
 export default function Home() {
@@ -18,11 +17,10 @@ export default function Home() {
         <Hero />
         <ServicesGrid />
         <About />
+        <ThreePillarsSection />
         <Stats />
-        <Testimonials />
         <Banner />
         <KnowAboutUs />
-        <Pricing />
         <ContactForm />
       </main>
       <Footer />

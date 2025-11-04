@@ -1,0 +1,24 @@
+/Users/adhyayandubey/Downloads/Turn2law Website/backend/ml-service/main.py:225: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [72975]
+INFO:     Waiting for application startup.
+INFO:__main__:🚀 Starting Turn2Law ML Matchmaking Service...
+WARNING:__main__:⚠ Could not load ML model: No module named 'catboost'
+INFO:__main__:  Service will use rule-based matching instead
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator RobustScaler from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Feature scaler loaded successfully
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator LabelEncoder from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Label encoders loaded successfully
+INFO:__main__:✓ Mock lawyers data loaded: 150 lawyers
+INFO:__main__:✅ Service ready!
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
