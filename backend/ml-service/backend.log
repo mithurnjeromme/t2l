@@ -1,15 +1,14 @@
-/Users/adhyayandubey/Downloads/Turn2law Website/backend/ml-service/main.py:225: DeprecationWarning: 
+/Users/adhyayandubey/Downloads/Turn2law Website/backend/ml-service/main.py:483: DeprecationWarning: 
         on_event is deprecated, use lifespan event handlers instead.
 
         Read more about it in the
         [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
         
   @app.on_event("startup")
-INFO:     Started server process [72975]
+INFO:     Started server process [19234]
 INFO:     Waiting for application startup.
 INFO:__main__:🚀 Starting Turn2Law ML Matchmaking Service...
-WARNING:__main__:⚠ Could not load ML model: No module named 'catboost'
-INFO:__main__:  Service will use rule-based matching instead
+INFO:__main__:✓ ML model loaded successfully
 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator RobustScaler from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
 https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
   warnings.warn(
@@ -22,3 +21,237 @@ INFO:__main__:✓ Mock lawyers data loaded: 150 lawyers
 INFO:__main__:✅ Service ready!
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:__main__:Received match request: Divorce and Family Law
+INFO:__main__:Case description: Need help with divorce proceedings, child custody, and alimony settlement...
+INFO:__main__:📋 Extracted keywords: ['custody', 'marriage', 'alimony', 'matrimonial', 'divorce']... (from 'Divorce and Family Law')
+INFO:__main__:📋 Extracted 7 keywords from prompt
+INFO:__main__:Filtering 150 lawyers with strict specialization + budget filters...
+INFO:__main__:❌ Specialization filter: Taimur Sami - No match for: custody
+INFO:__main__:❌ Specialization filter: Kashvi Saini - No match for: custody
+INFO:__main__:❌ Specialization filter: Alisha Gokhale - No match for: custody
+INFO:__main__:❌ Specialization filter: Mehul Sabharwal - No match for: custody
+INFO:__main__:❌ Specialization filter: Hunar Rao - No match for: custody
+INFO:__main__:❌ Specialization filter: Aarna Shetty - No match for: custody
+INFO:__main__:❌ Specialization filter: Lagan Mallick - No match for: custody
+INFO:__main__:❌ Specialization filter: Vardaniya Saran - No match for: custody
+INFO:__main__:❌ Specialization filter: Madhav Keer - No match for: custody
+INFO:__main__:❌ Specialization filter: Hansh Trivedi - No match for: custody
+INFO:__main__:❌ Specialization filter: Baiju Bhavsar - No match for: custody
+INFO:__main__:❌ Specialization filter: Shray Varkey - No match for: custody
+INFO:__main__:❌ Specialization filter: Jayesh Soni - No match for: custody
+INFO:__main__:Feature vector for Mohanlal Golla: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 7.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Mohanlal Golla = 1.0/100 (0% confidence)
+INFO:__main__:Feature vector for Anvi Goyal: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 24.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Anvi Goyal = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Eshani Shetty - No match for: custody
+INFO:__main__:❌ Specialization filter: Rati Ahluwalia - No match for: custody
+INFO:__main__:❌ Specialization filter: Azad Dutt - No match for: custody
+INFO:__main__:❌ Specialization filter: Darshit Baral - No match for: custody
+INFO:__main__:❌ Specialization filter: Ivan Sane - No match for: custody
+INFO:__main__:❌ Specialization filter: Alia Soni - No match for: custody
+INFO:__main__:❌ Specialization filter: Madhav Bhakta - No match for: custody
+INFO:__main__:❌ Specialization filter: Indrajit Kala - No match for: custody
+INFO:__main__:Feature vector for Kiara Dhar: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 7.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Kiara Dhar = 1.0/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Vanya Kapadia - No match for: custody
+INFO:__main__:❌ Specialization filter: Aaryahi Randhawa - No match for: custody
+INFO:__main__:❌ Specialization filter: Lagan Hegde - No match for: custody
+INFO:__main__:❌ Specialization filter: Pari Arya - No match for: custody
+INFO:__main__:❌ Specialization filter: Biju Dayal - No match for: custody
+INFO:__main__:❌ Specialization filter: Mahika Badal - No match for: custody
+INFO:__main__:❌ Specialization filter: Nakul Ray - No match for: custody
+INFO:__main__:❌ Specialization filter: Dishani Gara - No match for: custody
+INFO:__main__:Feature vector for Aradhya Bhatt: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 5.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Aradhya Bhatt = 0.9/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Pihu Sood - No match for: custody
+INFO:__main__:Feature vector for Krish Suri: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 28.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Krish Suri = 0.9/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Lavanya Chandra - No match for: custody
+INFO:__main__:❌ Specialization filter: Jhanvi Mahal - No match for: custody
+INFO:__main__:❌ Specialization filter: Advik Yohannan - No match for: custody
+INFO:__main__:❌ Specialization filter: Rania Choudhury - No match for: custody
+INFO:__main__:Feature vector for Nitya Seth: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 8.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Nitya Seth = 0.9/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Aniruddh Mahal - No match for: custody
+INFO:__main__:❌ Specialization filter: Dharmajan Gokhale - No match for: custody
+INFO:__main__:❌ Specialization filter: Damini Gulati - No match for: custody
+INFO:__main__:Feature vector for Sahil Ravi: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 15.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Sahil Ravi = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Oorja Thaker - No match for: custody
+INFO:__main__:❌ Specialization filter: Alia Dani - No match for: custody
+INFO:__main__:❌ Specialization filter: Indranil Chaudhari - No match for: custody
+INFO:__main__:❌ Specialization filter: Aaryahi Deol - No match for: custody
+INFO:__main__:Feature vector for Devansh Kadakia: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 30.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Devansh Kadakia = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Misha Kibe - No match for: custody
+INFO:__main__:❌ Specialization filter: Amani Upadhyay - No match for: custody
+INFO:__main__:Feature vector for Amira Talwar: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 13.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Amira Talwar = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Navya Suri - No match for: custody
+INFO:__main__:❌ Specialization filter: Adah Bawa - No match for: custody
+INFO:__main__:❌ Specialization filter: Jayesh Chakraborty - No match for: custody
+INFO:__main__:❌ Specialization filter: Jayesh Bhatnagar - No match for: custody
+INFO:__main__:❌ Specialization filter: Sahil Bhatia - No match for: custody
+INFO:__main__:❌ Specialization filter: Vardaniya Kibe - No match for: custody
+INFO:__main__:❌ Specialization filter: Eshani Lad - No match for: custody
+INFO:__main__:Feature vector for Yuvaan Master: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 17.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Yuvaan Master = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Jayesh Ahuja - No match for: custody
+INFO:__main__:❌ Specialization filter: Armaan Sangha - No match for: custody
+INFO:__main__:❌ Specialization filter: Emir Koshy - No match for: custody
+INFO:__main__:❌ Specialization filter: Farhan Mandal - No match for: custody
+INFO:__main__:❌ Specialization filter: Mehul Sule - No match for: custody
+INFO:__main__:❌ Specialization filter: Sara Gandhi - No match for: custody
+INFO:__main__:❌ Specialization filter: Eva Karnik - No match for: custody
+INFO:__main__:❌ Specialization filter: Indranil Batta - No match for: custody
+INFO:__main__:❌ Specialization filter: Riaan Rastogi - No match for: custody
+INFO:__main__:❌ Specialization filter: Anaya Ravel - No match for: custody
+INFO:__main__:❌ Specialization filter: Zaina Ganesan - No match for: custody
+INFO:__main__:❌ Specialization filter: Veer Edwin - No match for: custody
+INFO:__main__:❌ Specialization filter: Ritvik Shukla - No match for: custody
+INFO:__main__:❌ Specialization filter: Kartik Roy - No match for: custody
+INFO:__main__:❌ Specialization filter: Ela Gupta - No match for: custody
+INFO:__main__:❌ Specialization filter: Ahana  Doctor - No match for: custody
+INFO:__main__:Feature vector for Anahi Goswami: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 5.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Anahi Goswami = 0.9/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Oorja Devan - No match for: custody
+INFO:__main__:❌ Specialization filter: Vihaan Singhal - No match for: custody
+INFO:__main__:❌ Specialization filter: Aaina Dewan - No match for: custody
+INFO:__main__:Feature vector for Pihu Rao: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 20.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Pihu Rao = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Hiran Shanker - No match for: custody
+INFO:__main__:❌ Specialization filter: Tiya Sastry - No match for: custody
+INFO:__main__:❌ Specialization filter: Dhruv Kara - No match for: custody
+INFO:__main__:❌ Specialization filter: Anaya Desai - No match for: custody
+INFO:__main__:❌ Specialization filter: Zaina Srivastava - No match for: custody
+INFO:__main__:❌ Specialization filter: Priyansh Chawla - No match for: custody
+INFO:__main__:❌ Specialization filter: Vanya Lad - No match for: custody
+INFO:__main__:❌ Specialization filter: Saira Sur - No match for: custody
+INFO:__main__:❌ Specialization filter: Kanav Ram - No match for: custody
+INFO:__main__:❌ Specialization filter: Jayesh Savant - No match for: custody
+INFO:__main__:❌ Specialization filter: Anvi Sekhon - No match for: custody
+INFO:__main__:❌ Specialization filter: Emir Sachdeva - No match for: custody
+INFO:__main__:Feature vector for Neelofar Basu: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 18.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Neelofar Basu = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Uthkarsh Sharma - No match for: custody
+INFO:__main__:❌ Specialization filter: Samiha Sur - No match for: custody
+INFO:__main__:❌ Specialization filter: Uthkarsh Goel - No match for: custody
+INFO:__main__:Feature vector for Aradhya Borra: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 11.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Aradhya Borra = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Prisha Kannan - No match for: custody
+INFO:__main__:❌ Specialization filter: Shamik Chanda - No match for: custody
+INFO:__main__:❌ Specialization filter: Farhan Jaggi - No match for: custody
+INFO:__main__:❌ Specialization filter: Mamooty Goel - No match for: custody
+INFO:__main__:❌ Specialization filter: Tushar Chahal - No match for: custody
+INFO:__main__:❌ Specialization filter: Samaira Setty - No match for: custody
+INFO:__main__:❌ Specialization filter: Madhav Kara - No match for: custody
+INFO:__main__:Feature vector for Zara Char: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 21.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Zara Char = 1.0/100 (1% confidence)
+INFO:__main__:Feature vector for Vaibhav Arora: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 9.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Vaibhav Arora = 1.0/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Sana Bahri - No match for: custody
+INFO:__main__:❌ Specialization filter: Vritika Balasubramanian - No match for: custody
+INFO:__main__:❌ Specialization filter: Dharmajan Barman - No match for: custody
+INFO:__main__:❌ Specialization filter: Vaibhav Srivastava - No match for: custody
+INFO:__main__:❌ Specialization filter: Gatik Ramanathan - No match for: custody
+INFO:__main__:❌ Specialization filter: Kaira Sanghvi - No match for: custody
+INFO:__main__:❌ Specialization filter: Nitya Shankar - No match for: custody
+INFO:__main__:❌ Specialization filter: Uthkarsh Dugar - No match for: custody
+INFO:__main__:❌ Specialization filter: Jivika Sampath - No match for: custody
+INFO:__main__:Feature vector for Miraya Keer: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 21.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Miraya Keer = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Bhavin Kohli - No match for: custody
+INFO:__main__:❌ Specialization filter: Azad Kalla - No match for: custody
+INFO:__main__:❌ Specialization filter: Navya Apte - No match for: custody
+INFO:__main__:❌ Specialization filter: Dishani Vala - No match for: custody
+INFO:__main__:Feature vector for Miraan Grewal: length=35, first 10=[3.0, 2.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 16.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Miraan Grewal = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Kabir Sunder - No match for: custody
+INFO:__main__:❌ Specialization filter: Aniruddh Sodhi - No match for: custody
+INFO:__main__:❌ Specialization filter: Eva Krish - No match for: custody
+INFO:__main__:❌ Specialization filter: Vanya Sule - No match for: custody
+INFO:__main__:❌ Specialization filter: Lavanya Chawla - No match for: custody
+INFO:__main__:❌ Specialization filter: Shaan Karnik - No match for: custody
+INFO:__main__:❌ Specialization filter: Tushar Bhakta - No match for: custody
+INFO:__main__:Feature vector for Adira Vohra: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 7.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Adira Vohra = 1.0/100 (0% confidence)
+INFO:__main__:Feature vector for Mamooty Soman: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 7.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Mamooty Soman = 1.0/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Aayush Mahajan - No match for: custody
+INFO:__main__:Feature vector for Romil Kumer: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 28.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Romil Kumer = 0.9/100 (0% confidence)
+INFO:__main__:Feature vector for Alisha Anand: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 5.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Alisha Anand = 0.9/100 (0% confidence)
+INFO:__main__:❌ Specialization filter: Kiaan Yogi - No match for: custody
+INFO:__main__:❌ Specialization filter: Shlok Mane - No match for: custody
+INFO:__main__:Feature vector for Tejas Walia: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 21.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Tejas Walia = 1.0/100 (1% confidence)
+INFO:__main__:Feature vector for Urvi Varghese: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 14.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Urvi Varghese = 1.0/100 (1% confidence)
+INFO:__main__:❌ Specialization filter: Aaina Maharaj - No match for: custody
+INFO:__main__:❌ Specialization filter: Pari Sankar - No match for: custody
+INFO:__main__:❌ Specialization filter: Bhavin Mammen - No match for: custody
+INFO:__main__:❌ Specialization filter: Rasha Jani - No match for: custody
+INFO:__main__:❌ Specialization filter: Jhanvi Chatterjee - No match for: custody
+INFO:__main__:❌ Specialization filter: Ojas Rau - No match for: custody
+INFO:__main__:❌ Specialization filter: Veer Dasgupta - No match for: custody
+INFO:__main__:❌ Specialization filter: Darshit Subramaniam - No match for: custody
+INFO:__main__:❌ Specialization filter: Ranbir Agate - No match for: custody
+INFO:__main__:❌ Specialization filter: Bhamini Sen - No match for: custody
+INFO:__main__:❌ Specialization filter: Riya Kuruvilla - No match for: custody
+INFO:__main__:Feature vector for Yashvi Dua: length=35, first 10=[3.0, 0.0, 3.0, 3.0, 2.0, 1.0, 3.0, 2.0, 2.0, 16.0]
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Yashvi Dua = 0.9/100 (0% confidence)
+INFO:__main__:✅ Passed filters: 25 lawyers
+INFO:__main__:❌ Filtered out: 125 lawyers (budget: 0, specialization: 125, other: 0)
+INFO:__main__:Found 10 matches for Divorce and Family Law
+INFO:     127.0.0.1:50249 - "POST /api/match HTTP/1.1" 200 OK

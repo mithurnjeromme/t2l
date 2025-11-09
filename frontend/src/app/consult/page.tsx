@@ -1,15 +1,58 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Search, Star, MapPin, Phone, Mail, Calendar, X, Sparkles, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import {
+  Star,
+  Phone,
+  Mail,
+  Calendar,
+  X,
+  Sparkles,
+  Loader2,
+  ArrowLeft,
+  MapPin,
+  Briefcase,
+  MessageCircle,
+  Video,
+  Sliders,
+  Search,
+} from "lucide-react";
 import Header from "@/components/layout/header";
-import { FlipWords } from '@/components/ui/flip-words';
-import SmartMatchModal from '@/components/SmartMatchModal';
-import { mlMatchingAPI, LawyerProfile } from '@/lib/ml-matching-api';
+import { FlipWords } from "@/components/ui/flip-words";
+import { mlMatchingAPI, LawyerProfile } from "@/lib/ml-matching-api";
+import { Slider } from "@/components/ui/slider";
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { LawyerChat } from "@/components/ui/lawyer-chat";
+
+// Add custom scrollbar styles
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
+  style.textContent = `
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(250, 204, 21, 0.3);
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(250, 204, 21, 0.5);
+    }
+  `;
+  if (!document.querySelector("style[data-scrollbar]")) {
+    style.setAttribute("data-scrollbar", "true");
+    document.head.appendChild(style);
+  }
+}
 
 interface Lawyer {
   id: number;
@@ -29,39 +72,284 @@ interface Lawyer {
   match_reasons?: string[];
 }
 
-const Logo = () => (
-  <svg width="32" height="40" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-300">
-    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
-  </svg>
-);
+interface FilterState {
+  priceRange: [number, number];
+  locations: string[];
+  caseTypes: string[];
+  minExperience: number;
+  minRating: number;
+  minSuccessRate: number;
+  languages: string[];
+  sortBy:
+    | "rating"
+    | "price-low"
+    | "price-high"
+    | "experience"
+    | "reviews"
+    | "cases-handled"
+    | "success-rate";
+  availability: "all" | "available" | "verified";
+  verified: boolean;
+}
+
 const TypingEffect = () => (
-  <h1 className="text-6xl font-bold text-white mb-8 leading-tight">
-    Find the best <span className='text-yellow-400'><FlipWords className='*:text-yellow-400' words={['lawyers', 'students', 'drugs']} /></span>
+  <h1 className="text-5xl font-bold text-white mb-6 leading-tight">
+    Find the best{" "}
+    <span className="text-yellow-400">
+      <FlipWords
+        className="*:text-yellow-400"
+        words={["lawyers", "attorneys", "advocates"]}
+      />
+    </span>
   </h1>
 );
 
 const ConsultPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('Property and Estate');
-  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const [userPrompt, setUserPrompt] = useState("");
+  const [matchedLawyers, setMatchedLawyers] = useState<LawyerProfile[]>([]);
+  const [allLawyers, setAllLawyers] = useState<LawyerProfile[]>([]);
+  const [filteredLawyers, setFilteredLawyers] = useState<LawyerProfile[]>([]);
   const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    description: '',
-    preferredDate: ''
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [bookingType, setBookingType] = useState<"call" | "video" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    priceRange: [0, 10000],
+    locations: [],
+    caseTypes: [],
+    minExperience: 0,
+    minRating: 0,
+    minSuccessRate: 0,
+    languages: [],
+    sortBy: "rating",
+    availability: "all",
+    verified: false,
   });
 
-  // ML Matching State
-  const [isSmartMatchOpen, setIsSmartMatchOpen] = useState(false);
-  const [mlMatchedLawyers, setMlMatchedLawyers] = useState<LawyerProfile[]>([]);
-  const [showingMLResults, setShowingMLResults] = useState(false);
-  const [isLoadingFromAPI, setIsLoadingFromAPI] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  // Single-select dropdown states
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedCaseType, setSelectedCaseType] = useState<string>("");
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("");
+  const [bookingFormData, setBookingFormData] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    caseDescription: "",
+    preferredDateTime: "",
+  });
+  const [openSections, setOpenSections] = useState({
+    price: true,
+    locations: true,
+    caseTypes: true,
+    languages: false,
+    experience: false,
+    rating: true,
+    successRate: false,
+    sort: true,
+    availability: false,
+    verified: false,
+  });
 
-  // Convert ML API lawyer profile to legacy format
+  // Available options for filters
+  const locations = [
+    "Chennai",
+    "Mumbai",
+    "Delhi",
+    "Bangalore",
+    "Hyderabad",
+    "Kolkata",
+  ];
+  const caseTypes = [
+    "Property and Estate",
+    "Divorce",
+    "Criminal",
+    "Tax & Corporate",
+    "General Legal",
+  ];
+  const allLanguages = [
+    "English",
+    "Hindi",
+    "Tamil",
+    "Telugu",
+    "Bengali",
+    "Kannada",
+    "Malayalam",
+  ];
+
+  // Load all lawyers on component mount
+  useEffect(() => {
+    loadAllLawyers();
+  }, []);
+
+  // Apply filters whenever filters change or lawyers are loaded
+  useEffect(() => {
+    applyFilters();
+  }, [filters, allLawyers]);
+
+  const loadAllLawyers = async () => {
+    setLoading(true);
+    try {
+      // Load all lawyers without any specific filters
+      const response = await mlMatchingAPI.matchLawyers({
+        case_type: "General Legal",
+        case_description: "Looking for legal assistance",
+        location: "Chennai",
+        urgency: "Medium",
+        language_preference: "English",
+      });
+
+      if (response.success && response.matched_lawyers.length > 0) {
+        setAllLawyers(response.matched_lawyers);
+        setFilteredLawyers(response.matched_lawyers);
+      }
+    } catch (err) {
+      console.error("❌ Error loading lawyers:", err);
+      setError("Unable to load lawyers. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...allLawyers];
+
+    // Price filter
+    filtered = filtered.filter((lawyer) => {
+      const fee = parseInt(
+        lawyer.consultation_fee_formatted
+          .replace(/[₹,]/g, "")
+          .split("/")[0]
+          .trim(),
+      );
+      return fee >= filters.priceRange[0] && fee <= filters.priceRange[1];
+    });
+
+    // Location filter
+    if (filters.locations.length > 0) {
+      filtered = filtered.filter((lawyer) =>
+        filters.locations.some(
+          (loc) =>
+            lawyer.location.toLowerCase().includes(loc.toLowerCase()) ||
+            lawyer.city?.toLowerCase().includes(loc.toLowerCase()),
+        ),
+      );
+    }
+
+    // Case type filter
+    if (filters.caseTypes.length > 0) {
+      filtered = filtered.filter((lawyer) =>
+        filters.caseTypes.some(
+          (type) =>
+            lawyer.specialization.toLowerCase().includes(type.toLowerCase()) ||
+            lawyer.category.toLowerCase().includes(type.toLowerCase()),
+        ),
+      );
+    }
+
+    // Experience filter
+    if (filters.minExperience > 0) {
+      filtered = filtered.filter((lawyer) => {
+        const exp = parseInt(lawyer.experience.match(/(\d+)/)?.[1] || "0");
+        return exp >= filters.minExperience;
+      });
+    }
+
+    // Rating filter
+    if (filters.minRating > 0) {
+      filtered = filtered.filter(
+        (lawyer) => lawyer.rating >= filters.minRating,
+      );
+    }
+
+    // Success rate filter
+    if (filters.minSuccessRate > 0) {
+      filtered = filtered.filter(
+        (lawyer) => lawyer.success_rate >= filters.minSuccessRate,
+      );
+    }
+
+    // Languages filter
+    if (filters.languages.length > 0) {
+      filtered = filtered.filter((lawyer) =>
+        lawyer.languages?.some((lang) => filters.languages.includes(lang)),
+      );
+    }
+
+    // Availability filter
+    if (filters.availability === "available") {
+      filtered = filtered.filter((lawyer) => lawyer.available_now === true);
+    } else if (filters.availability === "verified") {
+      filtered = filtered.filter((lawyer) => lawyer.verified === true);
+    }
+
+    // Verified filter
+    if (filters.verified) {
+      filtered = filtered.filter((lawyer) => lawyer.verified === true);
+    }
+
+    // Sorting
+    switch (filters.sortBy) {
+      case "rating":
+        filtered.sort((a, b) => b.rating - a.rating);
+        break;
+      case "price-low":
+        filtered.sort((a, b) => {
+          const feeA = parseInt(
+            a.consultation_fee_formatted
+              .replace(/[₹,]/g, "")
+              .split("/")[0]
+              .trim(),
+          );
+          const feeB = parseInt(
+            b.consultation_fee_formatted
+              .replace(/[₹,]/g, "")
+              .split("/")[0]
+              .trim(),
+          );
+          return feeA - feeB;
+        });
+        break;
+      case "price-high":
+        filtered.sort((a, b) => {
+          const feeA = parseInt(
+            a.consultation_fee_formatted
+              .replace(/[₹,]/g, "")
+              .split("/")[0]
+              .trim(),
+          );
+          const feeB = parseInt(
+            b.consultation_fee_formatted
+              .replace(/[₹,]/g, "")
+              .split("/")[0]
+              .trim(),
+          );
+          return feeB - feeA;
+        });
+        break;
+      case "experience":
+        filtered.sort((a, b) => {
+          const expA = parseInt(a.experience.match(/(\d+)/)?.[1] || "0");
+          const expB = parseInt(b.experience.match(/(\d+)/)?.[1] || "0");
+          return expB - expA;
+        });
+        break;
+      case "reviews":
+        filtered.sort((a, b) => b.reviews - a.reviews);
+        break;
+      case "success-rate":
+        filtered.sort((a, b) => b.success_rate - a.success_rate);
+        break;
+      case "cases-handled":
+        filtered.sort((a, b) => b.cases_handled - a.cases_handled);
+        break;
+    }
+
+    setFilteredLawyers(filtered);
+  };
+
   const convertToLegacyLawyer = (lawyer: LawyerProfile): Lawyer => {
     return {
       id: lawyer.id,
@@ -82,664 +370,1296 @@ const ConsultPage = () => {
     };
   };
 
-  // Handle ML match completion
-  const handleMLMatchComplete = (matchedLawyers: LawyerProfile[]) => {
-    setMlMatchedLawyers(matchedLawyers);
-    setShowingMLResults(true);
-    setApiError(null);
-    // Scroll to results
-    setTimeout(() => {
-      window.scrollTo({ top: 400, behavior: 'smooth' });
-    }, 100);
-  };
+  const extractKeywordsFromPrompt = (prompt: string) => {
+    const lowerPrompt = prompt.toLowerCase();
+    console.log("🔍 Analyzing prompt:", prompt);
 
-  // Load lawyers from API on component mount (optional - you can enable this)
-  useEffect(() => {
-    const loadLawyersFromAPI = async () => {
-      try {
-        setIsLoadingFromAPI(true);
-        const lawyers = await mlMatchingAPI.getAllLawyers(selectedCategory, 50);
-        if (lawyers && lawyers.length > 0) {
-          // Successfully loaded from API
-          console.log(`✅ Loaded ${lawyers.length} lawyers from ML API`);
-        }
-      } catch (error) {
-        console.log('ℹ️ Using static lawyer data (API not available)');
-        setApiError('Using static data - ML matching available via AI-Powered Match button');
-      } finally {
-        setIsLoadingFromAPI(false);
-      }
+    // Extract case type with more specific patterns
+    const caseTypePatterns = {
+      property: [
+        "property",
+        "land",
+        "real estate",
+        "estate planning",
+        "tenancy",
+      ],
+      divorce: ["divorce", "separation", "matrimonial"],
+      family: ["family law", "custody", "adoption", "child support"],
+      criminal: ["criminal", "crime", "theft", "fraud", "assault"],
+      corporate: ["corporate", "business", "company", "startup"],
+      tax: ["tax", "gst", "income tax", "taxation"],
     };
 
-    // Uncomment to auto-load lawyers from API
-    // loadLawyersFromAPI();
-  }, [selectedCategory]);
-
-  const categories = [
-    'Property and Estate',
-    'Divorce',
-    'Tax & Corporate',
-    'Criminal',
-    'More'
-  ];
-
-  // Enhanced lawyer data with more details
-  const allLawyers = [
-    {
-      id: 1,
-      name: 'Rajendra',
-      specialization: 'Property and Estate',
-      category: 'Property and Estate',
-      rating: 4.8,
-      reviews: 156,
-      experience: '15+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43210',
-      email: 'rajendra@lawfirm.com',
-      consultationFee: '₹2,000',
-      about: 'Senior advocate specializing in property disputes, estate planning, and real estate transactions.',
-      image: '/images/lawyer-1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Priya Sharma',
-      specialization: 'Divorce & Family Law',
-      category: 'Divorce',
-      rating: 4.7,
-      reviews: 89,
-      experience: '12+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43211',
-      email: 'priya@lawfirm.com',
-      consultationFee: '₹1,800',
-      about: 'Expert in family law, divorce proceedings, and child custody cases.',
-      image: '/images/lawyer-2.jpg'
-    },
-    {
-      id: 3,
-      name: 'Vikram Mehta',
-      specialization: 'Corporate Law',
-      category: 'Tax & Corporate',
-      rating: 4.9,
-      reviews: 203,
-      experience: '18+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43212',
-      email: 'vikram@lawfirm.com',
-      consultationFee: '₹3,500',
-      about: 'Corporate law specialist with expertise in mergers, acquisitions, and tax matters.',
-      image: '/images/lawyer-3.jpg'
-    },
-    {
-      id: 4,
-      name: 'Anita Reddy',
-      specialization: 'Criminal Defense',
-      category: 'Criminal',
-      rating: 4.6,
-      reviews: 134,
-      experience: '14+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43213',
-      email: 'anita@lawfirm.com',
-      consultationFee: '₹2,500',
-      about: 'Criminal defense attorney with a strong track record in complex cases.',
-      image: '/images/lawyer-4.jpg'
-    },
-    {
-      id: 5,
-      name: 'Suresh Kumar',
-      specialization: 'Property Law',
-      category: 'Property and Estate',
-      rating: 4.5,
-      reviews: 98,
-      experience: '10+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43214',
-      email: 'suresh@lawfirm.com',
-      consultationFee: '₹1,500',
-      about: 'Property law expert handling residential and commercial real estate matters.',
-      image: '/images/lawyer-5.jpg'
-    },
-    {
-      id: 6,
-      name: 'Deepa Iyer',
-      specialization: 'Tax Law',
-      category: 'Tax & Corporate',
-      rating: 4.8,
-      reviews: 167,
-      experience: '16+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43215',
-      email: 'deepa@lawfirm.com',
-      consultationFee: '₹2,800',
-      about: 'Tax law specialist with extensive experience in GST and income tax matters.',
-      image: '/images/lawyer-6.jpg'
-    },
-    {
-      id: 7,
-      name: 'Ravi Krishnan',
-      specialization: 'Family Law',
-      category: 'Divorce',
-      rating: 4.4,
-      reviews: 76,
-      experience: '8+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43216',
-      email: 'ravi@lawfirm.com',
-      consultationFee: '₹1,200',
-      about: 'Family law practitioner focusing on matrimonial disputes and adoption cases.',
-      image: '/images/lawyer-7.jpg'
-    },
-    {
-      id: 8,
-      name: 'Meera Patel',
-      specialization: 'Criminal Law',
-      category: 'Criminal',
-      rating: 4.7,
-      reviews: 142,
-      experience: '13+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43217',
-      email: 'meera@lawfirm.com',
-      consultationFee: '₹2,200',
-      about: 'Criminal law expert with experience in white-collar crimes and fraud cases.',
-      image: '/images/lawyer-8.jpg'
-    },
-    {
-      id: 9,
-      name: 'Arjun Singh',
-      specialization: 'Estate Planning',
-      category: 'Property and Estate',
-      rating: 4.6,
-      reviews: 111,
-      experience: '11+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43218',
-      email: 'arjun@lawfirm.com',
-      consultationFee: '₹2,000',
-      about: 'Estate planning attorney specializing in wills, trusts, and inheritance matters.',
-      image: '/images/lawyer-9.jpg'
-    },
-    {
-      id: 10,
-      name: 'Kavitha Nair',
-      specialization: 'Business Law',
-      category: 'Tax & Corporate',
-      rating: 4.5,
-      reviews: 95,
-      experience: '9+ years',
-      location: 'Chennai High Court',
-      phone: '+91 98765 43219',
-      email: 'kavitha@lawfirm.com',
-      consultationFee: '₹1,800',
-      about: 'Business law attorney helping startups and SMEs with legal compliance.',
-      image: '/images/lawyer-10.jpg'
+    let caseType = "General Legal";
+    for (const [key, patterns] of Object.entries(caseTypePatterns)) {
+      if (patterns.some((pattern) => lowerPrompt.includes(pattern))) {
+        if (key === "property") caseType = "Property and Estate";
+        else if (key === "divorce" || key === "family") caseType = "Divorce";
+        else if (key === "tax" || key === "corporate")
+          caseType = "Tax & Corporate";
+        else if (key === "criminal") caseType = "Criminal";
+        console.log("✅ Detected case type:", caseType);
+        break;
+      }
     }
-  ];
 
-  // Filter lawyers based on category and search query
-  const filteredLawyers = allLawyers.filter(lawyer => {
-    const matchesCategory = selectedCategory === 'More' || lawyer.category === selectedCategory;
-    const matchesSearch = lawyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         lawyer.specialization.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+    // Extract location with more variations
+    const locationPatterns = [
+      "chennai",
+      "mumbai",
+      "delhi",
+      "bangalore",
+      "bengaluru",
+      "hyderabad",
+      "kolkata",
+      "calcutta",
+    ];
+    let location = "Chennai";
+    for (const loc of locationPatterns) {
+      if (lowerPrompt.includes(loc)) {
+        location = loc.charAt(0).toUpperCase() + loc.slice(1);
+        if (location === "Bengaluru") location = "Bangalore";
+        if (location === "Calcutta") location = "Kolkata";
+        console.log("✅ Detected location:", location);
+        break;
+      }
+    }
 
-  // Determine which lawyers to display: ML matches or filtered static lawyers
-  const displayLawyers = showingMLResults 
-    ? mlMatchedLawyers.map(convertToLegacyLawyer)
-    : filteredLawyers;
+    // Extract budget with multiple patterns and context
+    let budget: number | undefined;
+    let budgetOperator: "under" | "above" | "around" | "exact" = "exact";
 
-  const handleLawyerClick = (lawyer: Lawyer) => {
-    setSelectedLawyer(lawyer);
-    setIsFormOpen(true);
+    // Check for budget context words
+    if (
+      lowerPrompt.includes("under") ||
+      lowerPrompt.includes("below") ||
+      lowerPrompt.includes("less than") ||
+      lowerPrompt.includes("maximum")
+    ) {
+      budgetOperator = "under";
+    } else if (
+      lowerPrompt.includes("above") ||
+      lowerPrompt.includes("over") ||
+      lowerPrompt.includes("more than") ||
+      lowerPrompt.includes("minimum")
+    ) {
+      budgetOperator = "above";
+    } else if (
+      lowerPrompt.includes("around") ||
+      lowerPrompt.includes("approximately") ||
+      lowerPrompt.includes("about")
+    ) {
+      budgetOperator = "around";
+    }
+
+    // Try multiple budget patterns
+    const budgetPatterns = [
+      /(?:under|below|less than|maximum|max|upto|up to)\s*₹?\s*(\d+(?:,\d+)?)/i,
+      /₹?\s*(\d+(?:,\d+)?)\s*(?:or less|maximum|max)/i,
+      /(?:around|approximately|about)\s*₹?\s*(\d+(?:,\d+)?)/i,
+      /(?:budget|fee|price|cost)\s*(?:is|of)?\s*₹?\s*(\d+(?:,\d+)?)/i,
+      /₹\s*(\d+(?:,\d+)?)/,
+      /(\d+(?:,\d+)?)\s*rupees?/i,
+    ];
+
+    for (const pattern of budgetPatterns) {
+      const match = prompt.match(pattern);
+      if (match) {
+        budget = parseInt(match[1].replace(/,/g, ""));
+        console.log(`✅ Detected budget: ₹${budget} (${budgetOperator})`);
+        break;
+      }
+    }
+
+    // Extract urgency with more context
+    let urgency: "Low" | "Medium" | "High" = "Medium";
+    if (
+      lowerPrompt.includes("urgent") ||
+      lowerPrompt.includes("asap") ||
+      lowerPrompt.includes("immediately") ||
+      lowerPrompt.includes("emergency") ||
+      lowerPrompt.includes("right now") ||
+      lowerPrompt.includes("today")
+    ) {
+      urgency = "High";
+      console.log("✅ Detected urgency: High");
+    } else if (
+      lowerPrompt.includes("not urgent") ||
+      lowerPrompt.includes("flexible") ||
+      lowerPrompt.includes("whenever") ||
+      lowerPrompt.includes("no hurry")
+    ) {
+      urgency = "Low";
+      console.log("✅ Detected urgency: Low");
+    }
+
+    // Extract experience with multiple patterns
+    let preferredExperience: number | undefined;
+    const expPatterns = [
+      /(\d+)\+?\s*(?:years?|yrs?)\s*(?:of)?\s*(?:experience|exp)/i,
+      /(?:experience|exp)\s*(?:of)?\s*(\d+)\+?\s*(?:years?|yrs?)/i,
+      /(?:with|having)\s*(\d+)\+?\s*(?:years?|yrs?)/i,
+      /(?:senior|experienced)\s*(?:with)?\s*(\d+)\+?\s*(?:years?|yrs?)/i,
+    ];
+
+    for (const pattern of expPatterns) {
+      const match = prompt.match(pattern);
+      if (match) {
+        preferredExperience = parseInt(match[1]);
+        console.log(
+          "✅ Detected experience requirement:",
+          preferredExperience,
+          "years",
+        );
+        break;
+      }
+    }
+
+    // Extract language preferences
+    const languagePatterns = [
+      "tamil",
+      "hindi",
+      "english",
+      "telugu",
+      "bengali",
+      "kannada",
+      "malayalam",
+    ];
+    const detectedLanguages: string[] = [];
+    for (const lang of languagePatterns) {
+      if (lowerPrompt.includes(lang)) {
+        detectedLanguages.push(lang.charAt(0).toUpperCase() + lang.slice(1));
+      }
+    }
+    const languagePreference =
+      detectedLanguages.length > 0 ? detectedLanguages.join(", ") : "English";
+    if (detectedLanguages.length > 0) {
+      console.log("✅ Detected languages:", languagePreference);
+    }
+
+    const extracted = {
+      case_type: caseType,
+      case_description: prompt,
+      location,
+      budget,
+      urgency,
+      preferred_experience: preferredExperience,
+      language_preference: languagePreference,
+      budget_operator: budgetOperator, // Pass this for strict filtering
+    };
+
+    console.log("📊 Final extracted data:", extracted);
+    return extracted;
   };
 
-  const handleCloseForm = () => {
-    setIsFormOpen(false);
-    setSelectedLawyer(null);
-    setFormData({
-      fullName: '',
-      phone: '',
-      email: '',
-      description: '',
-      preferredDate: ''
-    });
+  const handleFindLawyers = async () => {
+    if (!userPrompt.trim()) {
+      // If no prompt, just show filtered lawyers
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const request = extractKeywordsFromPrompt(userPrompt);
+      console.log("🚀 Sending request to backend:", request);
+
+      const response = await mlMatchingAPI.matchLawyers(request);
+      console.log("✅ Received response:", response);
+
+      if (response.success && response.matched_lawyers.length > 0) {
+        setAllLawyers(response.matched_lawyers);
+        setFilteredLawyers(response.matched_lawyers);
+      } else {
+        setError("No matching lawyers found. Showing all available lawyers.");
+        loadAllLawyers();
+      }
+    } catch (err) {
+      console.error("❌ Match error:", err);
+      setError("Unable to process search. Showing all available lawyers.");
+      loadAllLawyers();
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const handleCallRequest = (lawyer: LawyerProfile, type: "call" | "video") => {
+    setSelectedLawyer(convertToLegacyLawyer(lawyer));
+    setBookingType(type);
+    setIsBookingOpen(true);
+  };
+
+  // Hash lawyer name for privacy
+  const hashLawyerName = (name: string) => {
+    const parts = name.split(" ");
+    return parts
+      .map((part) => {
+        if (part.length <= 2) return part;
+        return (
+          part.substring(0, 2) +
+          "*".repeat(Math.min(part.length - 3, 3)) +
+          part[part.length - 1]
+        );
+      })
+      .join(" ");
+  };
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsLoading(false);
-    alert(`Consultation booked with ${selectedLawyer?.name}! You will receive a confirmation email shortly.`);
-    handleCloseForm();
+
+    if (!selectedLawyer) return;
+
+    // Close the booking modal
+    setIsBookingOpen(false);
+
+    // Redirect to messages with hashed lawyer name and booking details
+    const hashedName = hashLawyerName(selectedLawyer.name);
+    const params = new URLSearchParams({
+      lawyerId: Date.now().toString(),
+      caseDescription: bookingFormData.caseDescription,
+      specialization: selectedLawyer.specialization,
+      lawyerName: hashedName,
+    });
+
+    router.push(`/messages?${params.toString()}`);
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleBackToSearch = () => {
+    setUserPrompt("");
+    setError(null);
+    loadAllLawyers();
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Header />
-      
-      <div className="pt-5 px-6">
-        <div className="container mx-auto py-12 pt-8">
-          {/* Header Section */}
-          <div className="flex justify-between items-start mb-12">
-            <div className="flex-1">
-              <div className='flex items-center justify-between'>
-                <TypingEffect />
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2 border-white/30 text-white hover:bg-white/10 hover:border-yellow-400 rounded-full px-5 py-2 transition-all"
-                  onClick={() => window.open('https://www.google.com/maps/place/Chennai,+India', '_blank')}
-                >
-                  <MapPin className="w-4 h-4 text-yellow-400" />
-                  Chennai, India
-                </Button>
+
+      <div className="flex">
+        {/* Left Sidebar - Filters */}
+        <div className="w-96 bg-gradient-to-b from-black via-gray-950 to-black h-[calc(100vh-80px)] sticky top-20 overflow-y-auto shadow-2xl">
+          <div className="p-4 space-y-3">
+            {/* Price Range */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <span className="text-black text-xs">₹</span>
+                </div>
+                <span>Consultation Fee Range</span>
+              </label>
+              <div className="mb-2 flex items-center justify-between bg-black/40 rounded-xl p-2 border border-white/10">
+                <div className="text-center">
+                  <p className="text-[10px] text-white/50 mb-0.5">Minimum</p>
+                  <span className="text-yellow-400 font-bold text-sm">
+                    ₹{filters.priceRange[0]}
+                  </span>
+                </div>
+                <div className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+                <div className="text-center">
+                  <p className="text-[10px] text-white/50 mb-0.5">Maximum</p>
+                  <span className="text-yellow-400 font-bold text-sm">
+                    ₹{filters.priceRange[1]}
+                  </span>
+                </div>
               </div>
-              
-              <div className='w-full justify-between flex items-center gap-4'>
-              {/* Category Pills */}
-              <div className="flex flex-wrap gap-4">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    className={`rounded-full px-6 py-3 text-sm transition-all h-12 duration-300 transform hover:scale-105 ${
-                      selectedCategory === category 
-                        ? 'bg-white text-black hover:bg-white/90 shadow-lg' 
-                        : 'border-white/30 text-white hover:bg-white/10 hover:border-white/50'
-                    }`}
-                    onClick={() => setSelectedCategory(category)}
-                  >
-                    {category}
-                  </Button>
+              <Slider
+                value={filters.priceRange}
+                onValueChange={(value) =>
+                  setFilters({
+                    ...filters,
+                    priceRange: value as [number, number],
+                  })
+                }
+                min={0}
+                max={10000}
+                step={500}
+                className="w-full [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-yellow-600 [&_[role=slider]]:border-2 [&_[role=slider]]:border-yellow-300 [&_[role=slider]]:shadow-lg [&_[role=slider]]:shadow-yellow-400/50 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-yellow-400 [&_.bg-primary]:to-yellow-600"
+              />
+            </div>
+
+            {/* Locations */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <MapPin className="w-4 h-4 text-black" />
+                </div>
+                <span>Location</span>
+              </label>
+              <select
+                value={selectedLocation}
+                onChange={(e) => {
+                  setSelectedLocation(e.target.value);
+                  if (e.target.value) {
+                    setFilters({ ...filters, locations: [e.target.value] });
+                  } else {
+                    setFilters({ ...filters, locations: [] });
+                  }
+                }}
+                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+              >
+                <option value="">All Locations</option>
+                {locations.map((loc) => (
+                  <option key={loc} value={loc}>
+                    {loc}
+                  </option>
                 ))}
-              </div>
+              </select>
+            </div>
 
-              {/* AI-Powered Match Button */}
-              <Button
-                onClick={() => setIsSmartMatchOpen(true)}
-                className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-full px-8 py-6 h-12 flex items-center gap-2 whitespace-nowrap animate-pulse hover:animate-none"
+            {/* Case Types */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <Briefcase className="w-4 h-4 text-black" />
+                </div>
+                <span>Case Type</span>
+              </label>
+              <select
+                value={selectedCaseType}
+                onChange={(e) => {
+                  setSelectedCaseType(e.target.value);
+                  if (e.target.value) {
+                    setFilters({ ...filters, caseTypes: [e.target.value] });
+                  } else {
+                    setFilters({ ...filters, caseTypes: [] });
+                  }
+                }}
+                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
               >
-                <Sparkles className="w-5 h-5" />
-                AI-Powered Match
-              </Button>
-              
-               <div className="relative w-80">
-                <Input
-                  type="text"
-                  placeholder="Search lawyers..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-white/30 text-white placeholder-white/50 pr-12 rounded-full h-12 pl-4 focus:border-yellow-400 transition-colors"
+                <option value="">All Case Types</option>
+                {caseTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Languages */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <MessageCircle className="w-4 h-4 text-black" />
+                </div>
+                <span>Language</span>
+              </label>
+              <select
+                value={selectedLanguage}
+                onChange={(e) => {
+                  setSelectedLanguage(e.target.value);
+                  if (e.target.value) {
+                    setFilters({ ...filters, languages: [e.target.value] });
+                  } else {
+                    setFilters({ ...filters, languages: [] });
+                  }
+                }}
+                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+              >
+                <option value="">All Languages</option>
+                {allLanguages.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Experience */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <Briefcase className="w-4 h-4 text-black" />
+                </div>
+                <span>Minimum Experience</span>
+              </label>
+              <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 text-center">
+                <span className="text-yellow-400 font-bold text-2xl">
+                  {filters.minExperience}+
+                </span>
+                <p className="text-white/50 text-xs mt-1">
+                  years of experience
+                </p>
+              </div>
+              <Slider
+                value={[filters.minExperience]}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, minExperience: value[0] })
+                }
+                min={0}
+                max={30}
+                step={1}
+                className="w-full [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-yellow-600 [&_[role=slider]]:border-2 [&_[role=slider]]:border-yellow-300 [&_[role=slider]]:shadow-lg [&_[role=slider]]:shadow-yellow-400/50 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-yellow-400 [&_.bg-primary]:to-yellow-600"
+              />
+            </div>
+
+            {/* Rating */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <Star className="w-4 h-4 text-black fill-black" />
+                </div>
+                <span>Minimum Rating</span>
+              </label>
+              <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 flex items-center justify-center gap-3">
+                <span className="text-yellow-400 font-bold text-2xl">
+                  {filters.minRating}+
+                </span>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-5 h-5 transition-all duration-200 ${star <= filters.minRating ? "fill-yellow-400 text-yellow-400 scale-110" : "text-white/20"}`}
+                    />
+                  ))}
+                </div>
+              </div>
+              <Slider
+                value={[filters.minRating]}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, minRating: value[0] })
+                }
+                min={0}
+                max={5}
+                step={0.5}
+                className="w-full [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-yellow-600 [&_[role=slider]]:border-2 [&_[role=slider]]:border-yellow-300 [&_[role=slider]]:shadow-lg [&_[role=slider]]:shadow-yellow-400/50 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-yellow-400 [&_.bg-primary]:to-yellow-600"
+              />
+            </div>
+
+            {/* Sort By */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <Sliders className="w-4 h-4 text-black" />
+                </div>
+                <span>Sort By</span>
+              </label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    sortBy: e.target.value as FilterState["sortBy"],
+                  })
+                }
+                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+              >
+                <option value="rating">Highest Rating</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="experience">Most Experienced</option>
+                <option value="reviews">Most Reviews</option>
+                <option value="success-rate">Highest Success Rate</option>
+                <option value="cases-handled">Most Cases Handled</option>
+              </select>
+            </div>
+
+            {/* Availability */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <Calendar className="w-4 h-4 text-black" />
+                </div>
+                <span>Availability</span>
+              </label>
+              <select
+                value={filters.availability}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    availability: e.target.value as FilterState["availability"],
+                  })
+                }
+                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+              >
+                <option value="all">All Lawyers</option>
+                <option value="available">Available Now</option>
+                <option value="verified">Verified Only</option>
+              </select>
+            </div>
+
+            {/* Verified Only Toggle */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="flex items-center justify-between cursor-pointer group">
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                    <span className="text-black text-lg">✓</span>
+                  </div>
+                  <span className="text-sm font-bold text-white">
+                    Verified Only
+                  </span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={filters.verified}
+                  onChange={(e) =>
+                    setFilters({ ...filters, verified: e.target.checked })
+                  }
+                  className="w-6 h-6 rounded-lg border-2 border-yellow-400/40 text-yellow-400 focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-black cursor-pointer transition-all"
                 />
-                <Button
-                  size="sm"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-yellow-400 hover:bg-yellow-500 text-black px-3 h-8 w-8 p-0 transition-all duration-300 hover:scale-110"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              </div>
+              </label>
             </div>
-            
-            {/* Location and Search */}
-            
-          </div>
-          
-          {/* ML Match Results Banner */}
-          {showingMLResults && (
-            <div className="mb-6 bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 border border-yellow-400/30 rounded-xl p-6 animate-in slide-in-from-top-4 duration-500">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-black animate-pulse" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold text-xl flex items-center gap-2">
-                      AI-Matched Lawyers
-                      <span className="text-green-400 text-sm bg-green-400/10 px-2 py-1 rounded-full">
-                        {displayLawyers.length} Perfect Matches
-                      </span>
-                    </h3>
-                    <p className="text-gray-300 text-sm mt-1">
-                      Personalized recommendations based on your requirements • Sorted by match score
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowingMLResults(false);
-                    setMlMatchedLawyers([]);
-                  }}
-                  className="border-yellow-400/30 text-yellow-400 hover:bg-yellow-400/10 hover:border-yellow-400 rounded-full px-6"
-                >
-                  <X className="w-4 h-4 mr-2" />
-                  View All Lawyers
-                </Button>
-              </div>
-            </div>
-          )}
 
-          {/* Results Count */}
-          <div className="mb-6">
-            <p className="text-white/70 text-sm">
-              {showingMLResults 
-                ? `Showing ${displayLawyers.length} AI-matched lawyers` 
-                : `Found ${filteredLawyers.length} lawyers in ${selectedCategory}`
-              }
-            </p>
-          </div>
-          
-          {/* Lawyers Grid */}
-          <div className="grid grid-cols-5 gap-6">
-            {displayLawyers.map((lawyer: Lawyer) => (
-              <div 
-                key={lawyer.id} 
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
-                onClick={() => handleLawyerClick(lawyer)}
-              >
-                <div className="bg-gray-400 rounded-xl aspect-[3/4] mb-3 overflow-hidden relative group-hover:shadow-2xl transition-shadow duration-300">
-                  <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-500 group-hover:from-gray-300 group-hover:to-gray-400 transition-all duration-300"></div>
-                  
-                  {/* Match Score Badge */}
-                  {showingMLResults && lawyer.match_score && (
-                    <div className="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10 flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" />
-                      {Math.round(lawyer.match_score)}%
-                    </div>
-                  )}
-                  
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="flex items-center justify-center gap-1 mb-2">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm font-semibold">{lawyer.rating}</span>
-                      </div>
-                      <p className="text-xs">Click to consult</p>
-                    </div>
-                  </div>
+            {/* Success Rate Filter */}
+            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
+                  <span className="text-black text-xs font-bold">%</span>
                 </div>
-                
-                <div className="space-y-1">
-                  <h3 className="text-white font-semibold text-lg group-hover:text-yellow-400 transition-colors">
-                    {lawyer.name}
-                  </h3>
-                  <p className="text-white/70 text-sm">{lawyer.specialization}</p>
-                  <div className="flex items-center gap-2 text-xs text-white/60">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                      <span>{lawyer.rating}</span>
-                    </div>
-                    <span>•</span>
-                    <span>{lawyer.reviews} reviews</span>
-                  </div>
-                  <p className="text-yellow-400 text-sm font-semibold">{lawyer.consultationFee}</p>
-                  
-                  {/* Match Reasons */}
-                  {showingMLResults && lawyer.match_reasons && lawyer.match_reasons.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {lawyer.match_reasons.slice(0, 2).map((reason, idx) => (
-                        <div key={idx} className="text-xs text-green-400 flex items-center gap-1">
-                          <span className="w-1 h-1 bg-green-400 rounded-full"></span>
-                          {reason}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <span>Minimum Success Rate</span>
+              </label>
+              <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 text-center">
+                <span className="text-yellow-400 font-bold text-2xl">
+                  {filters.minSuccessRate}%+
+                </span>
+                <p className="text-white/50 text-xs mt-1">success rate</p>
               </div>
-            ))}
+              <Slider
+                value={[filters.minSuccessRate]}
+                onValueChange={(value) =>
+                  setFilters({ ...filters, minSuccessRate: value[0] })
+                }
+                min={0}
+                max={100}
+                step={5}
+                className="w-full [&_[role=slider]]:bg-gradient-to-r [&_[role=slider]]:from-yellow-400 [&_[role=slider]]:to-yellow-600 [&_[role=slider]]:border-2 [&_[role=slider]]:border-yellow-300 [&_[role=slider]]:shadow-lg [&_[role=slider]]:shadow-yellow-400/50 [&_.bg-primary]:bg-gradient-to-r [&_.bg-primary]:from-yellow-400 [&_.bg-primary]:to-yellow-600"
+              />
+            </div>
+
+            {/* Reset Filters */}
+            <Button
+              onClick={() => {
+                setFilters({
+                  priceRange: [0, 10000],
+                  locations: [],
+                  caseTypes: [],
+                  minExperience: 0,
+                  minRating: 0,
+                  minSuccessRate: 0,
+                  languages: [],
+                  sortBy: "rating",
+                  availability: "all",
+                  verified: false,
+                });
+                setSelectedLocation("");
+                setSelectedCaseType("");
+                setSelectedLanguage("");
+              }}
+              className="w-full bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 text-black font-bold py-4 rounded-2xl shadow-2xl shadow-yellow-400/30 hover:shadow-yellow-400/50 hover:scale-[1.02] transition-all duration-300 border-0 text-base"
+            >
+              <span className="flex items-center justify-center gap-2">
+                <X className="w-5 h-5" />
+                Reset All Filters
+              </span>
+            </Button>
           </div>
-          
-          {/* No results */}
-          {displayLawyers.length === 0 && (
-            <div className="text-center py-12">
-              <AlertCircle className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-              <p className="text-white/70 text-lg mb-4">
-                {showingMLResults 
-                  ? 'No matching lawyers found. Try adjusting your criteria.' 
-                  : 'No lawyers found matching your search.'}
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 bg-black">
+          <div className="max-w-[1400px] mx-auto px-8 py-10">
+            {/* Header */}
+            <div className="text-center mb-12">
+              <TypingEffect />
+              <p className="text-white/60 text-lg max-w-2xl mx-auto mb-10">
+                Browse our verified lawyers or describe your case for AI-powered
+                matches
               </p>
-              <div className="flex gap-3 justify-center">
-                {showingMLResults ? (
-                  <Button 
-                    onClick={() => {
-                      setShowingMLResults(false);
-                      setMlMatchedLawyers([]);
-                    }}
-                    className="bg-yellow-400 hover:bg-yellow-500 text-black"
-                  >
-                    View All Lawyers
-                  </Button>
-                ) : (
-                  <>
-                    <Button 
-                      onClick={() => setIsSmartMatchOpen(true)}
-                      className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black"
-                    >
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      Try AI-Powered Match
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSelectedCategory('Property and Estate');
-                      }}
-                      variant="outline"
-                      className="border-white/30 text-white hover:bg-white/10"
-                    >
-                      Clear Filters
-                    </Button>
-                  </>
-                )}
+
+              {/* Search Prompt Box */}
+              <div className="max-w-4xl mx-auto mb-8">
+                <PlaceholdersAndVanishInput
+                  placeholders={[
+                    "Property dispute in Chennai, budget ₹2500, 15+ years experience...",
+                    "Divorce case in Mumbai, urgent, Hindi speaking lawyer needed...",
+                    "Criminal defense in Delhi, experienced advocate required...",
+                    "Tax consultation in Bangalore, corporate tax specialist...",
+                    "Family law case in Kolkata, immediate consultation needed...",
+                  ]}
+                  onChange={(e) => setUserPrompt(e.target.value)}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleFindLawyers();
+                  }}
+                />
+              </div>
+
+              {error && (
+                <div className="mb-6 bg-red-500/10 border-2 border-red-500/30 rounded-2xl p-4 max-w-4xl mx-auto backdrop-blur-sm">
+                  <p className="text-red-400 text-sm font-medium">{error}</p>
+                </div>
+              )}
+
+              {/* Results Count */}
+              <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-yellow-400/20 rounded-full px-6 py-3 shadow-lg shadow-yellow-400/10">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <p className="text-white/80 text-sm font-medium">
+                  Showing{" "}
+                  <span className="text-yellow-400 font-bold text-base">
+                    {filteredLawyers.length}
+                  </span>{" "}
+                  qualified lawyers
+                </p>
               </div>
             </div>
-          )}
+
+            {/* Loading State */}
+            {loading && (
+              <div className="max-w-2xl mx-auto text-center py-20">
+                <div className="relative inline-block mb-8">
+                  <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full animate-pulse"></div>
+                  <Loader2 className="w-16 h-16 text-yellow-400 animate-spin relative" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  Finding perfect matches...
+                </h3>
+                <p className="text-white/60">
+                  Please wait while we search our database
+                </p>
+              </div>
+            )}
+
+            {/* Lawyers Grid */}
+            {!loading && filteredLawyers.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
+                {filteredLawyers.map((lawyer) => {
+                  const maskName = (name: string) => {
+                    const parts = name.split(" ");
+                    return parts
+                      .map((part) => {
+                        if (part.length <= 2) return part;
+                        const firstChars = part.substring(0, 2);
+                        const lastChar = part[part.length - 1];
+                        const masked = "*".repeat(Math.min(part.length - 3, 2));
+                        return `${firstChars}${masked}${lastChar}`;
+                      })
+                      .join(" ");
+                  };
+
+                  const getExperienceYears = (exp: string) => {
+                    const match = exp.match(/(\d+)/);
+                    return match ? `${match[1]}y` : exp;
+                  };
+
+                  const getConsultationFee = (feeStr: string) => {
+                    return feeStr.replace(/[₹,]/g, "").split("/")[0].trim();
+                  };
+
+                  return (
+                    <div
+                      key={lawyer.id}
+                      className="group relative flex flex-col h-full"
+                    >
+                      {/* Glow effect on hover */}
+                      <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-300"></div>
+
+                      {/* Card - Fixed height structure */}
+                      <div className="relative flex flex-col h-full bg-gradient-to-br from-gray-950 via-black to-gray-900 border border-white/10 group-hover:border-yellow-400/50 rounded-2xl p-4 transition-all duration-300 shadow-xl group-hover:shadow-2xl">
+                        {/* Verified Badge */}
+                        {lawyer.verified && (
+                          <div className="absolute top-3 right-3 z-10 bg-green-500/20 border border-green-500/40 rounded-full px-2 py-1 flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
+                            <span className="text-green-400 text-xs font-bold">
+                              Verified
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Blurred Image - Fixed aspect ratio */}
+                        <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl aspect-[3/4] mb-4 overflow-hidden relative flex-shrink-0">
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-200 via-yellow-300 to-yellow-400 blur-3xl opacity-30"></div>
+                          </div>
+
+                          {/* Hover overlay with rating */}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm">
+                            <div className="text-center">
+                              <div className="flex items-center justify-center gap-1 mb-1">
+                                <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                                <span className="text-white font-bold text-lg">
+                                  {lawyer.rating}
+                                </span>
+                              </div>
+                              <p className="text-white/80 text-xs">
+                                {lawyer.reviews} reviews
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Info section - Flex grow to fill space */}
+                        <div className="flex flex-col flex-grow space-y-2.5">
+                          {/* Name */}
+                          <h3 className="text-white font-bold text-base leading-tight group-hover:text-yellow-400 transition-colors line-clamp-2 min-h-[2.5rem]">
+                            {maskName(lawyer.name)}
+                          </h3>
+
+                          {/* Specialization */}
+                          <p className="text-white/70 text-sm font-medium line-clamp-2 min-h-[2.5rem]">
+                            {lawyer.specialization}
+                          </p>
+
+                          {/* Meta info */}
+                          <div className="space-y-1.5 text-xs">
+                            <div className="flex items-center gap-1.5 text-white/50">
+                              <Briefcase className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
+                              <span>
+                                {getExperienceYears(lawyer.experience)} exp
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 text-white/50">
+                              <MapPin className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
+                              <span className="truncate">
+                                {lawyer.city || lawyer.location}
+                              </span>
+                            </div>
+
+                            {/* Success Rate */}
+                            <div className="flex items-center gap-1.5">
+                              <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded">
+                                <span className="text-green-400 text-xs font-bold">
+                                  {lawyer.success_rate}%
+                                </span>
+                              </div>
+                              <span className="text-white/40 text-xs">
+                                success
+                              </span>
+                            </div>
+
+                            {/* Cases Handled */}
+                            <div className="flex items-center gap-1.5 text-white/50">
+                              <span className="text-xs">
+                                {lawyer.cases_handled} cases handled
+                              </span>
+                            </div>
+
+                            {/* Response Time */}
+                            {lawyer.response_time && (
+                              <div className="flex items-center gap-1.5 text-white/40">
+                                <span className="text-xs truncate">
+                                  {lawyer.response_time}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Spacer to push price and buttons to bottom */}
+                          <div className="flex-grow"></div>
+
+                          {/* Price & Actions - Always at bottom */}
+                          <div className="pt-3 border-t border-white/10 mt-auto">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="text-yellow-400 text-xl font-bold leading-none">
+                                  ₹
+                                  {(() => {
+                                    const baseFee = parseInt(
+                                      lawyer.consultation_fee_formatted
+                                        .replace(/[₹,]/g, "")
+                                        .split("/")[0]
+                                        .trim(),
+                                    );
+                                    const perMinuteRate = Math.round(
+                                      baseFee / 30,
+                                    );
+                                    const roundedRate =
+                                      perMinuteRate < 90
+                                        ? 88
+                                        : perMinuteRate < 95
+                                          ? 90
+                                          : perMinuteRate < 100
+                                            ? 95
+                                            : perMinuteRate < 105
+                                              ? 102
+                                              : Math.round(perMinuteRate / 5) *
+                                                5;
+                                    return roundedRate;
+                                  })()}
+                                  /min
+                                </p>
+                                <p className="text-xs text-white/40 mt-0.5">
+                                  consultation fee
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <button
+                              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 border border-yellow-300/30 hover:border-yellow-300/50 transition-all duration-300 shadow-lg shadow-yellow-400/30 hover:shadow-xl hover:shadow-yellow-400/50 hover:scale-[1.02] active:scale-[0.98] group/btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCallRequest(lawyer, "call");
+                              }}
+                              title="Book Consultation"
+                            >
+                              <Calendar className="w-3.5 h-3.5 text-black group-hover/btn:scale-110 transition-transform" />
+                              <span className="text-black text-xs font-bold tracking-wide">
+                                CONSULT NOW
+                              </span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* No Results */}
+            {!loading && filteredLawyers.length === 0 && (
+              <div className="text-center py-20">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-400/10 rounded-full mb-6">
+                  <Search className="w-10 h-10 text-yellow-400" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">
+                  No lawyers found
+                </h3>
+                <p className="text-white/60 text-lg mb-8">
+                  Try adjusting your filters or search criteria
+                </p>
+                <Button
+                  onClick={() =>
+                    setFilters({
+                      priceRange: [0, 10000],
+                      locations: [],
+                      caseTypes: [],
+                      minExperience: 0,
+                      minRating: 0,
+                      minSuccessRate: 0,
+                      languages: [],
+                      sortBy: "rating",
+                      availability: "all",
+                      verified: false,
+                    })
+                  }
+                  className="bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-bold px-8 py-3 rounded-xl shadow-lg"
+                >
+                  Reset All Filters
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Consultation Form Modal */}
-      {isFormOpen && selectedLawyer && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-900 border border-gray-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300">
-            {/* Header */}
-            <div className="relative p-6 border-b border-gray-700">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCloseForm}
-                className="absolute right-4 top-4 rounded-full hover:bg-gray-800 text-gray-400 hover:text-yellow-400 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-              
-              <div className="flex items-start gap-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl"></div>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-white mb-1">{selectedLawyer.name}</h2>
-                  <p className="text-yellow-400 mb-2">{selectedLawyer.specialization}</p>
-                  <div className="flex items-center gap-4 text-sm text-gray-300">
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{selectedLawyer.rating} ({selectedLawyer.reviews} reviews)</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4 text-yellow-400" />
-                      <span>{selectedLawyer.location}</span>
+      {/* Consultation Request Modal */}
+      {isBookingOpen && selectedLawyer && bookingType && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex items-center justify-center p-4 animate-in fade-in duration-300">
+          {/* Animated Background Grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]"></div>
+
+          <div className="relative bg-gradient-to-br from-gray-900/95 via-black/95 to-gray-900/95 border border-yellow-400/20 rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-hidden shadow-[0_0_100px_rgba(250,204,21,0.15)] backdrop-blur-2xl animate-in slide-in-from-bottom-8 duration-500">
+            {/* Premium Glow Effects */}
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-yellow-400/20 rounded-full blur-[120px] animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-600/10 rounded-full blur-[120px] animate-pulse delay-700"></div>
+
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setIsBookingOpen(false);
+                setSelectedLawyer(null);
+                setBookingType(null);
+              }}
+              className="absolute right-6 top-6 z-20 w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 flex items-center justify-center transition-all duration-300 group hover:scale-110 hover:rotate-90"
+            >
+              <X className="w-5 h-5 text-white/60 group-hover:text-red-400 transition-colors" />
+            </button>
+
+            {/* Scrollable Content */}
+            <div className="relative overflow-y-auto max-h-[92vh] custom-scrollbar">
+              {/* Header - No Avatar */}
+              <div className="relative p-8 pb-6 border-b border-yellow-400/10">
+                <div className="flex items-start justify-between">
+                  {/* Lawyer Info */}
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-white mb-2 flex items-center gap-3">
+                      {selectedLawyer.name
+                        .split(" ")
+                        .map((part) => {
+                          if (part.length <= 2) return part;
+                          return (
+                            part.substring(0, 2) +
+                            "*".repeat(Math.min(part.length - 3, 2)) +
+                            part[part.length - 1]
+                          );
+                        })
+                        .join(" ")}
+                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">
+                        Expert
+                      </span>
+                      {(() => {
+                        const lawyer = allLawyers.find(
+                          (l) => l.id === selectedLawyer.id,
+                        );
+                        return (
+                          lawyer?.verified && (
+                            <div className="bg-green-500/20 rounded-full p-1.5 border border-green-500/40">
+                              <svg
+                                className="w-3 h-3 text-green-400"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          )
+                        );
+                      })()}
+                    </h2>
+                    <p className="text-white/60 text-sm mb-3">
+                      {selectedLawyer.specialization}
+                    </p>
+
+                    {/* Quick Stats */}
+                    <div className="flex items-center gap-4 text-xs">
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
+                        <span className="text-white font-semibold">
+                          {selectedLawyer.rating}
+                        </span>
+                        <span className="text-white/40">
+                          ({selectedLawyer.reviews})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                        <Briefcase className="w-3.5 h-3.5 text-yellow-400" />
+                        <span className="text-white/70">
+                          {selectedLawyer.experience}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                        <MapPin className="w-3.5 h-3.5 text-yellow-400" />
+                        <span className="text-white/70">
+                          {selectedLawyer.location}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-6">
-              {/* About */}
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-2">About</h3>
-                <p className="text-gray-300">{selectedLawyer.about}</p>
-                <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-                  <div>
-                    <span className="text-gray-400">Experience:</span>
-                    <span className="ml-2 font-semibold text-yellow-400">{selectedLawyer.experience}</span>
+              {/* Premium Stats Grid - All Equal Dimensions */}
+              <div className="p-6">
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  {/* Languages */}
+                  <div className="relative group h-[110px]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-yellow-400/30 transition-all flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <MessageCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                          Languages
+                        </span>
+                      </div>
+                      <p className="text-white font-semibold text-sm flex-1 flex items-center">
+                        {(() => {
+                          const lawyer = allLawyers.find(
+                            (l) => l.id === selectedLawyer.id,
+                          );
+                          return lawyer?.languages?.join(", ") || "English";
+                        })()}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-400">Consultation Fee:</span>
-                    <span className="ml-2 font-semibold text-green-400">{selectedLawyer.consultationFee}</span>
+
+                  {/* Cases Handled */}
+                  <div className="relative group h-[110px]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-4 h-4 rounded bg-green-400/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-400 text-xs font-bold">
+                            📋
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                          Cases
+                        </span>
+                      </div>
+                      <p className="text-green-400 font-bold text-2xl flex-1 flex items-center">
+                        {(() => {
+                          const lawyer = allLawyers.find(
+                            (l) => l.id === selectedLawyer.id,
+                          );
+                          return lawyer?.cases_handled || "N/A";
+                        })()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Success Rate */}
+                  <div className="relative group h-[110px]">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-4 h-4 rounded bg-green-400/20 flex items-center justify-center flex-shrink-0">
+                          <span className="text-green-400 text-xs font-bold">
+                            %
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                          Success
+                        </span>
+                      </div>
+                      <p className="text-green-400 font-bold text-2xl flex-1 flex items-center">
+                        {(() => {
+                          const lawyer = allLawyers.find(
+                            (l) => l.id === selectedLawyer.id,
+                          );
+                          return `${lawyer?.success_rate || 0}%`;
+                        })()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Contact Form */}
-              <div className="border-t border-gray-700 pt-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Book Consultation</h3>
-                
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
-                        Full Name *
-                      </label>
-                      <Input 
-                        placeholder="Enter your full name" 
-                        value={formData.fullName}
-                        onChange={(e) => handleInputChange('fullName', e.target.value)}
+                {/* Form Section */}
+                <form onSubmit={handleBookingSubmit} className="space-y-6">
+                  {/* Case Description */}
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white mb-3">
+                      <div className="w-7 h-7 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30">
+                        <span className="text-black text-sm">📝</span>
+                      </div>
+                      <span>Describe Your Legal Case</span>
+                      <span className="ml-auto text-xs text-white/40 font-normal">
+                        Required
+                      </span>
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                      <Textarea
+                        className="relative min-h-[140px] resize-none bg-black/40 border-2 border-white/10 focus:border-yellow-400/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-yellow-400/20 transition-all px-4 py-3"
+                        placeholder="Please provide detailed information about your legal matter, including:&#10;• Nature of the issue&#10;• Timeline of events&#10;• Desired outcome&#10;• Any urgent concerns"
+                        value={bookingFormData.caseDescription}
+                        onChange={(e) =>
+                          setBookingFormData({
+                            ...bookingFormData,
+                            caseDescription: e.target.value,
+                          })
+                        }
                         required
-                        className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
+                      />
+                      <div className="absolute bottom-3 right-3 text-xs text-white/30">
+                        {bookingFormData.caseDescription.length} characters
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Date & Time Picker */}
+                  <div className="relative">
+                    <label className="flex items-center gap-2 text-sm font-bold text-white mb-3">
+                      <div className="w-7 h-7 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-400/30">
+                        <Calendar className="w-4 h-4 text-black" />
+                      </div>
+                      <span>Preferred Consultation Time</span>
+                      <span className="ml-auto text-xs text-white/40 font-normal">
+                        Required
+                      </span>
+                    </label>
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+                      <Input
+                        type="datetime-local"
+                        value={bookingFormData.preferredDateTime}
+                        onChange={(e) =>
+                          setBookingFormData({
+                            ...bookingFormData,
+                            preferredDateTime: e.target.value,
+                          })
+                        }
+                        className="relative bg-black/40 border-2 border-white/10 focus:border-yellow-400/50 rounded-xl text-white focus:ring-2 focus:ring-yellow-400/20 transition-all h-14 text-base px-4 [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-100 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                        min={new Date().toISOString().slice(0, 16)}
+                        required
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-1">
-                        Phone Number *
-                      </label>
-                      <Input 
-                        placeholder="Enter your phone number" 
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange('phone', e.target.value)}
-                        required
-                        className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
-                      />
+                  </div>
+
+                  {/* Premium Pricing Card */}
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/30 via-yellow-500/30 to-yellow-600/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition duration-500"></div>
+                    <div className="relative bg-gradient-to-br from-yellow-400/10 via-yellow-500/5 to-yellow-600/10 border-2 border-yellow-400/30 rounded-2xl p-6 backdrop-blur-sm">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-yellow-400/20 border border-yellow-400/30 flex items-center justify-center">
+                            <span className="text-2xl">💰</span>
+                          </div>
+                          <div>
+                            <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
+                              Consultation Fee
+                            </p>
+                            <p className="text-white/30 text-xs mt-0.5">
+                              Pay per minute • Transparent pricing
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-black/30 rounded-xl p-4 border border-yellow-400/20">
+                          <p className="text-white/40 text-xs mb-1">
+                            Rate per minute
+                          </p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-yellow-400 text-4xl font-bold">
+                              ₹
+                              {(() => {
+                                const baseFee = parseInt(
+                                  selectedLawyer.consultationFee
+                                    .replace(/[₹,]/g, "")
+                                    .split("/")[0]
+                                    .trim(),
+                                );
+                                const perMinuteRate = Math.round(baseFee / 30);
+                                const roundedRate =
+                                  perMinuteRate < 90
+                                    ? 88
+                                    : perMinuteRate < 95
+                                      ? 90
+                                      : perMinuteRate < 100
+                                        ? 95
+                                        : perMinuteRate < 105
+                                          ? 102
+                                          : Math.round(perMinuteRate / 5) * 5;
+                                return roundedRate;
+                              })()}
+                            </span>
+                            <span className="text-white/50 text-sm">/min</span>
+                          </div>
+                        </div>
+
+                        <div className="bg-black/30 rounded-xl p-4 border border-white/10">
+                          <p className="text-white/40 text-xs mb-1">
+                            Estimated (30 minutes)
+                          </p>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-white text-3xl font-bold">
+                              ₹
+                              {(() => {
+                                const baseFee = parseInt(
+                                  selectedLawyer.consultationFee
+                                    .replace(/[₹,]/g, "")
+                                    .split("/")[0]
+                                    .trim(),
+                                );
+                                const perMinuteRate = Math.round(baseFee / 30);
+                                const roundedRate =
+                                  perMinuteRate < 90
+                                    ? 88
+                                    : perMinuteRate < 95
+                                      ? 90
+                                      : perMinuteRate < 100
+                                        ? 95
+                                        : perMinuteRate < 105
+                                          ? 102
+                                          : Math.round(perMinuteRate / 5) * 5;
+                                return (roundedRate * 30).toLocaleString(
+                                  "en-IN",
+                                );
+                              })()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-start gap-2 text-xs text-white/40 bg-black/20 rounded-lg p-3 border border-white/5">
+                        <svg
+                          className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>
+                          Final fee calculated based on actual consultation
+                          duration. Payment required before session begins.
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Email Address *
-                    </label>
-                    <Input 
-                      type="email" 
-                      placeholder="Enter your email address" 
-                      value={formData.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
-                      required
-                      className="bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Legal Issue Description *
-                    </label>
-                    <Textarea
-                      className="min-h-[100px] resize-none bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:ring-yellow-400 focus:border-yellow-400"
-                      placeholder="Briefly describe your legal issue..."
-                      value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Preferred Consultation Date
-                    </label>
-                    <Input 
-                      type="date" 
-                      value={formData.preferredDate}
-                      onChange={(e) => handleInputChange('preferredDate', e.target.value)}
-                      className="bg-gray-800 border-gray-600 text-white focus:ring-yellow-400 focus:border-yellow-400"
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-                  
-                  <div className="flex gap-3 pt-4">
-                    <Button 
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-4 pt-2">
+                    <Button
                       type="submit"
-                      disabled={isLoading}
-                      className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold disabled:opacity-50 transition-all duration-300"
+                      className="flex-1 relative group bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 text-black font-bold text-base h-14 rounded-xl shadow-xl shadow-yellow-400/30 hover:shadow-2xl hover:shadow-yellow-400/50 transition-all duration-300 overflow-hidden"
                     >
-                      {isLoading ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin mr-2" />
-                          Booking...
-                        </>
-                      ) : (
-                        <>
-                          <Calendar className="w-4 h-4 mr-2" />
-                          Book Consultation ({selectedLawyer.consultationFee})
-                        </>
-                      )}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
+                      <Calendar className="w-5 h-5 mr-2 relative z-10" />
+                      <span className="relative z-10">
+                        Book Consultation Now
+                      </span>
                     </Button>
-                    <Button 
+                    <Button
                       type="button"
-                      variant="outline"
-                      className="flex items-center gap-2 border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-yellow-400 hover:border-yellow-400 transition-all duration-300"
-                      onClick={() => window.open(`tel:${selectedLawyer.phone}`)}
+                      onClick={() => {
+                        setIsBookingOpen(false);
+                        setSelectedLawyer(null);
+                        setBookingType(null);
+                      }}
+                      className="px-8 h-14 rounded-xl bg-white/5 hover:bg-white/10 border-2 border-white/10 hover:border-white/20 text-white transition-all duration-300"
                     >
-                      <Phone className="w-4 h-4" />
-                      Call Now
+                      Cancel
                     </Button>
                   </div>
-                  
-                  <p className="text-xs text-gray-400 text-center">
-                    By booking a consultation, you agree to our terms of service and privacy policy.
-                  </p>
                 </form>
-              </div>
-
-              {/* Contact Info */}
-              <div className="border-t border-gray-700 pt-6">
-                <h3 className="text-lg font-semibold text-white mb-4">Contact Information</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-yellow-400" />
-                    <span className="text-gray-300">{selectedLawyer.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-yellow-400" />
-                    <span className="text-gray-300">{selectedLawyer.email}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-4 h-4 text-yellow-400" />
-                    <span className="text-gray-300">{selectedLawyer.location}</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Smart Match Modal */}
-      <SmartMatchModal
-        isOpen={isSmartMatchOpen}
-        onClose={() => setIsSmartMatchOpen(false)}
-        onMatchComplete={handleMLMatchComplete}
-      />
+      {/* Lawyer Chat Interface */}
+      {isChatOpen && selectedLawyer && (
+        <LawyerChat
+          isOpen={isChatOpen}
+          onClose={() => {
+            setIsChatOpen(false);
+            setSelectedLawyer(null);
+            setBookingType(null);
+            setBookingFormData({
+              fullName: "",
+              phone: "",
+              email: "",
+              caseDescription: "",
+              preferredDateTime: "",
+            });
+          }}
+          lawyerName={selectedLawyer.name}
+          lawyerSpecialization={selectedLawyer.specialization}
+          initialRequest={{
+            caseDescription: bookingFormData.caseDescription,
+            preferredDateTime: bookingFormData.preferredDateTime,
+          }}
+          perMinuteRate={(() => {
+            const baseFee = parseInt(
+              selectedLawyer.consultationFee
+                .replace(/[₹,]/g, "")
+                .split("/")[0]
+                .trim(),
+            );
+            const perMinuteRate = Math.round(baseFee / 30);
+            return perMinuteRate < 90
+              ? 88
+              : perMinuteRate < 95
+                ? 90
+                : perMinuteRate < 100
+                  ? 95
+                  : perMinuteRate < 105
+                    ? 102
+                    : Math.round(perMinuteRate / 5) * 5;
+          })()}
+        />
+      )}
     </div>
   );
 };

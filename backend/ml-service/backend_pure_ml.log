@@ -1,0 +1,363 @@
+/Users/adhyayandubey/Downloads/Turn2law Website/backend/ml-service/main.py:403: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [4659]
+INFO:     Waiting for application startup.
+INFO:__main__:🚀 Starting Turn2Law ML Matchmaking Service...
+INFO:__main__:✓ ML model loaded successfully
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator RobustScaler from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Feature scaler loaded successfully
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator LabelEncoder from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Label encoders loaded successfully
+INFO:__main__:✓ Mock lawyers data loaded: 150 lawyers
+INFO:__main__:✅ Service ready!
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:50050 - "GET /health HTTP/1.1" 200 OK
+INFO:__main__:Received match request: Divorce
+INFO:__main__:Using ML model to rank all 150 lawyers for 'Divorce'
+INFO:__main__:❌ Budget filter: Taimur Sami fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Taimur Sami: ['Over budget (₹4,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Kashvi Saini fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Kashvi Saini: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Alisha Gokhale fee 4800 > budget 3000.0
+INFO:__main__:Filtered out Alisha Gokhale: ['Over budget (₹4,800  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Mehul Sabharwal fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Mehul Sabharwal: ['Over budget (₹3,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Hunar Rao fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Hunar Rao: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Aarna Shetty fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Aarna Shetty: ['Over budget (₹4,500  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Lagan Mallick = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Vardaniya Saran fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Vardaniya Saran: ['Over budget (₹3,700  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Madhav Keer = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Hansh Trivedi = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Baiju Bhavsar = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Shray Varkey fee 4600 > budget 3000.0
+INFO:__main__:Filtered out Shray Varkey: ['Over budget (₹4,600  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Jayesh Soni fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Jayesh Soni: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Mohanlal Golla fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Mohanlal Golla: ['Over budget (₹3,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Anvi Goyal fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Anvi Goyal: ['Over budget (₹4,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Eshani Shetty fee 4900 > budget 3000.0
+INFO:__main__:Filtered out Eshani Shetty: ['Over budget (₹4,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Rati Ahluwalia fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Rati Ahluwalia: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Azad Dutt fee 3100 > budget 3000.0
+INFO:__main__:Filtered out Azad Dutt: ['Over budget (₹3,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Darshit Baral fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Darshit Baral: ['Over budget (₹4,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Ivan Sane fee 3500 > budget 3000.0
+INFO:__main__:Filtered out Ivan Sane: ['Over budget (₹3,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Alia Soni fee 3600 > budget 3000.0
+INFO:__main__:Filtered out Alia Soni: ['Over budget (₹3,600  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Madhav Bhakta = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Indrajit Kala fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Indrajit Kala: ['Over budget (₹3,700  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Kiara Dhar = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Vanya Kapadia = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Aaryahi Randhawa fee 5000 > budget 3000.0
+INFO:__main__:Filtered out Aaryahi Randhawa: ['Over budget (₹5,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Lagan Hegde fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Lagan Hegde: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Pari Arya fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Pari Arya: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Biju Dayal fee 5600 > budget 3000.0
+INFO:__main__:Filtered out Biju Dayal: ['Over budget (₹5,600  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Mahika Badal fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Mahika Badal: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Nakul Ray fee 5000 > budget 3000.0
+INFO:__main__:Filtered out Nakul Ray: ['Over budget (₹5,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Dishani Gara fee 5400 > budget 3000.0
+INFO:__main__:Filtered out Dishani Gara: ['Over budget (₹5,400  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Aradhya Bhatt = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Pihu Sood fee 5100 > budget 3000.0
+INFO:__main__:Filtered out Pihu Sood: ['Over budget (₹5,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Krish Suri fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Krish Suri: ['Over budget (₹4,700  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Lavanya Chandra = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Jhanvi Mahal = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Advik Yohannan fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Advik Yohannan: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Rania Choudhury fee 4400 > budget 3000.0
+INFO:__main__:Filtered out Rania Choudhury: ['Over budget (₹4,400  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Nitya Seth = 0.8/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Aniruddh Mahal = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Dharmajan Gokhale fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Dharmajan Gokhale: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Damini Gulati fee 3100 > budget 3000.0
+INFO:__main__:Filtered out Damini Gulati: ['Over budget (₹3,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Sahil Ravi fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Sahil Ravi: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Oorja Thaker fee 5000 > budget 3000.0
+INFO:__main__:Filtered out Oorja Thaker: ['Over budget (₹5,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Alia Dani fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Alia Dani: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Indranil Chaudhari fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Indranil Chaudhari: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Aaryahi Deol fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Aaryahi Deol: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Devansh Kadakia fee 4400 > budget 3000.0
+INFO:__main__:Filtered out Devansh Kadakia: ['Over budget (₹4,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Misha Kibe fee 3200 > budget 3000.0
+INFO:__main__:Filtered out Misha Kibe: ['Over budget (₹3,200  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Amani Upadhyay = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Amira Talwar = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Navya Suri = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Adah Bawa fee 3800 > budget 3000.0
+INFO:__main__:Filtered out Adah Bawa: ['Over budget (₹3,800  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Jayesh Chakraborty = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Jayesh Bhatnagar fee 5000 > budget 3000.0
+INFO:__main__:Filtered out Jayesh Bhatnagar: ['Over budget (₹5,000  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Sahil Bhatia = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Vardaniya Kibe fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Vardaniya Kibe: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Eshani Lad fee 3600 > budget 3000.0
+INFO:__main__:Filtered out Eshani Lad: ['Over budget (₹3,600  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Yuvaan Master fee 4400 > budget 3000.0
+INFO:__main__:Filtered out Yuvaan Master: ['Over budget (₹4,400  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Jayesh Ahuja = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Armaan Sangha fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Armaan Sangha: ['Over budget (₹4,500  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Emir Koshy = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Farhan Mandal fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Farhan Mandal: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Mehul Sule fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Mehul Sule: ['Over budget (₹4,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Sara Gandhi fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Sara Gandhi: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Eva Karnik fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Eva Karnik: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Indranil Batta fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Indranil Batta: ['Over budget (₹4,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Riaan Rastogi fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Riaan Rastogi: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Anaya Ravel fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Anaya Ravel: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Zaina Ganesan fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Zaina Ganesan: ['Over budget (₹3,400  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Veer Edwin = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Ritvik Shukla fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Ritvik Shukla: ['Over budget (₹4,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Kartik Roy fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Kartik Roy: ['Over budget (₹4,300  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Ela Gupta = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Ahana  Doctor fee 3100 > budget 3000.0
+INFO:__main__:Filtered out Ahana  Doctor: ['Over budget (₹3,100  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Anahi Goswami = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Oorja Devan fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Oorja Devan: ['Over budget (₹4,200  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Vihaan Singhal = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Aaina Dewan fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Aaina Dewan: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Pihu Rao fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Pihu Rao: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Hiran Shanker fee 3500 > budget 3000.0
+INFO:__main__:Filtered out Hiran Shanker: ['Over budget (₹3,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Tiya Sastry fee 4800 > budget 3000.0
+INFO:__main__:Filtered out Tiya Sastry: ['Over budget (₹4,800  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Dhruv Kara = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Anaya Desai fee 5200 > budget 3000.0
+INFO:__main__:Filtered out Anaya Desai: ['Over budget (₹5,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Zaina Srivastava fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Zaina Srivastava: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Priyansh Chawla fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Priyansh Chawla: ['Over budget (₹4,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Vanya Lad fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Vanya Lad: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Saira Sur fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Saira Sur: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Kanav Ram fee 4500 > budget 3000.0
+INFO:__main__:Filtered out Kanav Ram: ['Over budget (₹4,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Jayesh Savant fee 3500 > budget 3000.0
+INFO:__main__:Filtered out Jayesh Savant: ['Over budget (₹3,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Anvi Sekhon fee 3800 > budget 3000.0
+INFO:__main__:Filtered out Anvi Sekhon: ['Over budget (₹3,800  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Emir Sachdeva fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Emir Sachdeva: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Neelofar Basu fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Neelofar Basu: ['Over budget (₹3,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Uthkarsh Sharma fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Uthkarsh Sharma: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Samiha Sur fee 4400 > budget 3000.0
+INFO:__main__:Filtered out Samiha Sur: ['Over budget (₹4,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Uthkarsh Goel fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Uthkarsh Goel: ['Over budget (₹4,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Aradhya Borra fee 3200 > budget 3000.0
+INFO:__main__:Filtered out Aradhya Borra: ['Over budget (₹3,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Prisha Kannan fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Prisha Kannan: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Shamik Chanda fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Shamik Chanda: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Farhan Jaggi fee 3600 > budget 3000.0
+INFO:__main__:Filtered out Farhan Jaggi: ['Over budget (₹3,600  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Mamooty Goel fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Mamooty Goel: ['Over budget (₹3,300  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Tushar Chahal = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Samaira Setty fee 4400 > budget 3000.0
+INFO:__main__:Filtered out Samaira Setty: ['Over budget (₹4,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Madhav Kara fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Madhav Kara: ['Over budget (₹4,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Zara Char fee 3800 > budget 3000.0
+INFO:__main__:Filtered out Zara Char: ['Over budget (₹3,800  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Vaibhav Arora fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Vaibhav Arora: ['Over budget (₹3,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Sana Bahri fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Sana Bahri: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Vritika Balasubramanian fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Vritika Balasubramanian: ['Over budget (₹4,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Dharmajan Barman fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Dharmajan Barman: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Vaibhav Srivastava fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Vaibhav Srivastava: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Gatik Ramanathan fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Gatik Ramanathan: ['Over budget (₹4,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Kaira Sanghvi fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Kaira Sanghvi: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Nitya Shankar fee 4200 > budget 3000.0
+INFO:__main__:Filtered out Nitya Shankar: ['Over budget (₹4,200  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Uthkarsh Dugar = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Jivika Sampath fee 5700 > budget 3000.0
+INFO:__main__:Filtered out Jivika Sampath: ['Over budget (₹5,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Miraya Keer fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Miraya Keer: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Bhavin Kohli fee 3300 > budget 3000.0
+INFO:__main__:Filtered out Bhavin Kohli: ['Over budget (₹3,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Azad Kalla fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Azad Kalla: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Navya Apte fee 3400 > budget 3000.0
+INFO:__main__:Filtered out Navya Apte: ['Over budget (₹3,400  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Dishani Vala fee 4600 > budget 3000.0
+INFO:__main__:Filtered out Dishani Vala: ['Over budget (₹4,600  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Miraan Grewal fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Miraan Grewal: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Kabir Sunder fee 3500 > budget 3000.0
+INFO:__main__:Filtered out Kabir Sunder: ['Over budget (₹3,500  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Aniruddh Sodhi = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Eva Krish fee 3200 > budget 3000.0
+INFO:__main__:Filtered out Eva Krish: ['Over budget (₹3,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Vanya Sule fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Vanya Sule: ['Over budget (₹4,000  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Lavanya Chawla = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Shaan Karnik = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Tushar Bhakta fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Tushar Bhakta: ['Over budget (₹3,700  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Adira Vohra = 0.9/100 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Mamooty Soman = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Aayush Mahajan fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Aayush Mahajan: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Romil Kumer fee 5300 > budget 3000.0
+INFO:__main__:Filtered out Romil Kumer: ['Over budget (₹5,300  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Alisha Anand = 0.8/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Kiaan Yogi fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Kiaan Yogi: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Shlok Mane fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Shlok Mane: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Tejas Walia fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Tejas Walia: ['Over budget (₹4,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Urvi Varghese fee 4100 > budget 3000.0
+INFO:__main__:Filtered out Urvi Varghese: ['Over budget (₹4,100  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Aaina Maharaj fee 4700 > budget 3000.0
+INFO:__main__:Filtered out Aaina Maharaj: ['Over budget (₹4,700  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Pari Sankar fee 3600 > budget 3000.0
+INFO:__main__:Filtered out Pari Sankar: ['Over budget (₹3,600  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Bhavin Mammen = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Rasha Jani fee 5700 > budget 3000.0
+INFO:__main__:Filtered out Rasha Jani: ['Over budget (₹5,700  > ₹3000.0)']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML: Jhanvi Chatterjee = 0.9/100 (0% confidence)
+INFO:__main__:❌ Budget filter: Ojas Rau fee 3200 > budget 3000.0
+INFO:__main__:Filtered out Ojas Rau: ['Over budget (₹3,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Veer Dasgupta fee 4300 > budget 3000.0
+INFO:__main__:Filtered out Veer Dasgupta: ['Over budget (₹4,300  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Darshit Subramaniam fee 5200 > budget 3000.0
+INFO:__main__:Filtered out Darshit Subramaniam: ['Over budget (₹5,200  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Ranbir Agate fee 4000 > budget 3000.0
+INFO:__main__:Filtered out Ranbir Agate: ['Over budget (₹4,000  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Bhamini Sen fee 3900 > budget 3000.0
+INFO:__main__:Filtered out Bhamini Sen: ['Over budget (₹3,900  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Riya Kuruvilla fee 5500 > budget 3000.0
+INFO:__main__:Filtered out Riya Kuruvilla: ['Over budget (₹5,500  > ₹3000.0)']
+INFO:__main__:❌ Budget filter: Yashvi Dua fee 3700 > budget 3000.0
+INFO:__main__:Filtered out Yashvi Dua: ['Over budget (₹3,700  > ₹3000.0)']
+INFO:__main__:✅ Scored 34 lawyers, filtered out 116
+INFO:__main__:Found 10 matches for Divorce
+INFO:     127.0.0.1:50053 - "POST /api/match HTTP/1.1" 200 OK

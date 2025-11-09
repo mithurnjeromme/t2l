@@ -1,0 +1,87 @@
+/Users/adhyayandubey/Downloads/Turn2law Website/backend/ml-service/main.py:381: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+INFO:     Started server process [1579]
+INFO:     Waiting for application startup.
+INFO:__main__:🚀 Starting Turn2Law ML Matchmaking Service...
+INFO:__main__:✓ ML model loaded successfully
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator RobustScaler from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Feature scaler loaded successfully
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:348: InconsistentVersionWarning: Trying to unpickle estimator LabelEncoder from version 1.6.1 when using version 1.3.2. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+INFO:__main__:✓ Label encoders loaded successfully
+INFO:__main__:✓ Mock lawyers data loaded: 150 lawyers
+INFO:__main__:✅ Service ready!
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49986 - "GET /health HTTP/1.1" 200 OK
+INFO:__main__:Received match request: Divorce
+INFO:__main__:Found 25 potential matches for 'Divorce'
+INFO:__main__:❌ Filtered out Mohanlal Golla: Fee 3300 > Budget 3000.0
+INFO:__main__:Filtered out Mohanlal Golla: ['Over budget - Fee: ₹3,300 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Anvi Goyal: Fee 4000 > Budget 3000.0
+INFO:__main__:Filtered out Anvi Goyal: ['Over budget - Fee: ₹4,000 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Kiara Dhar: ML score = 0.53 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Aradhya Bhatt: ML score = 0.49 (0% confidence)
+INFO:__main__:❌ Filtered out Krish Suri: Fee 4700 > Budget 3000.0
+INFO:__main__:Filtered out Krish Suri: ['Over budget - Fee: ₹4,700 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Nitya Seth: ML score = 0.49 (0% confidence)
+INFO:__main__:❌ Filtered out Sahil Ravi: Fee 3400 > Budget 3000.0
+INFO:__main__:Filtered out Sahil Ravi: ['Over budget - Fee: ₹3,400 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Devansh Kadakia: Fee 4400 > Budget 3000.0
+INFO:__main__:Filtered out Devansh Kadakia: ['Over budget - Fee: ₹4,400 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Amira Talwar: ML score = 0.53 (0% confidence)
+INFO:__main__:❌ Filtered out Yuvaan Master: Fee 4400 > Budget 3000.0
+INFO:__main__:Filtered out Yuvaan Master: ['Over budget - Fee: ₹4,400 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Anahi Goswami: ML score = 0.49 (0% confidence)
+INFO:__main__:❌ Filtered out Pihu Rao: Fee 3400 > Budget 3000.0
+INFO:__main__:Filtered out Pihu Rao: ['Over budget - Fee: ₹3,400 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Neelofar Basu: Fee 3300 > Budget 3000.0
+INFO:__main__:Filtered out Neelofar Basu: ['Over budget - Fee: ₹3,300 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Aradhya Borra: Fee 3200 > Budget 3000.0
+INFO:__main__:Filtered out Aradhya Borra: ['Over budget - Fee: ₹3,200 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Zara Char: Fee 3800 > Budget 3000.0
+INFO:__main__:Filtered out Zara Char: ['Over budget - Fee: ₹3,800 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Vaibhav Arora: Fee 3300 > Budget 3000.0
+INFO:__main__:Filtered out Vaibhav Arora: ['Over budget - Fee: ₹3,300 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Miraya Keer: Fee 4700 > Budget 3000.0
+INFO:__main__:Filtered out Miraya Keer: ['Over budget - Fee: ₹4,700 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Miraan Grewal: Fee 4100 > Budget 3000.0
+INFO:__main__:Filtered out Miraan Grewal: ['Over budget - Fee: ₹4,100 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Adira Vohra: ML score = 0.53 (0% confidence)
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Mamooty Soman: ML score = 0.53 (0% confidence)
+INFO:__main__:❌ Filtered out Romil Kumer: Fee 5300 > Budget 3000.0
+INFO:__main__:Filtered out Romil Kumer: ['Over budget - Fee: ₹5,300 exceeds ₹3000.0']
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/sklearn/base.py:465: UserWarning: X does not have valid feature names, but RobustScaler was fitted with feature names
+  warnings.warn(
+INFO:__main__:✅ ML model used for Alisha Anand: ML score = 0.49 (0% confidence)
+INFO:__main__:❌ Filtered out Tejas Walia: Fee 4000 > Budget 3000.0
+INFO:__main__:Filtered out Tejas Walia: ['Over budget - Fee: ₹4,000 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Urvi Varghese: Fee 4100 > Budget 3000.0
+INFO:__main__:Filtered out Urvi Varghese: ['Over budget - Fee: ₹4,100 exceeds ₹3000.0']
+INFO:__main__:❌ Filtered out Yashvi Dua: Fee 3700 > Budget 3000.0
+INFO:__main__:Filtered out Yashvi Dua: ['Over budget - Fee: ₹3,700 exceeds ₹3000.0']
+INFO:__main__:✅ Scored 8 lawyers, filtered out 17
+INFO:__main__:Found 8 matches for Divorce
+INFO:     127.0.0.1:49990 - "POST /api/match HTTP/1.1" 200 OK

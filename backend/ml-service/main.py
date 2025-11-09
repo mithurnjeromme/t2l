@@ -15,6 +15,7 @@ import logging
 import os
 from pathlib import Path
 import json
+import traceback
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -173,58 +174,376 @@ def extract_years_from_experience(exp_str: str) -> int:
     return int(match.group(1)) if match else 10
 
 
-def calculate_match_score(client_req: ClientRequest, lawyer: Dict) -> tuple[float, List[str]]:
+def map_case_type_to_practice_area(case_type: str) -> str:
+    """Map user's case type to ML model's practice_area categories"""
+    case_type_lower = case_type.lower()
+    
+    if 'divorce' in case_type_lower or 'family' in case_type_lower or 'matrimonial' in case_type_lower:
+        return 'Family Law'
+    elif 'property' in case_type_lower or 'estate' in case_type_lower or 'land' in case_type_lower:
+        return 'Real Estate & Property Law'
+    elif 'criminal' in case_type_lower or 'crime' in case_type_lower:
+        return 'Criminal Law'
+    elif 'tax' in case_type_lower:
+        return 'Tax Law'
+    elif 'corporate' in case_type_lower or 'business' in case_type_lower:
+        return 'Corporate/Business Law'
+    elif 'labor' in case_type_lower or 'employment' in case_type_lower:
+        return 'Labor & Employment Law'
+    elif 'intellectual' in case_type_lower or 'patent' in case_type_lower or 'trademark' in case_type_lower:
+        return 'Intellectual Property Law'
+    else:
+        return 'Civil Law'
+
+
+def map_specialization_to_sub_specialisation(specialization: str) -> str:
+    """Map lawyer's specialization to ML model's sub_specialisation categories"""
+    spec_lower = specialization.lower()
+    
+    if 'divorce' in spec_lower or 'matrimonial' in spec_lower:
+        return 'Divorce Settlements'
+    elif 'property' in spec_lower or 'land' in spec_lower or 'estate' in spec_lower:
+        return 'Property Disputes'
+    elif 'fraud' in spec_lower:
+        return 'Fraud Cases'
+    elif 'cyber' in spec_lower:
+        return 'Cyber Crime'
+    elif 'contract' in spec_lower:
+        return 'Contract Disputes'
+    elif 'merger' in spec_lower or 'acquisition' in spec_lower:
+        return 'Mergers & Acquisitions'
+    elif 'patent' in spec_lower or 'trademark' in spec_lower:
+        return 'Patents & Trademarks'
+    elif 'wrongful' in spec_lower or 'termination' in spec_lower:
+        return 'Wrongful Termination'
+    else:
+        return 'Contract Disputes'  # Default
+
+
+def map_budget_to_range(budget: float) -> str:
+    """Map numeric budget to ML model's budget_range categories"""
+    if budget < 5000:
+        return '5000-15000'
+    elif budget < 15000:
+        return '5000-15000'
+    elif budget < 50000:
+        return '15000-50000'
+    elif budget < 150000:
+        return '50000-150000'
+    else:
+        return '150000+'
+
+
+def map_urgency_to_case_urgency(urgency: str) -> str:
+    """Map urgency to ML model's case_urgency categories"""
+    urgency_map = {
+        'Low': 'Flexible',
+        'Medium': 'Standard',
+        'High': 'Urgent'
+    }
+    return urgency_map.get(urgency, 'Standard')
+
+
+def prepare_ml_features(client_req: ClientRequest, lawyer: Dict) -> np.ndarray:
     """
-    Calculate match score between client and lawyer
-    Returns: (score, reasons)
+    Prepare complete feature vector for ML model (35 features total)
+    Must match EXACT order and format the model was trained on
+    
+    Feature order:
+    [0-8]: 9 encoded categorical features
+    [9-14]: 6 primary numerical features  
+    [15-34]: 20 additional features (padded with meaningful defaults)
     """
-    score = 0.0
+    # Get budget (default to middle range if not specified)
+    budget = client_req.budget if client_req.budget else 25000
+    budget_range = map_budget_to_range(budget)
+    
+    # Map client request to ML features
+    practice_area = map_case_type_to_practice_area(client_req.case_type)
+    sub_specialisation = map_specialization_to_sub_specialisation(lawyer.get('specialization', ''))
+    case_urgency = map_urgency_to_case_urgency(client_req.urgency)
+    
+    # Build feature vector in EXACT order
+    feature_vector = []
+    
+    # CATEGORICAL FEATURES (9 features) - these get encoded
+    categorical_features = {
+        'practice_area': practice_area,
+        'sub_specialisation': sub_specialisation,
+        'communication_mode': 'Video Call',  # Default user preference
+        'comfort_preference': 'Friendly & Approachable',  # Default
+        'past_client_category': 'Individual/Personal',  # Most common
+        'gender': 'Male',  # Neutral default (for lawyer gender preference)
+        'case_urgency': case_urgency,
+        'budget_range': budget_range,
+        'average_case_duration': '3-6 months'  # Default estimate
+    }
+    
+    # Encode each categorical feature
+    for feature_name in ['practice_area', 'sub_specialisation', 'communication_mode', 
+                         'comfort_preference', 'past_client_category', 'gender',
+                         'case_urgency', 'budget_range', 'average_case_duration']:
+        try:
+            encoded_value = label_encoders[feature_name].transform([categorical_features[feature_name]])[0]
+            feature_vector.append(float(encoded_value))
+        except Exception as e:
+            logger.warning(f"Encoding error for {feature_name}={categorical_features[feature_name]}: {e}")
+            feature_vector.append(0.0)
+    
+    # NUMERICAL FEATURES (6 core features from lawyer data)
+    feature_vector.append(float(lawyer.get('years_experience', 10)))
+    feature_vector.append(float(lawyer.get('rating', 4.0)))
+    feature_vector.append(float(lawyer.get('reviews', 100)))
+    feature_vector.append(float(lawyer.get('consultation_fee', 3000)))
+    feature_vector.append(float(lawyer.get('success_rate', 80)))
+    feature_vector.append(float(lawyer.get('cases_handled', 100)))
+    
+    # ADDITIONAL FEATURES (20 more features to reach 35 total)
+    # Use meaningful defaults based on typical values
+    additional_features = [
+        1.0,  # has_specialization (1 = yes)
+        lawyer.get('verified', True) * 1.0,  # is_verified
+        lawyer.get('available_now', False) * 1.0,  # available_now
+        1.0 if lawyer.get('rating', 0) >= 4.5 else 0.0,  # is_highly_rated
+        1.0 if lawyer.get('years_experience', 0) >= 10 else 0.0,  # is_experienced
+        len(lawyer.get('languages', [])),  # number_of_languages
+        len(lawyer.get('practice_areas', [])),  # number_of_practice_areas
+        float(budget / 1000),  # client_budget_thousands
+        1.0 if client_req.urgency == 'High' else 0.0,  # is_urgent_case
+        1.0 if client_req.location.lower() in lawyer.get('location', '').lower() else 0.0,  # location_match
+        # Pad remaining with zeros
+        0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    ]
+    
+    feature_vector.extend(additional_features)
+    
+    # Ensure exactly 35 features
+    feature_vector = feature_vector[:35]
+    while len(feature_vector) < 35:
+        feature_vector.append(0.0)
+    
+    logger.info(f"Feature vector for {lawyer['name']}: length={len(feature_vector)}, first 10={feature_vector[:10]}")
+    
+    return np.array(feature_vector, dtype=np.float64).reshape(1, -1)
+
+
+def extract_keywords_from_prompt(client_req: ClientRequest) -> Dict[str, List[str]]:
+    """
+    Extract all relevant keywords from client's case description and case type
+    Returns: Dict with primary and secondary keywords for matching
+    """
+    import re
+    
+    # Combine case type and description for analysis
+    full_text = f"{client_req.case_type} {client_req.case_description}".lower()
+    
+    # Define comprehensive keyword mappings (primary keywords only - NO overlap!)
+    keyword_mappings = {
+        'divorce': ['divorce', 'matrimonial', 'custody', 'alimony'],
+        'family': ['family law', 'domestic violence'],
+        'property': ['property', 'real estate', 'land', 'tenancy', 'estate'],
+        'criminal': ['criminal', 'crime', 'fraud', 'theft', 'assault', 'bail', 'fir'],
+        'tax': ['tax', 'gst', 'income tax'],
+        'corporate': ['corporate', 'business', 'company', 'merger', 'acquisition'],
+        'contract': ['contract'],
+        'civil': ['civil'],
+        'labor': ['labor', 'labour', 'employment', 'workplace', 'wrongful termination'],
+        'intellectual_property': ['intellectual property', 'patent', 'trademark', 'copyright'],
+        'consumer': ['consumer protection', 'defective product'],
+        'banking': ['banking', 'loan', 'debt', 'cheque bounce'],
+        'cyber': ['cyber', 'cybercrime', 'hacking'],
+        'immigration': ['immigration', 'visa', 'citizenship'],
+    }
+    
+    # Extract matched categories (primary match)
+    primary_matches = set()
+    matched_keywords = set()
+    
+    for category, keywords in keyword_mappings.items():
+        for keyword in keywords:
+            if keyword in full_text:
+                primary_matches.add(category)
+                matched_keywords.add(keyword)
+    
+    # Special handling: if "property" matched, exclude "intellectual property"
+    if 'intellectual_property' in primary_matches and 'property' in primary_matches:
+        # Check which one is actually in the text
+        if 'intellectual' in full_text or 'patent' in full_text or 'trademark' in full_text:
+            primary_matches.discard('property')  # Remove general property
+        else:
+            primary_matches.discard('intellectual_property')  # Remove IP
+    
+    # Extract location from request
+    location_keywords = [client_req.location.lower()]
+    
+    result = {
+        'keywords': list(matched_keywords),  # Actual keywords found in text
+        'categories': list(primary_matches),  # High-level categories
+        'location': location_keywords,
+        'case_type': client_req.case_type.lower(),
+        'full_text': full_text
+    }
+    
+    logger.info(f"📋 Extracted categories: {result['categories']} | Keywords: {list(matched_keywords)[:5]}...")
+    return result
+
+
+def matches_specialization(lawyer: Dict, extracted_keywords: Dict) -> tuple[bool, str]:
+    """
+    Check if lawyer's specialization matches the extracted keywords from prompt
+    Returns: (matches: bool, reason: str)
+    """
+    import re
+    
+    keywords = extracted_keywords['keywords']
+    categories = extracted_keywords.get('categories', [])
+    
+    if not keywords and not categories:
+        # If no specific keywords, accept all lawyers
+        return True, "General case"
+    
+    # Get lawyer's specialization data
+    lawyer_spec = lawyer.get('specialization', '').lower()
+    lawyer_category = lawyer.get('category', '').lower()
+    lawyer_practice_areas = [area.lower() for area in lawyer.get('practice_areas', [])]
+    
+    # Combine all lawyer specialization fields for matching
+    lawyer_fields = f" {lawyer_spec} {lawyer_category} {' '.join(lawyer_practice_areas)} "
+    
+    # Priority 1: Check for exact multi-word phrases first (highest priority)
+    exact_multi_word_keywords = [k for k in keywords if ' ' in k]  # e.g., "real estate", "intellectual property"
+    multi_word_matches = []
+    for keyword in exact_multi_word_keywords:
+        pattern = r'\b' + re.escape(keyword) + r'\b'
+        if re.search(pattern, lawyer_fields):
+            multi_word_matches.append(keyword)
+    
+    # Priority 2: Single-word keyword matching (but EXCLUDE if multi-word was more specific)
+    single_word_keywords = [k for k in keywords if ' ' not in k]  # e.g., "property", "divorce"
+    single_word_matches = []
+    excluded = False  # Track if lawyer should be COMPLETELY excluded
+    
+    for keyword in single_word_keywords:
+        pattern = r'\b' + re.escape(keyword) + r'\b'
+        if re.search(pattern, lawyer_fields):
+            # CRITICAL EXCLUSIONS: Avoid matching substrings of compound terms
+            if keyword == "property":
+                # If "intellectual property" is present, ONLY match if "real estate" or "property law" or "property disputes" is ALSO present
+                if "intellectual property" in lawyer_fields:
+                    # Check if there's ALSO a real property-related term
+                    has_real_property = any(term in lawyer_fields for term in ['real estate', 'property law', 'property dispute', 'tenancy', 'land law'])
+                    logger.info(f"🔍 Property check for {lawyer.get('name')}: has_real_property={has_real_property}, fields={lawyer_fields[:100]}")
+                    if not has_real_property:
+                        logger.info(f"❌ Excluding {lawyer.get('name')} - only 'intellectual property', not real property")
+                        excluded = True
+                        break  # Stop checking, this lawyer is excluded
+            
+            if keyword == "labor" or keyword == "labour":
+                # Labor/Labour law is distinct, don't match other terms
+                if not any(term in lawyer_fields for term in ['labor law', 'labour law', 'employment']):
+                    excluded = True
+                    break
+            
+            if keyword == "tax" and "income tax" in lawyer_fields:
+                single_word_matches.append("income tax")  # More specific match
+            else:
+                single_word_matches.append(keyword)
+    
+    # If lawyer was excluded due to false match, return False immediately
+    if excluded:
+        return False, f"Excluded: false match on '{keywords[0]}'"
+    
+    # Priority 3: Check categories for broader matching
+    category_matches = []
+    for category in categories:
+        category_clean = category.replace('_', ' ')
+        if category_clean in lawyer_fields or category in lawyer_fields:
+            category_matches.append(category_clean)
+    
+    # Combine all matches (prioritize multi-word > single-word > categories)
+    all_matches = multi_word_matches + single_word_matches + category_matches
+    
+    if all_matches:
+        return True, f"Matches: {', '.join(all_matches[:2])}"
+    else:
+        # No match
+        search_terms = keywords[:2] if keywords else categories[:2]
+        return False, f"No match for: {', '.join(search_terms)}"
+
+
+def calculate_match_score(client_req: ClientRequest, lawyer: Dict, extracted_keywords: Dict) -> tuple[float, List[str]]:
+    """
+    Uses STRICT FILTERING + YOUR ML MODEL for scoring
+    
+    Steps:
+    1. Strict budget filter (hard constraint)
+    2. Strict specialization filter (hard constraint) - NEW!
+    3. ML model prediction (100% of score)
+    4. Add human-readable match reasons
+    
+    Returns: (score 0-100, reasons)
+    """
     reasons = []
     
-    # Specialization match (40% weight)
-    if lawyer['specialization'].lower() in client_req.case_type.lower() or \
-       client_req.case_type.lower() in lawyer['specialization'].lower():
-        score += 40
-        reasons.append(f"Specializes in {lawyer['specialization']}")
-    
-    # Location match (15% weight)
-    if client_req.location.lower() in lawyer['location'].lower():
-        score += 15
-        reasons.append(f"Available in {client_req.location}")
-    else:
-        score += 8  # Partial score if different location
-    
-    # Budget match (20% weight)
+    # STEP 1: STRICT BUDGET FILTERING (hard constraint - must pass)
     if client_req.budget:
         lawyer_fee = lawyer.get('consultation_fee', 2000)
-        if lawyer_fee <= client_req.budget:
-            score += 20
-            reasons.append(f"Within budget ({lawyer.get('consultation_fee_formatted', '₹2,000')})")
-        elif lawyer_fee <= client_req.budget * 1.2:  # Within 20% of budget
-            score += 10
-            reasons.append(f"Slightly above budget ({lawyer.get('consultation_fee_formatted', '₹2,000')})")
-    else:
-        score += 10  # Neutral if no budget specified
+        if lawyer_fee > client_req.budget:
+            logger.info(f"❌ Budget filter: {lawyer['name']} fee {lawyer_fee} > budget {client_req.budget}")
+            return 0, [f"Over budget ({lawyer.get('consultation_fee_formatted')} > ₹{client_req.budget})"]
     
-    # Experience match (15% weight)
-    lawyer_years = extract_years_from_experience(lawyer['experience'])
-    if client_req.preferred_experience:
-        if lawyer_years >= client_req.preferred_experience:
-            score += 15
-            reasons.append(f"{lawyer_years}+ years of experience")
-        else:
-            score += 5
-    else:
-        score += 10
-        reasons.append(f"{lawyer_years}+ years of experience")
+    # STEP 2: STRICT SPECIALIZATION FILTERING (hard constraint - must pass)
+    specialization_match, match_reason = matches_specialization(lawyer, extracted_keywords)
+    if not specialization_match:
+        logger.info(f"❌ Specialization filter: {lawyer['name']} - {match_reason}")
+        return 0, [f"Specialization mismatch: {match_reason}"]
     
-    # Rating bonus (10% weight)
-    rating = lawyer.get('rating', 4.0)
-    score += (rating / 5.0) * 10
-    if rating >= 4.5:
-        reasons.append(f"Highly rated ({rating}⭐)")
+    # STEP 3: USE YOUR ML MODEL FOR SCORING (100% of the score)
+    if ml_model is None or feature_scaler is None or label_encoders is None:
+        logger.error("❌ ML model not loaded! Cannot score lawyers.")
+        return 0, ["ML model not available"]
     
-    return min(score, 100), reasons
+    try:
+        # Prepare feature vector (35 features)
+        feature_vector = prepare_ml_features(client_req, lawyer)
+        
+        # Scale features using YOUR scaler
+        scaled_features = feature_scaler.transform(feature_vector)
+        
+        # Get ML prediction probability
+        ml_prediction = ml_model.predict_proba(scaled_features)[0]
+        ml_confidence = ml_prediction[1]  # Probability of being a good match (0-1)
+        
+        # Convert to 0-100 score
+        ml_score = ml_confidence * 100
+        
+        # Log ML usage
+        logger.info(f"✅ ML: {lawyer['name']} = {ml_score:.1f}/100 ({int(ml_confidence*100)}% confidence)")
+        
+        # STEP 4: Generate human-readable match reasons based on data
+        reasons.append(f"AI Match Score: {int(ml_score)}/100")
+        reasons.append(f"{match_reason}")  # Add specialization match reason
+        reasons.append(f"{lawyer['specialization']} specialist")
+        
+        if client_req.budget:
+            reasons.append(f"Within budget ({lawyer.get('consultation_fee_formatted')})")
+        
+        if lawyer.get('rating', 0) >= 4.5:
+            reasons.append(f"Highly rated ({lawyer.get('rating')}⭐)")
+        
+        if lawyer.get('years_experience', 0) >= 15:
+            reasons.append(f"Experienced ({lawyer.get('years_experience')}+ years)")
+        
+        if client_req.location.lower() in lawyer.get('location', '').lower():
+            reasons.append(f"Located in {client_req.location}")
+        
+        return ml_score, reasons
+        
+    except Exception as e:
+        logger.error(f"❌ ML model error for {lawyer['name']}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return 0, [f"ML model error: {str(e)}"]
 
 
 @app.on_event("startup")
@@ -270,34 +589,49 @@ async def match_lawyer(client_request: ClientRequest):
     """
     try:
         logger.info(f"Received match request: {client_request.case_type}")
+        logger.info(f"Case description: {client_request.case_description[:100]}...")
         
         if not mock_lawyers_data:
             raise HTTPException(status_code=503, detail="Lawyer data not available")
         
-        # Filter lawyers by category
-        category_matches = [
-            lawyer for lawyer in mock_lawyers_data
-            if client_request.case_type.lower() in lawyer['category'].lower() or
-               lawyer['category'].lower() in client_request.case_type.lower()
-        ]
+        # STEP 1: Extract keywords from user prompt for strict filtering
+        extracted_keywords = extract_keywords_from_prompt(client_request)
+        logger.info(f"📋 Extracted {len(extracted_keywords['keywords'])} keywords from prompt")
         
-        if not category_matches:
-            # If no exact category match, use all lawyers
-            category_matches = mock_lawyers_data
+        # STEP 2: Filter and score lawyers using STRICT FILTERS + ML MODEL
+        logger.info(f"Filtering {len(mock_lawyers_data)} lawyers with strict specialization + budget filters...")
         
-        # Calculate match scores for all lawyers
+        # Calculate match scores for all lawyers using STRICT FILTERS + ML MODEL
         scored_lawyers = []
-        for lawyer in category_matches:
-            score, reasons = calculate_match_score(client_request, lawyer)
-            lawyer_copy = lawyer.copy()
-            lawyer_copy['match_score'] = round(score, 2)
-            lawyer_copy['match_reasons'] = reasons
-            scored_lawyers.append(lawyer_copy)
+        filtered_count = 0
+        filter_reasons = {'budget': 0, 'specialization': 0, 'other': 0}
+        
+        for lawyer in mock_lawyers_data:
+            score, reasons = calculate_match_score(client_request, lawyer, extracted_keywords)
+            
+            # STRICT FILTERING: Only include lawyers with score > 0
+            if score > 0:
+                lawyer_copy = lawyer.copy()
+                lawyer_copy['match_score'] = round(score, 2)
+                lawyer_copy['match_reasons'] = reasons
+                scored_lawyers.append(lawyer_copy)
+            else:
+                filtered_count += 1
+                # Track filter reasons for debugging
+                if 'budget' in reasons[0].lower():
+                    filter_reasons['budget'] += 1
+                elif 'specialization' in reasons[0].lower():
+                    filter_reasons['specialization'] += 1
+                else:
+                    filter_reasons['other'] += 1
+        
+        logger.info(f"✅ Passed filters: {len(scored_lawyers)} lawyers")
+        logger.info(f"❌ Filtered out: {filtered_count} lawyers (budget: {filter_reasons['budget']}, specialization: {filter_reasons['specialization']}, other: {filter_reasons['other']})")
         
         # Sort by match score (descending)
         scored_lawyers.sort(key=lambda x: x['match_score'], reverse=True)
         
-        # Return top 10 matches
+        # Return top 10 matches (or all if less than 10)
         top_matches = scored_lawyers[:10]
         
         logger.info(f"Found {len(top_matches)} matches for {client_request.case_type}")

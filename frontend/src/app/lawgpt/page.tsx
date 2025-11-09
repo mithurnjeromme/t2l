@@ -19,17 +19,23 @@ function SkeletonLoader() {
 }
 
 // Custom LawGPT Sidebar
-function LawGPTSidebar({ onClose }: { onClose: () => void }) {
-  const mockChats = [
-    "Chat title",
-    "Chat title",
-    "Chat title",
-    "Chat title",
-    "Chat title",
-    "Chat title",
-    "Chat title"
-  ];
+interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
+interface LawGPTSidebarProps {
+  onClose: () => void;
+  chatSessions: ChatSession[];
+  currentSessionId: string | null;
+  onSelectSession: (sessionId: string) => void;
+  onNewChat: () => void;
+}
+
+function LawGPTSidebar({ onClose, chatSessions, currentSessionId, onSelectSession, onNewChat }: LawGPTSidebarProps) {
   return (
     <div className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-[#202020] border-r border-[#232323] flex flex-col shadow-2xl" style={{minWidth:340}}>
       {/* Header with LawGPT icon and close button */}
@@ -57,44 +63,68 @@ function LawGPTSidebar({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
-      {/* Chat history mockups */}
-      <div className="flex-1 overflow-y-auto px-7 pt-6">
-        {/* No label, just chat titles */}
+      {/* New Chat Button */}
+      <div className="px-7 pt-4 pb-2">
+        <button
+          onClick={onNewChat}
+          className="w-full flex items-center justify-center gap-2 bg-[#3C9B97]/20 hover:bg-[#3C9B97]/30 text-white/90 font-bold transition-colors"
+          style={{
+            height: 42,
+            borderRadius: 13,
+            fontFamily: 'Instrument Sans, sans-serif',
+            fontSize: '1rem'
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 4V16M4 10H16" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          New Chat
+        </button>
+      </div>
+
+      {/* Chat history */}
+      <div className="flex-1 overflow-y-auto px-7 pt-4">
         <div className="flex flex-col gap-4">
-          {mockChats.map((chat, i) => (
-            <div
-              key={i}
-              className={
-                `font-bold text-[1.18rem] text-white flex items-center transition-colors cursor-pointer select-none ` +
-                (i === 0
-                  ? 'bg-[#3A3A3A] text-white'
-                  : 'hover:bg-[#232323] text-white/90')
-              }
-              style={{
-                width: 239,
-                height: 42,
-                borderRadius: 13,
-                paddingLeft: 22,
-                paddingRight: 22,
-                fontFamily: 'Instrument Sans, sans-serif',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                background: i === 0 ? '#3A3A3A' : 'none',
-                display: 'flex',
-                alignItems: 'center',
-                marginLeft: 0,
-                marginRight: 0,
-                boxSizing: 'border-box',
-              }}
-            >
-              {chat}
-            </div>
-          ))}
+          {chatSessions.length === 0 ? (
+            <p className="text-white/40 text-sm text-center py-8" style={{ fontFamily: 'Instrument Sans, sans-serif' }}>
+              No chat history yet
+            </p>
+          ) : (
+            chatSessions.map((session) => (
+              <div
+                key={session.id}
+                onClick={() => onSelectSession(session.id)}
+                className={
+                  `font-bold text-[1.18rem] text-white flex items-center transition-colors cursor-pointer select-none ` +
+                  (session.id === currentSessionId
+                    ? 'bg-[#3A3A3A] text-white'
+                    : 'hover:bg-[#232323] text-white/90')
+                }
+                style={{
+                  width: 239,
+                  height: 42,
+                  borderRadius: 13,
+                  paddingLeft: 22,
+                  paddingRight: 22,
+                  fontFamily: 'Instrument Sans, sans-serif',
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  textOverflow: 'ellipsis',
+                  background: session.id === currentSessionId ? '#3A3A3A' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginLeft: 0,
+                  marginRight: 0,
+                  boxSizing: 'border-box',
+                }}
+              >
+                {session.title}
+              </div>
+            ))
+          )}
         </div>
       </div>
 
-      {/* No new chat button at bottom, just spacing */}
       <div className="py-6" />
     </div>
   );
@@ -331,9 +361,86 @@ export default function LawGPTPage() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [aiLoading, setAiLoading] = useState(false);
+  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomTextareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Load chat sessions from localStorage on mount
+  useEffect(() => {
+    const savedSessions = localStorage.getItem('lawgpt_sessions');
+    if (savedSessions) {
+      try {
+        const parsed = JSON.parse(savedSessions);
+        // Convert date strings back to Date objects
+        const sessions = parsed.map((s: any) => ({
+          ...s,
+          createdAt: new Date(s.createdAt),
+          updatedAt: new Date(s.updatedAt),
+          messages: s.messages.map((m: any) => ({
+            ...m,
+            timestamp: new Date(m.timestamp)
+          }))
+        }));
+        setChatSessions(sessions);
+      } catch (error) {
+        console.error('Error loading chat sessions:', error);
+      }
+    }
+  }, []);
+
+  // Save chat sessions to localStorage whenever they change
+  useEffect(() => {
+    if (chatSessions.length > 0) {
+      localStorage.setItem('lawgpt_sessions', JSON.stringify(chatSessions));
+    }
+  }, [chatSessions]);
+
+  // Save or update current session when chat history changes
+  useEffect(() => {
+    if (chatHistory.length > 0 && currentSessionId) {
+      const firstUserMessage = chatHistory.find(m => m.type === 'user');
+      const sessionTitle = firstUserMessage 
+        ? firstUserMessage.content.substring(0, 40) + (firstUserMessage.content.length > 40 ? '...' : '')
+        : 'New Chat';
+
+      setChatSessions(prev => {
+        const existingIndex = prev.findIndex(s => s.id === currentSessionId);
+        const updatedSession: ChatSession = {
+          id: currentSessionId,
+          title: sessionTitle,
+          messages: chatHistory,
+          createdAt: existingIndex >= 0 ? prev[existingIndex].createdAt : new Date(),
+          updatedAt: new Date()
+        };
+
+        if (existingIndex >= 0) {
+          const updated = [...prev];
+          updated[existingIndex] = updatedSession;
+          return updated;
+        } else {
+          return [updatedSession, ...prev];
+        }
+      });
+    }
+  }, [chatHistory, currentSessionId]);
+
+  const handleNewChat = () => {
+    setChatHistory([]);
+    setCurrentSessionId(null);
+    setMessage('');
+    setSidebarOpen(false);
+  };
+
+  const handleSelectSession = (sessionId: string) => {
+    const session = chatSessions.find(s => s.id === sessionId);
+    if (session) {
+      setChatHistory(session.messages);
+      setCurrentSessionId(sessionId);
+      setSidebarOpen(false);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -431,6 +538,11 @@ export default function LawGPTPage() {
     if (message.trim() !== "") {
       const currentMessage = message.trim();
       
+      // Create a new session if this is the first message and no session exists
+      if (chatHistory.length === 0 && !currentSessionId) {
+        setCurrentSessionId(Date.now().toString());
+      }
+      
       const userMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'user',
@@ -499,7 +611,13 @@ export default function LawGPTPage() {
       <WowAhhAnimation />
 
       {sidebarOpen && (
-        <LawGPTSidebar onClose={() => setSidebarOpen(false)} />
+        <LawGPTSidebar 
+          onClose={() => setSidebarOpen(false)} 
+          chatSessions={chatSessions}
+          currentSessionId={currentSessionId}
+          onSelectSession={handleSelectSession}
+          onNewChat={handleNewChat}
+        />
       )}
 
       {chatHistory.length === 0 ? (
