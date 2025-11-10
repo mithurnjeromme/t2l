@@ -26,6 +26,7 @@ import {
   Info,
   BellOff,
   MessageCircle,
+  Menu,
   Search,
   Phone,
   Video,
@@ -341,6 +342,7 @@ const ChatMessagesIcon = ({ user }: { user: any }) => {
 
 const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
@@ -363,6 +365,16 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
       }
     }
   }, []);
+
+  // Close mobile menu on Escape
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileMenuOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -400,7 +412,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             </Link>
           )}
         </div>
-        <nav className="flex items-center justify-center gap-8 text-white text-sm font-body justify-self-center">
+  <nav className="hidden md:flex items-center justify-center gap-8 text-white text-sm font-body justify-self-center">
           <Link
             href="/consult"
             className={cn(
@@ -432,8 +444,9 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             Pricing
           </Link>
         </nav>
+        {/* Right side: auth actions + mobile menu button */}
         {!hideAuthButtons && !user && (
-          <div className="flex items-center gap-4 justify-self-end">
+          <div className="hidden md:flex items-center gap-4 justify-self-end">
             <Button
               variant="ghost"
               asChild
@@ -450,13 +463,123 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           </div>
         )}
         {!hideAuthButtons && user && (
-          <div className="flex items-center gap-2 justify-self-end">
+          <div className="hidden md:flex items-center gap-2 justify-self-end">
             {user.userType === "client" && <ChatMessagesIcon user={user} />}
             <NotificationsPopover user={user} />
             <HeaderUserDropdown user={user} onLogout={handleLogout} />
           </div>
         )}
+
+        {/* Mobile menu button - visible on small screens */}
+        <div className="flex items-center ml-[200px]  md:hidden">
+          <Button
+            variant="ghost"
+            onClick={() => setMobileMenuOpen((s) => !s)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            className="h-10 w-10 p-0 text-white flex items-center justify-center"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
+      {/* Mobile menu panel */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0  z-40 md:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+
+          {/* Panel */}
+          <div className="absolute top-16 inset-x-0 bg-card border-t border-border/50 shadow-lg p-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+            <nav className="flex flex-col gap-2">
+              <Link
+                href="/consult"
+                className={cn(
+                  "flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted",
+                  pathname === "/consult" && "bg-muted",
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Gavel className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Consult</span>
+              </Link>
+
+              <Link
+                href="/lawgpt"
+                className={cn(
+                  "flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted",
+                  pathname === "/lawgpt" && "bg-muted",
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Search className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">LawGPT</span>
+              </Link>
+
+              <Link
+                href="#services"
+                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Info className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Resources</span>
+              </Link>
+
+              <Link
+                href="#pricing"
+                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <BarChart3 className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Pricing</span>
+              </Link>
+
+              {/* Chat & Notifications */}
+              <Link
+                href="/messages"
+                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <MessageCircle className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Messages</span>
+              </Link>
+
+              <Link
+                href="/notifications"
+                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Bell className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Notifications</span>
+              </Link>
+            </nav>
+
+            <div className="mt-4 border-t border-border/40 pt-4 flex flex-col gap-3">
+              {!user ? (
+                <>
+                  <Button asChild className="w-full">
+                    <Link href="/login">Login</Link>
+                  </Button>
+                  <Button asChild className="w-full bg-secondary text-white">
+                    <Link href="/signup">Signup</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href={user.userType === "lawyer" ? "/dashboard/lawyer" : "/dashboard/client"} className="py-3 px-4 rounded-md text-foreground hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                    Dashboard
+                  </Link>
+                  <Button className="w-full" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                    Logout
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
