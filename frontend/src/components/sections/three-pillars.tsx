@@ -36,13 +36,7 @@ export default function ThreePillarsSection() {
                 Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.
               </p>
             </div>
-            <img
-              src="/linear.webp"
-              width={500}
-              height={500}
-              alt="Client-Lawyer Matchmaking illustration"
-              className="absolute -right-4 lg:-right-[40%] grayscale filter -bottom-10 object-contain rounded-2xl opacity-80"
-            />
+            
           </WobbleCard>
 
           {/* Pillar 2: Document Drafting - Small Card */}
@@ -71,13 +65,7 @@ export default function ThreePillarsSection() {
                 Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.
               </p>
             </div>
-            <img
-              src="/linear.webp"
-              width={500}
-              height={500}
-              alt="Legal AI Chatbot illustration"
-              className="absolute -right-10 md:-right-[40%] lg:-right-[20%] -bottom-10 object-contain rounded-2xl opacity-60"
-            />
+           
           </WobbleCard>
         </div>
       </div>
