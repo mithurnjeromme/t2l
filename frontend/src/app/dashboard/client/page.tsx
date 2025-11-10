@@ -104,13 +104,13 @@ const ClientDashboard = () => {
 
       {/* Hero Welcome Section */}
       <div className="bg-gradient-to-br from-background via-background to-card border-b border-border/50 pt-20">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex-1">
-              <h1 className="text-4xl lg:text-5xl font-headline font-semibold text-foreground mb-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold text-foreground mb-4">
                 Welcome back, <span className="text-primary">{user.fullName.split(' ')[0]}</span>
               </h1>
-              <p className="text-xl text-muted-foreground mb-6 max-w-2xl font-body">
+              <p className="text-lg sm:text-xl text-muted-foreground mb-6 max-w-2xl font-body">
                 Your legal journey continues here. Access expert lawyers, manage your cases, and get the justice you deserve.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -128,8 +128,8 @@ const ClientDashboard = () => {
                 </Button>
               </div>
             </div>
-            <div className="relative">
-              <div className="w-80 h-64 relative">
+            <div className="relative w-full max-w-md lg:max-w-none lg:w-auto">
+              <div className="w-full sm:w-96 h-44 sm:h-64 relative mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 rounded-3xl blur-2xl"></div>
                 <Image
                   src="/images/landingpagephoto.png"
@@ -144,16 +144,18 @@ const ClientDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-5 lg:w-fit">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="consultations">Consultations</TabsTrigger>
-            <TabsTrigger value="cases">My Cases</TabsTrigger>
-            <TabsTrigger value="lawyers">Find Lawyers</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto no-scrollbar">
+            <TabsList className="inline-flex space-x-2 items-center py-2 px-1">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="consultations">Consultations</TabsTrigger>
+              <TabsTrigger value="cases">My Cases</TabsTrigger>
+              <TabsTrigger value="lawyers">Find Lawyers</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
@@ -163,16 +165,16 @@ const ClientDashboard = () => {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)]"></div>
               </div>
               <CardHeader className="relative">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="text-3xl font-headline font-semibold mb-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                  <div className="w-full sm:max-w-[70%]">
+                    <CardTitle className="text-2xl sm:text-3xl lg:text-3xl font-headline font-semibold mb-2">
                       Welcome back, {user.fullName}!
                     </CardTitle>
-                    <p className="text-primary-foreground/90 text-lg max-w-2xl font-body">
+                    <p className="text-base sm:text-lg text-primary-foreground/90 max-w-2xl font-body">
                       Your legal matters are in good hands. Here's what's happening with your account and explore new legal services.
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 mt-4 sm:mt-0">
                     <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
                       Client Portal
                     </Badge>
@@ -371,7 +373,7 @@ const ClientDashboard = () => {
           <TabsContent value="consultations" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-3xl font-headline font-semibold">My Consultations</h2>
+                <h2 className="text-2xl sm:text-3xl font-headline font-semibold">My Consultations</h2>
                 <p className="text-muted-foreground">Manage your legal consultations and meetings</p>
               </div>
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" asChild>
@@ -382,11 +384,11 @@ const ClientDashboard = () => {
               </Button>
             </div>
             
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-12 sm:py-16">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <Calendar className="w-12 h-12 text-primary" />
               </div>
-              <h3 className="text-2xl font-headline font-semibold mb-4">No Consultations Yet</h3>
+              <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">No Consultations Yet</h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">Start your legal journey by booking a consultation with our expert lawyers. Get personalized advice for your legal matters.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
@@ -403,7 +405,7 @@ const ClientDashboard = () => {
           <TabsContent value="cases" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-3xl font-headline font-semibold">My Legal Cases</h2>
+                <h2 className="text-2xl sm:text-3xl font-headline font-semibold">My Legal Cases</h2>
                 <p className="text-muted-foreground">Track and manage your ongoing legal matters</p>
               </div>
               <Button size="lg" variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
@@ -412,11 +414,11 @@ const ClientDashboard = () => {
               </Button>
             </div>
             
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-secondary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-12 sm:py-16">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-12 h-12 text-secondary" />
               </div>
-              <h3 className="text-2xl font-headline font-semibold mb-4">No Cases Yet</h3>
+              <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">No Cases Yet</h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">Your legal cases will be organized and tracked here. Start by consulting with a lawyer to begin your legal journey.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="outline">
@@ -431,11 +433,11 @@ const ClientDashboard = () => {
 
           {/* Enhanced Find Lawyers Tab */}
           <TabsContent value="lawyers" className="space-y-6">
-            <div className="text-center py-16">
-              <div className="w-24 h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <div className="text-center py-12 sm:py-16">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <Search className="w-12 h-12 text-primary" />
               </div>
-              <h3 className="text-2xl font-headline font-semibold mb-4">Find the Right Lawyer</h3>
+              <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">Find the Right Lawyer</h3>
               <p className="text-muted-foreground mb-8 max-w-lg mx-auto font-body">Browse through our network of verified, experienced lawyers. Filter by specialization, location, and ratings to find the perfect legal expert for your needs.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="font-body" asChild>
