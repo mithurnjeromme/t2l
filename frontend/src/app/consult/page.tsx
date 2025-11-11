@@ -35,9 +35,154 @@ if (typeof document !== "undefined") {
     .custom-scrollbar::-webkit-scrollbar {
       width: 8px;
     }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 10px;
+      
+      {/* Mobile Filters Popup */}
+      {mobileFiltersOpen && (
+        <div className="fixed inset-0 z-100 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => {
+              console.log("📂 Mobile filters backdrop clicked - closing");
+              setMobileFiltersOpen(false);
+            }}
+          />
+
+          <div className="fixed inset-0 flex items-center justify-center p-4">
+            <div className="w-full max-w-md bg-gradient-to-b from-black via-gray-900 to-black p-4 rounded-2xl border border-yellow-400/20 overflow-y-auto max-h-[90vh]">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-bold">Filters</h3>
+                <button
+                  onClick={() => {
+                    console.log("📂 Mobile filters close button clicked");
+                    setMobileFiltersOpen(false);
+                  }}
+                  className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center"
+                  aria-label="Close filters"
+                >
+                  <X className="w-4 h-4 text-white/70" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Price Range (compact) */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/70">Consultation Fee</span>
+                    <span className="text-sm font-bold text-yellow-400">₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}</span>
+                  </div>
+                  <Slider
+                    value={filters.priceRange}
+                    onValueChange={(value) => setFilters({ ...filters, priceRange: value as [number, number] })}
+                    min={0}
+                    max={10000}
+                    step={500}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Location */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Location</label>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => {
+                      setSelectedLocation(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, locations: [e.target.value] });
+                      else setFilters({ ...filters, locations: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Locations</option>
+                    {locations.map((loc) => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Case Type */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Case Type</label>
+                  <select
+                    value={selectedCaseType}
+                    onChange={(e) => {
+                      setSelectedCaseType(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, caseTypes: [e.target.value] });
+                      else setFilters({ ...filters, caseTypes: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Case Types</option>
+                    {caseTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Language */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Language</label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => {
+                      setSelectedLanguage(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, languages: [e.target.value] });
+                      else setFilters({ ...filters, languages: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Languages</option>
+                    {allLanguages.map((lang) => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => {
+                      // Apply and close
+                      setMobileFiltersOpen(false);
+                    }}
+                    className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-3 rounded-2xl"
+                  >
+                    Apply
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      // Reset filters
+                      setFilters({
+                        priceRange: [0, 10000],
+                        locations: [],
+                        caseTypes: [],
+                        minExperience: 0,
+                        minRating: 0,
+                        minSuccessRate: 0,
+                        languages: [],
+                        sortBy: "rating",
+                        availability: "all",
+                        verified: false,
+                      });
+                      setSelectedLocation("");
+                      setSelectedCaseType("");
+                      setSelectedLanguage("");
+                      setMobileFiltersOpen(false);
+                    }}
+                    className="flex-1 bg-white/5 text-white py-3 rounded-2xl"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+export default ConsultPage
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(250, 204, 21, 0.3);
@@ -152,6 +297,9 @@ const ConsultPage = () => {
     availability: false,
     verified: false,
   });
+
+  // Mobile filter drawer state
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Available options for filters
   const locations = [
@@ -635,9 +783,10 @@ const ConsultPage = () => {
     <div className="min-h-screen bg-black">
       <Header />
 
-      <div className="flex">
+  <div className="flex flex-col lg:flex-row">
         {/* Left Sidebar - Filters */}
-        <div className="w-96 bg-gradient-to-b from-black via-gray-950 to-black h-[calc(100vh-80px)] sticky top-20 overflow-y-auto shadow-2xl">
+  {/* Desktop sidebar: hidden on mobile, visible on lg+ */}
+  <div className="hidden lg:block w-full lg:w-96 bg-gradient-to-b from-black via-gray-950 to-black h-auto lg:h-[calc(100vh-80px)] lg:sticky lg:top-20 overflow-y-auto shadow-2xl">
           <div className="p-4 space-y-3">
             {/* Price Range */}
             <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
@@ -662,6 +811,7 @@ const ConsultPage = () => {
                   </span>
                 </div>
               </div>
+                {/* mobile filters removed from sidebar - popup will be rendered elsewhere */}
               <Slider
                 value={filters.priceRange}
                 onValueChange={(value) =>
@@ -677,7 +827,7 @@ const ConsultPage = () => {
               />
             </div>
 
-            {/* Locations */}
+            {}
             <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
               <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
                 <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
@@ -956,7 +1106,7 @@ const ConsultPage = () => {
 
         {/* Main Content */}
         <div className="flex-1 bg-black">
-          <div className="max-w-[1400px] mx-auto px-8 py-10">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
             {/* Header */}
             <div className="text-center mb-12">
               <TypingEffect />
@@ -981,6 +1131,22 @@ const ConsultPage = () => {
                     handleFindLawyers();
                   }}
                 />
+              </div>
+
+              {/* Mobile: Filters toggle button */}
+              <div className="lg:hidden flex justify-center mb-6">
+                <button
+                  onClick={() => {
+                    console.log("📂 Filters button clicked (mobile)");
+                    setMobileFiltersOpen(true);
+                  }}
+                  className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-semibold shadow-lg"
+                  aria-controls="mobile-filters-drawer"
+                  aria-expanded={mobileFiltersOpen}
+                >
+                  <Sliders className="w-4 h-4" />
+                  Filters
+                </button>
               </div>
 
               {error && (
@@ -1345,9 +1511,9 @@ const ConsultPage = () => {
 
               {/* Premium Stats Grid - All Equal Dimensions */}
               <div className="p-6">
-                <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                   {/* Languages */}
-                  <div className="relative group h-[110px]">
+                  <div className="relative group h-auto sm:h-[110px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-yellow-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
@@ -1368,7 +1534,7 @@ const ConsultPage = () => {
                   </div>
 
                   {/* Cases Handled */}
-                  <div className="relative group h-[110px]">
+                  <div className="relative group h-auto sm:h-[110px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
@@ -1393,7 +1559,7 @@ const ConsultPage = () => {
                   </div>
 
                   {/* Success Rate */}
-                  <div className="relative group h-[110px]">
+                  <div className="relative group h-auto sm:h-[110px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
@@ -1664,4 +1830,4 @@ const ConsultPage = () => {
   );
 };
 
-export default ConsultPage;
+export default ConsultPage
