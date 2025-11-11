@@ -28,161 +28,12 @@ import { Slider } from "@/components/ui/slider";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { LawyerChat } from "@/components/ui/lawyer-chat";
 
-// Add custom scrollbar styles
+// Inject CSS for custom scrollbar & mobile popup visuals (no JSX here)
 if (typeof document !== "undefined") {
   const style = document.createElement("style");
   style.textContent = `
     .custom-scrollbar::-webkit-scrollbar {
       width: 8px;
-    }
-      
-      {/* Mobile Filters Popup */}
-      {mobileFiltersOpen && (
-        <div className="fixed inset-0 z-100 lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => {
-              console.log("📂 Mobile filters backdrop clicked - closing");
-              setMobileFiltersOpen(false);
-            }}
-          />
-
-          <div className="fixed inset-0 flex items-center justify-center p-4">
-            <div className="w-full max-w-md bg-gradient-to-b from-black via-gray-900 to-black p-4 rounded-2xl border border-yellow-400/20 overflow-y-auto max-h-[90vh]">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-white font-bold">Filters</h3>
-                <button
-                  onClick={() => {
-                    console.log("📂 Mobile filters close button clicked");
-                    setMobileFiltersOpen(false);
-                  }}
-                  className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center"
-                  aria-label="Close filters"
-                >
-                  <X className="w-4 h-4 text-white/70" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {/* Price Range (compact) */}
-                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-white/70">Consultation Fee</span>
-                    <span className="text-sm font-bold text-yellow-400">₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}</span>
-                  </div>
-                  <Slider
-                    value={filters.priceRange}
-                    onValueChange={(value) => setFilters({ ...filters, priceRange: value as [number, number] })}
-                    min={0}
-                    max={10000}
-                    step={500}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Location */}
-                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
-                  <label className="text-xs font-bold text-white mb-2">Location</label>
-                  <select
-                    value={selectedLocation}
-                    onChange={(e) => {
-                      setSelectedLocation(e.target.value);
-                      if (e.target.value) setFilters({ ...filters, locations: [e.target.value] });
-                      else setFilters({ ...filters, locations: [] });
-                    }}
-                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
-                  >
-                    <option value="">All Locations</option>
-                    {locations.map((loc) => (
-                      <option key={loc} value={loc}>{loc}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Case Type */}
-                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
-                  <label className="text-xs font-bold text-white mb-2">Case Type</label>
-                  <select
-                    value={selectedCaseType}
-                    onChange={(e) => {
-                      setSelectedCaseType(e.target.value);
-                      if (e.target.value) setFilters({ ...filters, caseTypes: [e.target.value] });
-                      else setFilters({ ...filters, caseTypes: [] });
-                    }}
-                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
-                  >
-                    <option value="">All Case Types</option>
-                    {caseTypes.map((type) => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Language */}
-                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
-                  <label className="text-xs font-bold text-white mb-2">Language</label>
-                  <select
-                    value={selectedLanguage}
-                    onChange={(e) => {
-                      setSelectedLanguage(e.target.value);
-                      if (e.target.value) setFilters({ ...filters, languages: [e.target.value] });
-                      else setFilters({ ...filters, languages: [] });
-                    }}
-                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
-                  >
-                    <option value="">All Languages</option>
-                    {allLanguages.map((lang) => (
-                      <option key={lang} value={lang}>{lang}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex gap-3">
-                  <Button
-                    onClick={() => {
-                      // Apply and close
-                      setMobileFiltersOpen(false);
-                    }}
-                    className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-3 rounded-2xl"
-                  >
-                    Apply
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      // Reset filters
-                      setFilters({
-                        priceRange: [0, 10000],
-                        locations: [],
-                        caseTypes: [],
-                        minExperience: 0,
-                        minRating: 0,
-                        minSuccessRate: 0,
-                        languages: [],
-                        sortBy: "rating",
-                        availability: "all",
-                        verified: false,
-                      });
-                      setSelectedLocation("");
-                      setSelectedCaseType("");
-                      setSelectedLanguage("");
-                      setMobileFiltersOpen(false);
-                    }}
-                    className="flex-1 bg-white/5 text-white py-3 rounded-2xl"
-                  >
-                    Reset
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-};
-
-export default ConsultPage
     }
     .custom-scrollbar::-webkit-scrollbar-thumb {
       background: rgba(250, 204, 21, 0.3);
@@ -191,6 +42,14 @@ export default ConsultPage
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: rgba(250, 204, 21, 0.5);
+    }
+
+    /* Mobile popup specifics */
+    .mobile-filters-backdrop {
+      backdrop-filter: blur(4px);
+    }
+    .mobile-filters-panel {
+      -webkit-overflow-scrolling: touch;
     }
   `;
   if (!document.querySelector("style[data-scrollbar]")) {
@@ -241,10 +100,7 @@ const TypingEffect = () => (
   <h1 className="text-5xl font-bold text-white mb-6 leading-tight">
     Find the best{" "}
     <span className="text-yellow-400">
-      <FlipWords
-        className="*:text-yellow-400"
-        words={["lawyers", "attorneys", "advocates"]}
-      />
+      <FlipWords className="*:text-yellow-400" words={["lawyers", "attorneys", "advocates"]} />
     </span>
   </h1>
 );
@@ -302,35 +158,27 @@ const ConsultPage = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Available options for filters
-  const locations = [
-    "Chennai",
-    "Mumbai",
-    "Delhi",
-    "Bangalore",
-    "Hyderabad",
-    "Kolkata",
-  ];
-  const caseTypes = [
-    "Property and Estate",
-    "Divorce",
-    "Criminal",
-    "Tax & Corporate",
-    "General Legal",
-  ];
-  const allLanguages = [
-    "English",
-    "Hindi",
-    "Tamil",
-    "Telugu",
-    "Bengali",
-    "Kannada",
-    "Malayalam",
-  ];
+  const locations = ["Chennai", "Mumbai", "Delhi", "Bangalore", "Hyderabad", "Kolkata"];
+  const caseTypes = ["Property and Estate", "Divorce", "Criminal", "Tax & Corporate", "General Legal"];
+  const allLanguages = ["English", "Hindi", "Tamil", "Telugu", "Bengali", "Kannada", "Malayalam"];
 
   // Load all lawyers on component mount
   useEffect(() => {
     loadAllLawyers();
   }, []);
+
+  // Lock body scroll while mobile filters are open (only mobile behavior)
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (mobileFiltersOpen) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [mobileFiltersOpen]);
 
   // Apply filters whenever filters change or lawyers are loaded
   useEffect(() => {
@@ -367,10 +215,7 @@ const ConsultPage = () => {
     // Price filter
     filtered = filtered.filter((lawyer) => {
       const fee = parseInt(
-        lawyer.consultation_fee_formatted
-          .replace(/[₹,]/g, "")
-          .split("/")[0]
-          .trim(),
+        lawyer.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim()
       );
       return fee >= filters.priceRange[0] && fee <= filters.priceRange[1];
     });
@@ -381,8 +226,8 @@ const ConsultPage = () => {
         filters.locations.some(
           (loc) =>
             lawyer.location.toLowerCase().includes(loc.toLowerCase()) ||
-            lawyer.city?.toLowerCase().includes(loc.toLowerCase()),
-        ),
+            lawyer.city?.toLowerCase().includes(loc.toLowerCase())
+        )
       );
     }
 
@@ -392,8 +237,8 @@ const ConsultPage = () => {
         filters.caseTypes.some(
           (type) =>
             lawyer.specialization.toLowerCase().includes(type.toLowerCase()) ||
-            lawyer.category.toLowerCase().includes(type.toLowerCase()),
-        ),
+            lawyer.category.toLowerCase().includes(type.toLowerCase())
+        )
       );
     }
 
@@ -407,22 +252,18 @@ const ConsultPage = () => {
 
     // Rating filter
     if (filters.minRating > 0) {
-      filtered = filtered.filter(
-        (lawyer) => lawyer.rating >= filters.minRating,
-      );
+      filtered = filtered.filter((lawyer) => lawyer.rating >= filters.minRating);
     }
 
     // Success rate filter
     if (filters.minSuccessRate > 0) {
-      filtered = filtered.filter(
-        (lawyer) => lawyer.success_rate >= filters.minSuccessRate,
-      );
+      filtered = filtered.filter((lawyer) => lawyer.success_rate >= filters.minSuccessRate);
     }
 
     // Languages filter
     if (filters.languages.length > 0) {
       filtered = filtered.filter((lawyer) =>
-        lawyer.languages?.some((lang) => filters.languages.includes(lang)),
+        lawyer.languages?.some((lang) => filters.languages.includes(lang))
       );
     }
 
@@ -445,35 +286,15 @@ const ConsultPage = () => {
         break;
       case "price-low":
         filtered.sort((a, b) => {
-          const feeA = parseInt(
-            a.consultation_fee_formatted
-              .replace(/[₹,]/g, "")
-              .split("/")[0]
-              .trim(),
-          );
-          const feeB = parseInt(
-            b.consultation_fee_formatted
-              .replace(/[₹,]/g, "")
-              .split("/")[0]
-              .trim(),
-          );
+          const feeA = parseInt(a.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim());
+          const feeB = parseInt(b.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim());
           return feeA - feeB;
         });
         break;
       case "price-high":
         filtered.sort((a, b) => {
-          const feeA = parseInt(
-            a.consultation_fee_formatted
-              .replace(/[₹,]/g, "")
-              .split("/")[0]
-              .trim(),
-          );
-          const feeB = parseInt(
-            b.consultation_fee_formatted
-              .replace(/[₹,]/g, "")
-              .split("/")[0]
-              .trim(),
-          );
+          const feeA = parseInt(a.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim());
+          const feeB = parseInt(b.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim());
           return feeB - feeA;
         });
         break;
@@ -524,13 +345,7 @@ const ConsultPage = () => {
 
     // Extract case type with more specific patterns
     const caseTypePatterns = {
-      property: [
-        "property",
-        "land",
-        "real estate",
-        "estate planning",
-        "tenancy",
-      ],
+      property: ["property", "land", "real estate", "estate planning", "tenancy"],
       divorce: ["divorce", "separation", "matrimonial"],
       family: ["family law", "custody", "adoption", "child support"],
       criminal: ["criminal", "crime", "theft", "fraud", "assault"],
@@ -543,8 +358,7 @@ const ConsultPage = () => {
       if (patterns.some((pattern) => lowerPrompt.includes(pattern))) {
         if (key === "property") caseType = "Property and Estate";
         else if (key === "divorce" || key === "family") caseType = "Divorce";
-        else if (key === "tax" || key === "corporate")
-          caseType = "Tax & Corporate";
+        else if (key === "tax" || key === "corporate") caseType = "Tax & Corporate";
         else if (key === "criminal") caseType = "Criminal";
         console.log("✅ Detected case type:", caseType);
         break;
@@ -552,16 +366,7 @@ const ConsultPage = () => {
     }
 
     // Extract location with more variations
-    const locationPatterns = [
-      "chennai",
-      "mumbai",
-      "delhi",
-      "bangalore",
-      "bengaluru",
-      "hyderabad",
-      "kolkata",
-      "calcutta",
-    ];
+    const locationPatterns = ["chennai", "mumbai", "delhi", "bangalore", "bengaluru", "hyderabad", "kolkata", "calcutta"];
     let location = "Chennai";
     for (const loc of locationPatterns) {
       if (lowerPrompt.includes(loc)) {
@@ -577,30 +382,14 @@ const ConsultPage = () => {
     let budget: number | undefined;
     let budgetOperator: "under" | "above" | "around" | "exact" = "exact";
 
-    // Check for budget context words
-    if (
-      lowerPrompt.includes("under") ||
-      lowerPrompt.includes("below") ||
-      lowerPrompt.includes("less than") ||
-      lowerPrompt.includes("maximum")
-    ) {
+    if (lowerPrompt.includes("under") || lowerPrompt.includes("below") || lowerPrompt.includes("less than") || lowerPrompt.includes("maximum")) {
       budgetOperator = "under";
-    } else if (
-      lowerPrompt.includes("above") ||
-      lowerPrompt.includes("over") ||
-      lowerPrompt.includes("more than") ||
-      lowerPrompt.includes("minimum")
-    ) {
+    } else if (lowerPrompt.includes("above") || lowerPrompt.includes("over") || lowerPrompt.includes("more than") || lowerPrompt.includes("minimum")) {
       budgetOperator = "above";
-    } else if (
-      lowerPrompt.includes("around") ||
-      lowerPrompt.includes("approximately") ||
-      lowerPrompt.includes("about")
-    ) {
+    } else if (lowerPrompt.includes("around") || lowerPrompt.includes("approximately") || lowerPrompt.includes("about")) {
       budgetOperator = "around";
     }
 
-    // Try multiple budget patterns
     const budgetPatterns = [
       /(?:under|below|less than|maximum|max|upto|up to)\s*₹?\s*(\d+(?:,\d+)?)/i,
       /₹?\s*(\d+(?:,\d+)?)\s*(?:or less|maximum|max)/i,
@@ -654,33 +443,20 @@ const ConsultPage = () => {
       const match = prompt.match(pattern);
       if (match) {
         preferredExperience = parseInt(match[1]);
-        console.log(
-          "✅ Detected experience requirement:",
-          preferredExperience,
-          "years",
-        );
+        console.log("✅ Detected experience requirement:", preferredExperience, "years");
         break;
       }
     }
 
     // Extract language preferences
-    const languagePatterns = [
-      "tamil",
-      "hindi",
-      "english",
-      "telugu",
-      "bengali",
-      "kannada",
-      "malayalam",
-    ];
+    const languagePatterns = ["tamil", "hindi", "english", "telugu", "bengali", "kannada", "malayalam"];
     const detectedLanguages: string[] = [];
     for (const lang of languagePatterns) {
       if (lowerPrompt.includes(lang)) {
         detectedLanguages.push(lang.charAt(0).toUpperCase() + lang.slice(1));
       }
     }
-    const languagePreference =
-      detectedLanguages.length > 0 ? detectedLanguages.join(", ") : "English";
+    const languagePreference = detectedLanguages.length > 0 ? detectedLanguages.join(", ") : "English";
     if (detectedLanguages.length > 0) {
       console.log("✅ Detected languages:", languagePreference);
     }
@@ -744,11 +520,7 @@ const ConsultPage = () => {
     return parts
       .map((part) => {
         if (part.length <= 2) return part;
-        return (
-          part.substring(0, 2) +
-          "*".repeat(Math.min(part.length - 3, 3)) +
-          part[part.length - 1]
-        );
+        return part.substring(0, 2) + "*".repeat(Math.min(part.length - 3, 3)) + part[part.length - 1];
       })
       .join(" ");
   };
@@ -783,10 +555,9 @@ const ConsultPage = () => {
     <div className="min-h-screen bg-black">
       <Header />
 
-  <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row">
         {/* Left Sidebar - Filters */}
-  {/* Desktop sidebar: hidden on mobile, visible on lg+ */}
-  <div className="hidden lg:block w-full lg:w-96 bg-gradient-to-b from-black via-gray-950 to-black h-auto lg:h-[calc(100vh-80px)] lg:sticky lg:top-20 overflow-y-auto shadow-2xl">
+        <div className="hidden lg:block w-full lg:w-96 bg-gradient-to-b from-black via-gray-950 to-black h-auto lg:h-[calc(100vh-80px)] lg:sticky lg:top-20 overflow-y-auto shadow-2xl">
           <div className="p-4 space-y-3">
             {/* Price Range */}
             <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
@@ -799,27 +570,17 @@ const ConsultPage = () => {
               <div className="mb-2 flex items-center justify-between bg-black/40 rounded-xl p-2 border border-white/10">
                 <div className="text-center">
                   <p className="text-[10px] text-white/50 mb-0.5">Minimum</p>
-                  <span className="text-yellow-400 font-bold text-sm">
-                    ₹{filters.priceRange[0]}
-                  </span>
+                  <span className="text-yellow-400 font-bold text-sm">₹{filters.priceRange[0]}</span>
                 </div>
                 <div className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
                 <div className="text-center">
                   <p className="text-[10px] text-white/50 mb-0.5">Maximum</p>
-                  <span className="text-yellow-400 font-bold text-sm">
-                    ₹{filters.priceRange[1]}
-                  </span>
+                  <span className="text-yellow-400 font-bold text-sm">₹{filters.priceRange[1]}</span>
                 </div>
               </div>
-                {/* mobile filters removed from sidebar - popup will be rendered elsewhere */}
               <Slider
                 value={filters.priceRange}
-                onValueChange={(value) =>
-                  setFilters({
-                    ...filters,
-                    priceRange: value as [number, number],
-                  })
-                }
+                onValueChange={(value) => setFilters({ ...filters, priceRange: value as [number, number] })}
                 min={0}
                 max={10000}
                 step={500}
@@ -827,7 +588,6 @@ const ConsultPage = () => {
               />
             </div>
 
-            {}
             <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
               <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
                 <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
@@ -923,18 +683,12 @@ const ConsultPage = () => {
                 <span>Minimum Experience</span>
               </label>
               <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 text-center">
-                <span className="text-yellow-400 font-bold text-2xl">
-                  {filters.minExperience}+
-                </span>
-                <p className="text-white/50 text-xs mt-1">
-                  years of experience
-                </p>
+                <span className="text-yellow-400 font-bold text-2xl">{filters.minExperience}+</span>
+                <p className="text-white/50 text-xs mt-1">years of experience</p>
               </div>
               <Slider
                 value={[filters.minExperience]}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, minExperience: value[0] })
-                }
+                onValueChange={(value) => setFilters({ ...filters, minExperience: value[0] })}
                 min={0}
                 max={30}
                 step={1}
@@ -951,9 +705,7 @@ const ConsultPage = () => {
                 <span>Minimum Rating</span>
               </label>
               <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 flex items-center justify-center gap-3">
-                <span className="text-yellow-400 font-bold text-2xl">
-                  {filters.minRating}+
-                </span>
+                <span className="text-yellow-400 font-bold text-2xl">{filters.minRating}+</span>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <Star
@@ -965,9 +717,7 @@ const ConsultPage = () => {
               </div>
               <Slider
                 value={[filters.minRating]}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, minRating: value[0] })
-                }
+                onValueChange={(value) => setFilters({ ...filters, minRating: value[0] })}
                 min={0}
                 max={5}
                 step={0.5}
@@ -985,12 +735,7 @@ const ConsultPage = () => {
               </label>
               <select
                 value={filters.sortBy}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    sortBy: e.target.value as FilterState["sortBy"],
-                  })
-                }
+                onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as FilterState["sortBy"] })}
                 className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
               >
                 <option value="rating">Highest Rating</option>
@@ -1013,12 +758,7 @@ const ConsultPage = () => {
               </label>
               <select
                 value={filters.availability}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    availability: e.target.value as FilterState["availability"],
-                  })
-                }
+                onChange={(e) => setFilters({ ...filters, availability: e.target.value as FilterState["availability"] })}
                 className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
               >
                 <option value="all">All Lawyers</option>
@@ -1034,16 +774,12 @@ const ConsultPage = () => {
                   <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
                     <span className="text-black text-lg">✓</span>
                   </div>
-                  <span className="text-sm font-bold text-white">
-                    Verified Only
-                  </span>
+                  <span className="text-sm font-bold text-white">Verified Only</span>
                 </div>
                 <input
                   type="checkbox"
                   checked={filters.verified}
-                  onChange={(e) =>
-                    setFilters({ ...filters, verified: e.target.checked })
-                  }
+                  onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
                   className="w-6 h-6 rounded-lg border-2 border-yellow-400/40 text-yellow-400 focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-black cursor-pointer transition-all"
                 />
               </label>
@@ -1058,16 +794,12 @@ const ConsultPage = () => {
                 <span>Minimum Success Rate</span>
               </label>
               <div className="mb-4 bg-black/40 rounded-2xl p-4 border border-white/10 text-center">
-                <span className="text-yellow-400 font-bold text-2xl">
-                  {filters.minSuccessRate}%+
-                </span>
+                <span className="text-yellow-400 font-bold text-2xl">{filters.minSuccessRate}%+</span>
                 <p className="text-white/50 text-xs mt-1">success rate</p>
               </div>
               <Slider
                 value={[filters.minSuccessRate]}
-                onValueChange={(value) =>
-                  setFilters({ ...filters, minSuccessRate: value[0] })
-                }
+                onValueChange={(value) => setFilters({ ...filters, minSuccessRate: value[0] })}
                 min={0}
                 max={100}
                 step={5}
@@ -1111,8 +843,7 @@ const ConsultPage = () => {
             <div className="text-center mb-12">
               <TypingEffect />
               <p className="text-white/60 text-lg max-w-2xl mx-auto mb-10">
-                Browse our verified lawyers or describe your case for AI-powered
-                matches
+                Browse our verified lawyers or describe your case for AI-powered matches
               </p>
 
               {/* Search Prompt Box */}
@@ -1160,9 +891,7 @@ const ConsultPage = () => {
                 <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
                 <p className="text-white/80 text-sm font-medium">
                   Showing{" "}
-                  <span className="text-yellow-400 font-bold text-base">
-                    {filteredLawyers.length}
-                  </span>{" "}
+                  <span className="text-yellow-400 font-bold text-base">{filteredLawyers.length}</span>{" "}
                   qualified lawyers
                 </p>
               </div>
@@ -1175,12 +904,8 @@ const ConsultPage = () => {
                   <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full animate-pulse"></div>
                   <Loader2 className="w-16 h-16 text-yellow-400 animate-spin relative" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  Finding perfect matches...
-                </h3>
-                <p className="text-white/60">
-                  Please wait while we search our database
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-2">Finding perfect matches...</h3>
+                <p className="text-white/60">Please wait while we search our database</p>
               </div>
             )}
 
@@ -1206,15 +931,8 @@ const ConsultPage = () => {
                     return match ? `${match[1]}y` : exp;
                   };
 
-                  const getConsultationFee = (feeStr: string) => {
-                    return feeStr.replace(/[₹,]/g, "").split("/")[0].trim();
-                  };
-
                   return (
-                    <div
-                      key={lawyer.id}
-                      className="group relative flex flex-col h-full"
-                    >
+                    <div key={lawyer.id} className="group relative flex flex-col h-full">
                       {/* Glow effect on hover */}
                       <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400/20 to-yellow-500/20 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-300"></div>
 
@@ -1224,9 +942,7 @@ const ConsultPage = () => {
                         {lawyer.verified && (
                           <div className="absolute top-3 right-3 z-10 bg-green-500/20 border border-green-500/40 rounded-full px-2 py-1 flex items-center gap-1">
                             <div className="w-1.5 h-1.5 bg-green-400 rounded-full"></div>
-                            <span className="text-green-400 text-xs font-bold">
-                              Verified
-                            </span>
+                            <span className="text-green-400 text-xs font-bold">Verified</span>
                           </div>
                         )}
 
@@ -1241,13 +957,9 @@ const ConsultPage = () => {
                             <div className="text-center">
                               <div className="flex items-center justify-center gap-1 mb-1">
                                 <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                                <span className="text-white font-bold text-lg">
-                                  {lawyer.rating}
-                                </span>
+                                <span className="text-white font-bold text-lg">{lawyer.rating}</span>
                               </div>
-                              <p className="text-white/80 text-xs">
-                                {lawyer.reviews} reviews
-                              </p>
+                              <p className="text-white/80 text-xs">{lawyer.reviews} reviews</p>
                             </div>
                           </div>
                         </div>
@@ -1260,51 +972,37 @@ const ConsultPage = () => {
                           </h3>
 
                           {/* Specialization */}
-                          <p className="text-white/70 text-sm font-medium line-clamp-2 min-h-[2.5rem]">
-                            {lawyer.specialization}
-                          </p>
+                          <p className="text-white/70 text-sm font-medium line-clamp-2 min-h-[2.5rem]">{lawyer.specialization}</p>
 
                           {/* Meta info */}
                           <div className="space-y-1.5 text-xs">
                             <div className="flex items-center gap-1.5 text-white/50">
                               <Briefcase className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
-                              <span>
-                                {getExperienceYears(lawyer.experience)} exp
-                              </span>
+                              <span>{getExperienceYears(lawyer.experience)} exp</span>
                             </div>
 
                             <div className="flex items-center gap-1.5 text-white/50">
                               <MapPin className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
-                              <span className="truncate">
-                                {lawyer.city || lawyer.location}
-                              </span>
+                              <span className="truncate">{lawyer.city || lawyer.location}</span>
                             </div>
 
                             {/* Success Rate */}
                             <div className="flex items-center gap-1.5">
                               <div className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded">
-                                <span className="text-green-400 text-xs font-bold">
-                                  {lawyer.success_rate}%
-                                </span>
+                                <span className="text-green-400 text-xs font-bold">{lawyer.success_rate}%</span>
                               </div>
-                              <span className="text-white/40 text-xs">
-                                success
-                              </span>
+                              <span className="text-white/40 text-xs">success</span>
                             </div>
 
                             {/* Cases Handled */}
                             <div className="flex items-center gap-1.5 text-white/50">
-                              <span className="text-xs">
-                                {lawyer.cases_handled} cases handled
-                              </span>
+                              <span className="text-xs">{lawyer.cases_handled} cases handled</span>
                             </div>
 
                             {/* Response Time */}
                             {lawyer.response_time && (
                               <div className="flex items-center gap-1.5 text-white/40">
-                                <span className="text-xs truncate">
-                                  {lawyer.response_time}
-                                </span>
+                                <span className="text-xs truncate">{lawyer.response_time}</span>
                               </div>
                             )}
                           </div>
@@ -1319,33 +1017,23 @@ const ConsultPage = () => {
                                 <p className="text-yellow-400 text-xl font-bold leading-none">
                                   ₹
                                   {(() => {
-                                    const baseFee = parseInt(
-                                      lawyer.consultation_fee_formatted
-                                        .replace(/[₹,]/g, "")
-                                        .split("/")[0]
-                                        .trim(),
-                                    );
-                                    const perMinuteRate = Math.round(
-                                      baseFee / 30,
-                                    );
+                                    const baseFee = parseInt(lawyer.consultation_fee_formatted.replace(/[₹,]/g, "").split("/")[0].trim());
+                                    const perMinuteRate = Math.round(baseFee / 30);
                                     const roundedRate =
                                       perMinuteRate < 90
                                         ? 88
                                         : perMinuteRate < 95
-                                          ? 90
-                                          : perMinuteRate < 100
-                                            ? 95
-                                            : perMinuteRate < 105
-                                              ? 102
-                                              : Math.round(perMinuteRate / 5) *
-                                                5;
+                                        ? 90
+                                        : perMinuteRate < 100
+                                        ? 95
+                                        : perMinuteRate < 105
+                                        ? 102
+                                        : Math.round(perMinuteRate / 5) * 5;
                                     return roundedRate;
                                   })()}
                                   /min
                                 </p>
-                                <p className="text-xs text-white/40 mt-0.5">
-                                  consultation fee
-                                </p>
+                                <p className="text-xs text-white/40 mt-0.5">consultation fee</p>
                               </div>
                             </div>
 
@@ -1359,9 +1047,7 @@ const ConsultPage = () => {
                               title="Book Consultation"
                             >
                               <Calendar className="w-3.5 h-3.5 text-black group-hover/btn:scale-110 transition-transform" />
-                              <span className="text-black text-xs font-bold tracking-wide">
-                                CONSULT NOW
-                              </span>
+                              <span className="text-black text-xs font-bold tracking-wide">CONSULT NOW</span>
                             </button>
                           </div>
                         </div>
@@ -1378,12 +1064,8 @@ const ConsultPage = () => {
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-yellow-400/10 rounded-full mb-6">
                   <Search className="w-10 h-10 text-yellow-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">
-                  No lawyers found
-                </h3>
-                <p className="text-white/60 text-lg mb-8">
-                  Try adjusting your filters or search criteria
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-3">No lawyers found</h3>
+                <p className="text-white/60 text-lg mb-8">Try adjusting your filters or search criteria</p>
                 <Button
                   onClick={() =>
                     setFilters({
@@ -1408,6 +1090,249 @@ const ConsultPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Filters Popup - bottom-sheet, scrollable, only affects mobile */}
+      {mobileFiltersOpen && (
+        <div
+          id="mobile-filters-drawer"
+          className="fixed inset-0 z-50 lg:hidden flex items-end justify-center"
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 mobile-filters-backdrop"
+            onClick={() => {
+              console.log("📂 Mobile filters backdrop clicked - closing");
+              setMobileFiltersOpen(false);
+            }}
+          />
+
+          {/* Panel */}
+          <div className="relative w-full max-w-md p-4">
+            <div
+              className="w-full bg-gradient-to-b from-black via-gray-900 to-black p-4 rounded-t-3xl border border-yellow-400/20 mobile-filters-panel"
+              style={{ maxHeight: "90vh", overflowY: "auto", WebkitOverflowScrolling: "touch" as any }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-white font-bold">Filters</h3>
+                <button
+                  onClick={() => {
+                    console.log("📂 Mobile filters close button clicked");
+                    setMobileFiltersOpen(false);
+                  }}
+                  className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center"
+                  aria-label="Close filters"
+                >
+                  <X className="w-4 h-4 text-white/70" />
+                </button>
+              </div>
+
+              <div className="space-y-4 pb-6">
+                {/* Price Range */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/70">Consultation Fee</span>
+                    <span className="text-sm font-bold text-yellow-400">₹{filters.priceRange[0]} - ₹{filters.priceRange[1]}</span>
+                  </div>
+                  <Slider
+                    value={filters.priceRange}
+                    onValueChange={(value) => setFilters({ ...filters, priceRange: value as [number, number] })}
+                    min={0}
+                    max={10000}
+                    step={500}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Location */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Location</label>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => {
+                      setSelectedLocation(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, locations: [e.target.value] });
+                      else setFilters({ ...filters, locations: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Locations</option>
+                    {locations.map((loc) => (
+                      <option key={loc} value={loc}>{loc}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Case Type */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Case Type</label>
+                  <select
+                    value={selectedCaseType}
+                    onChange={(e) => {
+                      setSelectedCaseType(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, caseTypes: [e.target.value] });
+                      else setFilters({ ...filters, caseTypes: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Case Types</option>
+                    {caseTypes.map((type) => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Language */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Language</label>
+                  <select
+                    value={selectedLanguage}
+                    onChange={(e) => {
+                      setSelectedLanguage(e.target.value);
+                      if (e.target.value) setFilters({ ...filters, languages: [e.target.value] });
+                      else setFilters({ ...filters, languages: [] });
+                    }}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="">All Languages</option>
+                    {allLanguages.map((lang) => (
+                      <option key={lang} value={lang}>{lang}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Experience */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/70">Minimum Experience</span>
+                    <span className="text-sm font-bold text-yellow-400">{filters.minExperience}+</span>
+                  </div>
+                  <Slider
+                    value={[filters.minExperience]}
+                    onValueChange={(value) => setFilters({ ...filters, minExperience: value[0] })}
+                    min={0}
+                    max={30}
+                    step={1}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Rating */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/70">Minimum Rating</span>
+                    <span className="text-sm font-bold text-yellow-400">{filters.minRating}+</span>
+                  </div>
+                  <Slider
+                    value={[filters.minRating]}
+                    onValueChange={(value) => setFilters({ ...filters, minRating: value[0] })}
+                    min={0}
+                    max={5}
+                    step={0.5}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Success Rate */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-white/70">Minimum Success Rate</span>
+                    <span className="text-sm font-bold text-yellow-400">{filters.minSuccessRate}%+</span>
+                  </div>
+                  <Slider
+                    value={[filters.minSuccessRate]}
+                    onValueChange={(value) => setFilters({ ...filters, minSuccessRate: value[0] })}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Availability */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Availability</label>
+                  <select
+                    value={filters.availability}
+                    onChange={(e) => setFilters({ ...filters, availability: e.target.value as FilterState["availability"] })}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="all">All Lawyers</option>
+                    <option value="available">Available Now</option>
+                    <option value="verified">Verified Only</option>
+                  </select>
+                </div>
+
+                {/* Verified toggle */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-white mb-1">Verified Only</div>
+                    <div className="text-xs text-white/50">Show only verified lawyers</div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={filters.verified}
+                    onChange={(e) => setFilters({ ...filters, verified: e.target.checked })}
+                    className="w-6 h-6 rounded-lg border-2 border-yellow-400/40 text-yellow-400 focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 focus:ring-offset-black cursor-pointer"
+                  />
+                </div>
+
+                {/* Sort */}
+                <div className="p-3 bg-black/40 rounded-2xl border border-white/10">
+                  <label className="text-xs font-bold text-white mb-2">Sort By</label>
+                  <select
+                    value={filters.sortBy}
+                    onChange={(e) => setFilters({ ...filters, sortBy: e.target.value as FilterState["sortBy"] })}
+                    className="w-full bg-black/60 rounded-2xl px-4 py-3 text-white"
+                  >
+                    <option value="rating">Highest Rating</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="experience">Most Experienced</option>
+                    <option value="reviews">Most Reviews</option>
+                    <option value="success-rate">Highest Success Rate</option>
+                    <option value="cases-handled">Most Cases Handled</option>
+                  </select>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex gap-3">
+                  <Button
+                    onClick={() => setMobileFiltersOpen(false)}
+                    className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-black font-bold py-3 rounded-2xl"
+                  >
+                    Apply
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setFilters({
+                        priceRange: [0, 10000],
+                        locations: [],
+                        caseTypes: [],
+                        minExperience: 0,
+                        minRating: 0,
+                        minSuccessRate: 0,
+                        languages: [],
+                        sortBy: "rating",
+                        availability: "all",
+                        verified: false,
+                      });
+                      setSelectedLocation("");
+                      setSelectedCaseType("");
+                      setSelectedLanguage("");
+                      setMobileFiltersOpen(false);
+                    }}
+                    className="flex-1 bg-white/5 text-white py-3 rounded-2xl"
+                  >
+                    Reset
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Consultation Request Modal */}
       {isBookingOpen && selectedLawyer && bookingType && (
@@ -1444,65 +1369,39 @@ const ConsultPage = () => {
                         .split(" ")
                         .map((part) => {
                           if (part.length <= 2) return part;
-                          return (
-                            part.substring(0, 2) +
-                            "*".repeat(Math.min(part.length - 3, 2)) +
-                            part[part.length - 1]
-                          );
+                          return part.substring(0, 2) + "*".repeat(Math.min(part.length - 3, 2)) + part[part.length - 1];
                         })
                         .join(" ")}
-                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">
-                        Expert
-                      </span>
+                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">Expert</span>
                       {(() => {
-                        const lawyer = allLawyers.find(
-                          (l) => l.id === selectedLawyer.id,
-                        );
+                        const lawyer = allLawyers.find((l) => l.id === selectedLawyer.id);
                         return (
                           lawyer?.verified && (
                             <div className="bg-green-500/20 rounded-full p-1.5 border border-green-500/40">
-                              <svg
-                                className="w-3 h-3 text-green-400"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
+                              <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
                             </div>
                           )
                         );
                       })()}
                     </h2>
-                    <p className="text-white/60 text-sm mb-3">
-                      {selectedLawyer.specialization}
-                    </p>
+                    <p className="text-white/60 text-sm mb-3">{selectedLawyer.specialization}</p>
 
                     {/* Quick Stats */}
                     <div className="flex items-center gap-4 text-xs">
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                         <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                        <span className="text-white font-semibold">
-                          {selectedLawyer.rating}
-                        </span>
-                        <span className="text-white/40">
-                          ({selectedLawyer.reviews})
-                        </span>
+                        <span className="text-white font-semibold">{selectedLawyer.rating}</span>
+                        <span className="text-white/40">({selectedLawyer.reviews})</span>
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                         <Briefcase className="w-3.5 h-3.5 text-yellow-400" />
-                        <span className="text-white/70">
-                          {selectedLawyer.experience}
-                        </span>
+                        <span className="text-white/70">{selectedLawyer.experience}</span>
                       </div>
                       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
                         <MapPin className="w-3.5 h-3.5 text-yellow-400" />
-                        <span className="text-white/70">
-                          {selectedLawyer.location}
-                        </span>
+                        <span className="text-white/70">{selectedLawyer.location}</span>
                       </div>
                     </div>
                   </div>
@@ -1518,15 +1417,11 @@ const ConsultPage = () => {
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-yellow-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
                         <MessageCircle className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                          Languages
-                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Languages</span>
                       </div>
                       <p className="text-white font-semibold text-sm flex-1 flex items-center">
                         {(() => {
-                          const lawyer = allLawyers.find(
-                            (l) => l.id === selectedLawyer.id,
-                          );
+                          const lawyer = allLawyers.find((l) => l.id === selectedLawyer.id);
                           return lawyer?.languages?.join(", ") || "English";
                         })()}
                       </p>
@@ -1539,19 +1434,13 @@ const ConsultPage = () => {
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-4 h-4 rounded bg-green-400/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-green-400 text-xs font-bold">
-                            📋
-                          </span>
+                          <span className="text-green-400 text-xs font-bold">📋</span>
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                          Cases
-                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Cases</span>
                       </div>
                       <p className="text-green-400 font-bold text-2xl flex-1 flex items-center">
                         {(() => {
-                          const lawyer = allLawyers.find(
-                            (l) => l.id === selectedLawyer.id,
-                          );
+                          const lawyer = allLawyers.find((l) => l.id === selectedLawyer.id);
                           return lawyer?.cases_handled || "N/A";
                         })()}
                       </p>
@@ -1564,19 +1453,13 @@ const ConsultPage = () => {
                     <div className="relative h-full bg-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-green-400/30 transition-all flex flex-col">
                       <div className="flex items-center gap-2 mb-3">
                         <div className="w-4 h-4 rounded bg-green-400/20 flex items-center justify-center flex-shrink-0">
-                          <span className="text-green-400 text-xs font-bold">
-                            %
-                          </span>
+                          <span className="text-green-400 text-xs font-bold">%</span>
                         </div>
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">
-                          Success
-                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Success</span>
                       </div>
                       <p className="text-green-400 font-bold text-2xl flex-1 flex items-center">
                         {(() => {
-                          const lawyer = allLawyers.find(
-                            (l) => l.id === selectedLawyer.id,
-                          );
+                          const lawyer = allLawyers.find((l) => l.id === selectedLawyer.id);
                           return `${lawyer?.success_rate || 0}%`;
                         })()}
                       </p>
@@ -1593,22 +1476,15 @@ const ConsultPage = () => {
                         <span className="text-black text-sm">📝</span>
                       </div>
                       <span>Describe Your Legal Case</span>
-                      <span className="ml-auto text-xs text-white/40 font-normal">
-                        Required
-                      </span>
+                      <span className="ml-auto text-xs text-white/40 font-normal">Required</span>
                     </label>
                     <div className="relative group">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                       <Textarea
                         className="relative min-h-[140px] resize-none bg-black/40 border-2 border-white/10 focus:border-yellow-400/50 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-yellow-400/20 transition-all px-4 py-3"
-                        placeholder="Please provide detailed information about your legal matter, including:&#10;• Nature of the issue&#10;• Timeline of events&#10;• Desired outcome&#10;• Any urgent concerns"
+                        placeholder={"Please provide detailed information about your legal matter, including:\n• Nature of the issue\n• Timeline of events\n• Desired outcome\n• Any urgent concerns"}
                         value={bookingFormData.caseDescription}
-                        onChange={(e) =>
-                          setBookingFormData({
-                            ...bookingFormData,
-                            caseDescription: e.target.value,
-                          })
-                        }
+                        onChange={(e) => setBookingFormData({ ...bookingFormData, caseDescription: e.target.value })}
                         required
                       />
                       <div className="absolute bottom-3 right-3 text-xs text-white/30">
@@ -1624,21 +1500,14 @@ const ConsultPage = () => {
                         <Calendar className="w-4 h-4 text-black" />
                       </div>
                       <span>Preferred Consultation Time</span>
-                      <span className="ml-auto text-xs text-white/40 font-normal">
-                        Required
-                      </span>
+                      <span className="ml-auto text-xs text-white/40 font-normal">Required</span>
                     </label>
                     <div className="relative group">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400/20 to-yellow-600/20 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
                       <Input
                         type="datetime-local"
                         value={bookingFormData.preferredDateTime}
-                        onChange={(e) =>
-                          setBookingFormData({
-                            ...bookingFormData,
-                            preferredDateTime: e.target.value,
-                          })
-                        }
+                        onChange={(e) => setBookingFormData({ ...bookingFormData, preferredDateTime: e.target.value })}
                         className="relative bg-black/40 border-2 border-white/10 focus:border-yellow-400/50 rounded-xl text-white focus:ring-2 focus:ring-yellow-400/20 transition-all h-14 text-base px-4 [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-100 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                         min={new Date().toISOString().slice(0, 16)}
                         required
@@ -1656,42 +1525,22 @@ const ConsultPage = () => {
                             <span className="text-2xl">💰</span>
                           </div>
                           <div>
-                            <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">
-                              Consultation Fee
-                            </p>
-                            <p className="text-white/30 text-xs mt-0.5">
-                              Pay per minute • Transparent pricing
-                            </p>
+                            <p className="text-white/50 text-xs font-semibold uppercase tracking-wider">Consultation Fee</p>
+                            <p className="text-white/30 text-xs mt-0.5">Pay per minute • Transparent pricing</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div className="bg-black/30 rounded-xl p-4 border border-yellow-400/20">
-                          <p className="text-white/40 text-xs mb-1">
-                            Rate per minute
-                          </p>
+                          <p className="text-white/40 text-xs mb-1">Rate per minute</p>
                           <div className="flex items-baseline gap-2">
                             <span className="text-yellow-400 text-4xl font-bold">
                               ₹
                               {(() => {
-                                const baseFee = parseInt(
-                                  selectedLawyer.consultationFee
-                                    .replace(/[₹,]/g, "")
-                                    .split("/")[0]
-                                    .trim(),
-                                );
+                                const baseFee = parseInt(selectedLawyer.consultationFee.replace(/[₹,]/g, "").split("/")[0].trim());
                                 const perMinuteRate = Math.round(baseFee / 30);
-                                const roundedRate =
-                                  perMinuteRate < 90
-                                    ? 88
-                                    : perMinuteRate < 95
-                                      ? 90
-                                      : perMinuteRate < 100
-                                        ? 95
-                                        : perMinuteRate < 105
-                                          ? 102
-                                          : Math.round(perMinuteRate / 5) * 5;
+                                const roundedRate = perMinuteRate < 90 ? 88 : perMinuteRate < 95 ? 90 : perMinuteRate < 100 ? 95 : perMinuteRate < 105 ? 102 : Math.round(perMinuteRate / 5) * 5;
                                 return roundedRate;
                               })()}
                             </span>
@@ -1700,33 +1549,15 @@ const ConsultPage = () => {
                         </div>
 
                         <div className="bg-black/30 rounded-xl p-4 border border-white/10">
-                          <p className="text-white/40 text-xs mb-1">
-                            Estimated (30 minutes)
-                          </p>
+                          <p className="text-white/40 text-xs mb-1">Estimated (30 minutes)</p>
                           <div className="flex items-baseline gap-2">
                             <span className="text-white text-3xl font-bold">
                               ₹
                               {(() => {
-                                const baseFee = parseInt(
-                                  selectedLawyer.consultationFee
-                                    .replace(/[₹,]/g, "")
-                                    .split("/")[0]
-                                    .trim(),
-                                );
+                                const baseFee = parseInt(selectedLawyer.consultationFee.replace(/[₹,]/g, "").split("/")[0].trim());
                                 const perMinuteRate = Math.round(baseFee / 30);
-                                const roundedRate =
-                                  perMinuteRate < 90
-                                    ? 88
-                                    : perMinuteRate < 95
-                                      ? 90
-                                      : perMinuteRate < 100
-                                        ? 95
-                                        : perMinuteRate < 105
-                                          ? 102
-                                          : Math.round(perMinuteRate / 5) * 5;
-                                return (roundedRate * 30).toLocaleString(
-                                  "en-IN",
-                                );
+                                const roundedRate = perMinuteRate < 90 ? 88 : perMinuteRate < 95 ? 90 : perMinuteRate < 100 ? 95 : perMinuteRate < 105 ? 102 : Math.round(perMinuteRate / 5) * 5;
+                                return (roundedRate * 30).toLocaleString("en-IN");
                               })()}
                             </span>
                           </div>
@@ -1734,21 +1565,10 @@ const ConsultPage = () => {
                       </div>
 
                       <div className="mt-4 flex items-start gap-2 text-xs text-white/40 bg-black/20 rounded-lg p-3 border border-white/5">
-                        <svg
-                          className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                          />
+                        <svg className="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                         </svg>
-                        <span>
-                          Final fee calculated based on actual consultation
-                          duration. Payment required before session begins.
-                        </span>
+                        <span>Final fee calculated based on actual consultation duration. Payment required before session begins.</span>
                       </div>
                     </div>
                   </div>
@@ -1761,9 +1581,7 @@ const ConsultPage = () => {
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
                       <Calendar className="w-5 h-5 mr-2 relative z-10" />
-                      <span className="relative z-10">
-                        Book Consultation Now
-                      </span>
+                      <span className="relative z-10">Book Consultation Now</span>
                     </Button>
                     <Button
                       type="button"
@@ -1807,22 +1625,9 @@ const ConsultPage = () => {
             preferredDateTime: bookingFormData.preferredDateTime,
           }}
           perMinuteRate={(() => {
-            const baseFee = parseInt(
-              selectedLawyer.consultationFee
-                .replace(/[₹,]/g, "")
-                .split("/")[0]
-                .trim(),
-            );
+            const baseFee = parseInt(selectedLawyer.consultationFee.replace(/[₹,]/g, "").split("/")[0].trim());
             const perMinuteRate = Math.round(baseFee / 30);
-            return perMinuteRate < 90
-              ? 88
-              : perMinuteRate < 95
-                ? 90
-                : perMinuteRate < 100
-                  ? 95
-                  : perMinuteRate < 105
-                    ? 102
-                    : Math.round(perMinuteRate / 5) * 5;
+            return perMinuteRate < 90 ? 88 : perMinuteRate < 95 ? 90 : perMinuteRate < 100 ? 95 : perMinuteRate < 105 ? 102 : Math.round(perMinuteRate / 5) * 5;
           })()}
         />
       )}
@@ -1830,4 +1635,4 @@ const ConsultPage = () => {
   );
 };
 
-export default ConsultPage
+export default ConsultPage;
