@@ -31,23 +31,42 @@ import {
   Phone,
   Video,
   MoreVertical,
+  FileText,
 } from "lucide-react";
 import { useMessages } from "@/lib/messages-context";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const Logo = () => (
-  <svg
-    width="30"
-    height="30"
-    viewBox="0 0 62 79"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className="transition-all duration-300"
-  >
-    <path
-      d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z"
-      fill="white"
-    />
-  </svg>
+  <>
+    {/* Black logo for Light Mode */}
+    <svg
+      width="30"
+      height="39"
+      viewBox="0 0 23 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="dark:hidden transition-all duration-300"
+    >
+      <path
+        d="M17.2048 0L11.4096 6.19541L13.4028 8.16545L15.8223 5.57886V20.2762L2.51237 6.72721C1.58129 5.77941 0 6.45738 0 7.80434V30H2.76506V10.9846L16.075 24.5337C17.006 25.4814 18.5874 24.8036 18.5874 23.4565V5.57886L21.0069 8.16545L23 6.19541L17.2048 0Z"
+        fill="black"
+      />
+    </svg>
+    {/* White logo for Dark Mode */}
+    <svg
+      width="30"
+      height="39"
+      viewBox="0 0 62 79"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="hidden dark:block transition-all duration-300"
+    >
+      <path
+        d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z"
+        fill="white"
+      />
+    </svg>
+  </>
 );
 
 // User dropdown for the main header
@@ -211,7 +230,7 @@ const NotificationsPopover = ({ user }: { user: any }) => {
       <Button
         variant="ghost"
         size="sm"
-        className="relative h-10 w-10 p-0 text-white hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+        className="relative h-10 w-10 p-0 text-foreground hover:bg-muted transition-colors flex items-center justify-center"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Bell className="h-4 w-4" />
@@ -327,7 +346,7 @@ const ChatMessagesIcon = ({ user }: { user: any }) => {
       <Button
         variant="ghost"
         size="sm"
-        className="relative h-10 w-10 p-0 text-white hover:text-white hover:bg-white/10 transition-colors flex items-center justify-center"
+        className="relative h-10 w-10 p-0 text-foreground hover:bg-muted transition-colors flex items-center justify-center"
       >
         <MessageCircle className="h-4 w-4" />
         {totalUnread > 0 && (
@@ -389,7 +408,8 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
       id="home"
       className={cn(
         "fixed top-0 left-0 w-full z-50 py-4 transition-all duration-300",
-        "",
+        "bg-background/80 dark:bg-background/80 backdrop-blur-sm",
+        "border-b border-border/10",
         "relative",
       )}
     >
@@ -412,7 +432,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             </Link>
           )}
         </div>
-  <nav className="hidden md:flex items-center justify-center gap-8 text-white text-sm font-body justify-self-center">
+        <nav className="hidden md:flex items-center justify-center gap-8 text-foreground dark:text-white text-sm font-body justify-self-center font-medium">
           <Link
             href="/consult"
             className={cn(
@@ -432,10 +452,13 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             LawGPT
           </Link>
           <Link
-            href="#services"
-            className="hover:text-primary transition-colors"
+            href="/documents"
+            className={cn(
+              "hover:text-primary transition-colors",
+              pathname === "/documents" && "text-primary",
+            )}
           >
-            Resources
+            Document Drafting
           </Link>
           <Link
             href="#pricing"
@@ -446,17 +469,18 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
         </nav>
         {/* Right side: auth actions + mobile menu button */}
         {!hideAuthButtons && !user && (
-          <div className="hidden md:flex items-center gap-4 justify-self-end">
+          <div className="hidden md:flex items-center gap-2 justify-self-end">
+            <ThemeToggle />
             <Button
               variant="ghost"
               asChild
-              className="text-white hover:bg-white/10 rounded-full"
+              className="text-foreground hover:bg-muted rounded-full transition-colors"
             >
               <Link href="/login">Login</Link>
             </Button>
             <Button
               asChild
-              className="rounded-full bg-secondary hover:bg-secondary/90 text-white px-6"
+              className="rounded-full bg-primary dark:bg-[#009E98] hover:bg-primary/90 dark:hover:bg-[#009E98]/90 text-primary-foreground px-6 transition-colors"
             >
               <Link href="/signup">Signup</Link>
             </Button>
@@ -466,6 +490,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           <div className="hidden md:flex items-center gap-2 justify-self-end">
             {user.userType === "client" && <ChatMessagesIcon user={user} />}
             <NotificationsPopover user={user} />
+            <ThemeToggle />
             <HeaderUserDropdown user={user} onLogout={handleLogout} />
           </div>
         )}
@@ -476,7 +501,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             variant="ghost"
             onClick={() => setMobileMenuOpen((s) => !s)}
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            className="h-10 w-10 p-0 text-white flex items-center justify-center"
+            className="h-10 w-10 p-0 text-foreground hover:bg-muted flex items-center justify-center"
           >
             <Menu className="h-5 w-5" />
           </Button>
@@ -519,12 +544,15 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
               </Link>
 
               <Link
-                href="#services"
-                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
+                href="/documents"
+                className={cn(
+                  "flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted",
+                  pathname === "/documents" && "bg-muted",
+                )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Info className="w-5 h-5 text-foreground/80" />
-                <span className="font-medium">Resources</span>
+                <FileText className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Document Drafting</span>
               </Link>
 
               <Link
@@ -557,6 +585,12 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             </nav>
 
             <div className="mt-4 border-t border-border/40 pt-4 flex flex-col gap-3">
+              {/* Theme Toggle for Mobile */}
+              <div className="flex items-center justify-between py-3 px-4 rounded-md bg-muted/50">
+                <span className="font-medium text-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
+
               {!user ? (
                 <>
                   <Button asChild className="w-full">
@@ -568,10 +602,24 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                 </>
               ) : (
                 <>
-                  <Link href={user.userType === "lawyer" ? "/dashboard/lawyer" : "/dashboard/client"} className="py-3 px-4 rounded-md text-foreground hover:bg-muted" onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href={
+                      user.userType === "lawyer"
+                        ? "/dashboard/lawyer"
+                        : "/dashboard/client"
+                    }
+                    className="py-3 px-4 rounded-md text-foreground hover:bg-muted"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Dashboard
                   </Link>
-                  <Button className="w-full" onClick={() => { handleLogout(); setMobileMenuOpen(false); }}>
+                  <Button
+                    className="w-full"
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
                     Logout
                   </Button>
                 </>

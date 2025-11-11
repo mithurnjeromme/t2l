@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { MessagesProvider } from "@/lib/messages-context";
+import { ThemeProvider } from "@/lib/theme-context";
 
 export const metadata: Metadata = {
   title: "Turn2Law - Your Trusted Legal Partner",
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -47,10 +48,12 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/favicon.svg" />
       </head>
       <body className="font-body antialiased">
-        <MessagesProvider>
-          {children}
-          <Toaster />
-        </MessagesProvider>
+        <ThemeProvider>
+          <MessagesProvider>
+            {children}
+            <Toaster />
+          </MessagesProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

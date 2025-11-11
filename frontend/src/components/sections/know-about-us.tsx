@@ -13,14 +13,16 @@ const navItems = [
 ];
 
 const KnowAboutUs = () => {
-  const [activeItem, setActiveItem] = useState("Channels of Instant Legal Access");
+  const [activeItem, setActiveItem] = useState(
+    "Channels of Instant Legal Access",
+  );
 
   return (
     <section id="know-about-us" className="py-16 md:py-24 bg-background">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="bg-[#2A2A2A] rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 relative overflow-hidden">
+        <div className="bg-card dark:bg-[#2A2A2A] rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 relative overflow-hidden border border-border/20">
           {/* Title */}
-          <h2 className="text-2xl sm:text-3xl font-body font-medium mb-6 sm:mb-8 text-white">
+          <h2 className="text-2xl sm:text-3xl font-body font-medium mb-6 sm:mb-8 text-foreground">
             Know about us.
           </h2>
 
@@ -33,8 +35,8 @@ const KnowAboutUs = () => {
                   key={index}
                   className={`cursor-pointer transition-all duration-300 rounded-xl text-left ${
                     activeItem === item
-                      ? "bg-[#009E98] text-white py-3 px-4"
-                      : "text-white hover:text-[#009E98] py-3 px-4"
+                      ? "bg-secondary text-secondary-foreground dark:bg-[#009E98] dark:text-white py-3 px-4"
+                      : "text-foreground hover:text-secondary dark:hover:text-[#009E98] py-3 px-4"
                   }`}
                   onClick={() => setActiveItem(item)}
                 >
@@ -47,7 +49,7 @@ const KnowAboutUs = () => {
 
             {/* Content Area */}
             <div className="flex-1 relative">
-              <div className="bg-[#8B8B8B] rounded-[20px] sm:rounded-[24px] relative h-[260px] sm:h-[320px] md:h-[380px] lg:h-[420px] w-full">
+              <div className="bg-muted dark:bg-[#8B8B8B] rounded-[20px] sm:rounded-[24px] relative h-[260px] sm:h-[320px] md:h-[380px] lg:h-[420px] w-full">
                 {/* Centered Image Placeholder */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <span className="text-[#2A2A2A] text-2xl sm:text-3xl font-body font-medium">

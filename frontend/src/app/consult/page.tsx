@@ -632,32 +632,36 @@ const ConsultPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background dark:bg-black">
       <Header />
 
       <div className="flex">
         {/* Left Sidebar - Filters */}
-        <div className="w-96 bg-gradient-to-b from-black via-gray-950 to-black h-[calc(100vh-80px)] sticky top-20 overflow-y-auto shadow-2xl">
+        <div className="w-96 bg-gradient-to-b from-white via-gray-50 to-white dark:from-black dark:via-gray-950 dark:to-black h-[calc(100vh-80px)] sticky top-20 overflow-y-auto shadow-2xl border-r border-border/20 dark:border-white/20">
           <div className="p-4 space-y-3">
             {/* Price Range */}
-            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
-              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
-                  <span className="text-black text-xs">₹</span>
+            <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-white/5 dark:via-white/[0.02] dark:to-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/20 rounded-2xl p-3 hover:border-primary dark:hover:border-yellow-400/40 hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-foreground dark:text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 dark:from-yellow-400 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-primary/30 dark:shadow-yellow-400/30">
+                  <span className="text-white dark:text-black text-xs">₹</span>
                 </div>
                 <span>Consultation Fee Range</span>
               </label>
-              <div className="mb-2 flex items-center justify-between bg-black/40 rounded-xl p-2 border border-white/10">
+              <div className="mb-2 flex items-center justify-between bg-gray-100 dark:bg-black/40 rounded-xl p-2 border border-gray-200 dark:border-white/10">
                 <div className="text-center">
-                  <p className="text-[10px] text-white/50 mb-0.5">Minimum</p>
-                  <span className="text-yellow-400 font-bold text-sm">
+                  <p className="text-[10px] text-muted-foreground dark:text-white/50 mb-0.5">
+                    Minimum
+                  </p>
+                  <span className="text-primary dark:text-yellow-400 font-bold text-sm">
                     ₹{filters.priceRange[0]}
                   </span>
                 </div>
-                <div className="h-6 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent"></div>
+                <div className="h-6 w-px bg-gradient-to-b from-transparent via-gray-300 dark:via-white/20 to-transparent"></div>
                 <div className="text-center">
-                  <p className="text-[10px] text-white/50 mb-0.5">Maximum</p>
-                  <span className="text-yellow-400 font-bold text-sm">
+                  <p className="text-[10px] text-muted-foreground dark:text-white/50 mb-0.5">
+                    Maximum
+                  </p>
+                  <span className="text-primary dark:text-yellow-400 font-bold text-sm">
                     ₹{filters.priceRange[1]}
                   </span>
                 </div>
@@ -678,10 +682,10 @@ const ConsultPage = () => {
             </div>
 
             {/* Locations */}
-            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
-              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
-                  <MapPin className="w-4 h-4 text-black" />
+            <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-white/5 dark:via-white/[0.02] dark:to-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/20 rounded-2xl p-3 hover:border-primary dark:hover:border-yellow-400/40 hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-foreground dark:text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 dark:from-yellow-400 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-primary/30 dark:shadow-yellow-400/30">
+                  <MapPin className="w-4 h-4 text-white dark:text-black" />
                 </div>
                 <span>Location</span>
               </label>
@@ -695,7 +699,7 @@ const ConsultPage = () => {
                     setFilters({ ...filters, locations: [] });
                   }
                 }}
-                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+                className="w-full bg-white dark:bg-black/60 border-2 border-primary/30 dark:border-yellow-400/30 rounded-2xl px-5 py-4 text-foreground dark:text-white font-semibold focus:ring-2 focus:ring-primary dark:focus:ring-yellow-400 focus:border-primary dark:focus:border-yellow-400 hover:border-primary/50 dark:hover:border-yellow-400/50 hover:bg-gray-50 dark:hover:bg-black/80 transition-all cursor-pointer shadow-lg"
               >
                 <option value="">All Locations</option>
                 {locations.map((loc) => (
@@ -707,10 +711,10 @@ const ConsultPage = () => {
             </div>
 
             {/* Case Types */}
-            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
-              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
-                  <Briefcase className="w-4 h-4 text-black" />
+            <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-white/5 dark:via-white/[0.02] dark:to-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/20 rounded-2xl p-3 hover:border-primary dark:hover:border-yellow-400/40 hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-foreground dark:text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 dark:from-yellow-400 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-primary/30 dark:shadow-yellow-400/30">
+                  <Briefcase className="w-4 h-4 text-white dark:text-black" />
                 </div>
                 <span>Case Type</span>
               </label>
@@ -724,7 +728,7 @@ const ConsultPage = () => {
                     setFilters({ ...filters, caseTypes: [] });
                   }
                 }}
-                className="w-full bg-black/60 border-2 border-yellow-400/30 rounded-2xl px-5 py-4 text-white font-semibold focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 hover:border-yellow-400/50 hover:bg-black/80 transition-all cursor-pointer shadow-lg"
+                className="w-full bg-white dark:bg-black/60 border-2 border-primary/30 dark:border-yellow-400/30 rounded-2xl px-5 py-4 text-foreground dark:text-white font-semibold focus:ring-2 focus:ring-primary dark:focus:ring-yellow-400 focus:border-primary dark:focus:border-yellow-400 hover:border-primary/50 dark:hover:border-yellow-400/50 hover:bg-gray-50 dark:hover:bg-black/80 transition-all cursor-pointer shadow-lg"
               >
                 <option value="">All Case Types</option>
                 {caseTypes.map((type) => (
@@ -736,10 +740,10 @@ const ConsultPage = () => {
             </div>
 
             {/* Languages */}
-            <div className="bg-gradient-to-br from-white/5 via-white/[0.02] to-white/5 backdrop-blur-xl border border-white/20 rounded-2xl p-3 hover:border-yellow-400/40 hover:shadow-xl hover:shadow-yellow-400/10 transition-all duration-300">
-              <label className="text-xs font-bold text-white mb-2 flex items-center gap-2">
-                <div className="w-6 h-6 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-yellow-400/30">
-                  <MessageCircle className="w-4 h-4 text-black" />
+            <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-white/5 dark:via-white/[0.02] dark:to-white/5 backdrop-blur-xl border border-gray-200 dark:border-white/20 rounded-2xl p-3 hover:border-primary dark:hover:border-yellow-400/40 hover:shadow-xl hover:shadow-primary/10 dark:hover:shadow-yellow-400/10 transition-all duration-300">
+              <label className="text-xs font-bold text-foreground dark:text-white mb-2 flex items-center gap-2">
+                <div className="w-6 h-6 bg-gradient-to-br from-primary to-primary/80 dark:from-yellow-400 dark:to-yellow-600 rounded-full flex items-center justify-center shadow-md shadow-primary/30 dark:shadow-yellow-400/30">
+                  <MessageCircle className="w-4 h-4 text-white dark:text-black" />
                 </div>
                 <span>Language</span>
               </label>

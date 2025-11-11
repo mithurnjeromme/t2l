@@ -231,16 +231,18 @@ function MessagesContent() {
   };
 
   return (
-    <>
+    <div className="flex flex-col h-screen bg-background overflow-hidden">
       <Header />
-      <div className="fixed inset-0 top-[72px] bg-background">
-        <div className="w-full h-full flex">
-          {/* Chat List Sidebar */}
-          <div className="w-96 border-r border-white/10 flex flex-col bg-card">
+      <main className="flex-grow overflow-hidden">
+        <div className="h-full flex">
+          {/* Chat List Sidebar - Transparent blend */}
+          <div className="w-96 border-r border-white/5 flex flex-col bg-white/[0.02] backdrop-blur-sm">
             {/* Sidebar Header */}
-            <div className="p-5 border-b border-white/10">
+            <div className="p-6 border-b border-white/5">
               <div className="flex items-center justify-between mb-4">
-                <h1 className="font-bold text-white text-xl">Messages</h1>
+                <h1 className="font-bold text-white text-xl font-headline">
+                  Messages
+                </h1>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -389,9 +391,9 @@ function MessagesContent() {
 
           {/* Chat Window */}
           {currentChat ? (
-            <div className="flex-1 flex flex-col bg-background">
+            <div className="flex-1 flex flex-col bg-transparent h-full overflow-hidden">
               {/* Chat Header */}
-              <div className="p-4 border-b border-white/10 bg-card">
+              <div className="p-4 border-b border-white/5 bg-white/[0.02] backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="relative">
@@ -533,7 +535,7 @@ function MessagesContent() {
               </div>
 
               {/* Input Area */}
-              <div className="p-4 border-t border-white/10 bg-card">
+              <div className="p-4 border-t border-white/5 bg-white/[0.02] backdrop-blur-sm">
                 {currentChat.isPending ? (
                   <div className="flex items-center justify-center gap-2 py-3 px-4 bg-white/5 border border-white/10 rounded-xl">
                     <Lock className="h-4 w-4 text-gray-400" />
@@ -581,39 +583,39 @@ function MessagesContent() {
             </div>
           )}
         </div>
-      </div>
 
-      <style jsx global>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
+        <style jsx global>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
           }
-        }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+          }
 
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
-    </>
+          @keyframes fade-in {
+            from {
+              opacity: 0;
+              transform: translateY(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+          }
+        `}</style>
+      </main>
+    </div>
   );
 }
 

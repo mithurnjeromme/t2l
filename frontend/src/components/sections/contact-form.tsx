@@ -1,13 +1,13 @@
 "use client";
 
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useActionState, useEffect, useRef } from 'react';
-import { findLawyerAction, type FormState } from '@/app/actions';
-import { useToast } from '@/hooks/use-toast';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { useActionState, useEffect, useRef } from "react";
+import { findLawyerAction, type FormState } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const LawyerCard = ({
   lawyer,
@@ -41,7 +41,7 @@ const LawyerCard = ({
 );
 
 export default function ContactForm() {
-  const initialState: FormState = { message: '' };
+  const initialState: FormState = { message: "" };
   const [state, formAction] = useActionState(findLawyerAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
@@ -49,9 +49,9 @@ export default function ContactForm() {
   useEffect(() => {
     if (state.message && !state.lawyers) {
       toast({
-        title: state.error ? 'Error' : 'Success',
+        title: state.error ? "Error" : "Success",
         description: state.message,
-        variant: state.error ? 'destructive' : 'default',
+        variant: state.error ? "destructive" : "default",
       });
     }
     if (state.lawyers && state.lawyers.length > 0) {
@@ -89,50 +89,54 @@ export default function ContactForm() {
             </div>
 
             {/* Right Side - Form Section */}
-            <div className="bg-[#2A2A2A] p-8 sm:p-12 relative">
-              <h2 className="text-2xl sm:text-3xl font-headline font-bold mb-2">
+            <div className="bg-card dark:bg-[#2A2A2A] p-8 sm:p-12 relative border border-border/20 rounded-2xl">
+              <h2 className="text-2xl sm:text-3xl font-headline font-bold mb-2 text-foreground">
                 Consult us
               </h2>
-              <p className="text-white/60 mb-6 sm:mb-8 font-body text-sm sm:text-base">
+              <p className="text-muted-foreground dark:text-white/60 mb-6 sm:mb-8 font-body text-sm sm:text-base">
                 Tell us about your legal needs and we'll connect you with the
                 right lawyer.
               </p>
 
-              <form ref={formRef} action={formAction} className="space-y-5 sm:space-y-6">
+              <form
+                ref={formRef}
+                action={formAction}
+                className="space-y-5 sm:space-y-6"
+              >
                 <div className="space-y-4">
                   <input
                     type="text"
                     name="name"
                     placeholder="Name"
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:bg-white/10 focus:border-white/40 outline-none font-body text-sm sm:text-base"
+                    className="w-full bg-input dark:bg-white/5 border border-border dark:border-white/20 rounded-xl px-4 py-3 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-white/50 focus:bg-muted dark:focus:bg-white/10 focus:border-primary dark:focus:border-white/40 outline-none font-body text-sm sm:text-base"
                     required
                   />
                   <input
                     type="email"
                     name="email"
                     placeholder="Email"
-                    className="w-full bg-white/5 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/50 focus:bg-white/10 focus:border-white/40 outline-none font-body text-sm sm:text-base"
+                    className="w-full bg-input dark:bg-white/5 border border-border dark:border-white/20 rounded-xl px-4 py-3 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-white/50 focus:bg-muted dark:focus:bg-white/10 focus:border-primary dark:focus:border-white/40 outline-none font-body text-sm sm:text-base"
                     required
                   />
 
                   {/* Mobile Number Section */}
-                <div className="flex items-center overflow-hidden rounded-xl border border-white/20 bg-white/5 focus-within:border-white/40 transition">
-  <span className="px-4 py-3 bg-white/10 text-white text-sm sm:text-base border-r border-white/20">
-    +91
-  </span>
-  <input
-    type="tel"
-    name="mobile"
-    placeholder="Mobile Number"
-    className="flex-1 bg-transparent px-4 py-3 text-white placeholder-white/50 focus:outline-none font-body text-sm sm:text-base"
-    required
-  />
-</div>
+                  <div className="flex items-center overflow-hidden rounded-xl border border-border dark:border-white/20 bg-input dark:bg-white/5 focus-within:border-primary dark:focus-within:border-white/40 transition">
+                    <span className="px-4 py-3 bg-muted dark:bg-white/10 text-foreground dark:text-white text-sm sm:text-base border-r border-border dark:border-white/20">
+                      +91
+                    </span>
+                    <input
+                      type="tel"
+                      name="mobile"
+                      placeholder="Mobile Number"
+                      className="flex-1 bg-transparent px-4 py-3 text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-white/50 focus:outline-none font-body text-sm sm:text-base"
+                      required
+                    />
+                  </div>
 
                   <Textarea
                     name="message"
                     placeholder="Message"
-                    className="bg-white/5 border border-white/20 rounded-xl min-h-[100px] sm:min-h-[120px] text-white placeholder-white/50 focus:bg-white/10 focus:border-white/40 resize-none font-body text-sm sm:text-base"
+                    className="bg-input dark:bg-white/5 border border-border dark:border-white/20 rounded-xl min-h-[100px] sm:min-h-[120px] text-foreground dark:text-white placeholder-muted-foreground dark:placeholder-white/50 focus:bg-muted dark:focus:bg-white/10 focus:border-primary dark:focus:border-white/40 resize-none font-body text-sm sm:text-base"
                     rows={4}
                     required
                   />
