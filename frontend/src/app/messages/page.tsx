@@ -193,10 +193,18 @@ function MessagesContent() {
           <Menu className="h-5 w-5 text-white" />
         </button>
 
+        {/* Overlay for mobile (click outside to close) */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
         <div
           className={cn(
-            "fixed md:static inset-y-0 left-0 z-30 w-80 md:w-96 bg-card border-r border-white/10 flex flex-col transition-transform duration-300",
+            "fixed md:static inset-y-0 left-0 z-50 w-80 md:w-96 bg-card border-r border-white/10 flex flex-col transition-transform duration-300 ease-in-out",
             sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           )}
         >
