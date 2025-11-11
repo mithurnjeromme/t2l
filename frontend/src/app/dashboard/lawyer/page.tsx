@@ -8,15 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Calendar, 
-  FileText, 
-  Users, 
-  DollarSign, 
-  Clock, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  Calendar,
+  FileText,
+  Users,
+  DollarSign,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
   Search,
   MessageCircle,
   Scale,
@@ -62,7 +62,7 @@ interface LawyerProfile {
 
 const Logo = () => (
   <svg width="30" height="30" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300">
-    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
+    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white" />
   </svg>
 );
 
@@ -76,12 +76,12 @@ const LawyerDashboard = () => {
     // Get user data from localStorage
     const userData = localStorage.getItem('user');
     const token = localStorage.getItem('token');
-    
+
     if (!userData || !token) {
       window.location.href = '/login';
       return;
     }
-    
+
     try {
       const parsedUser = JSON.parse(userData);
       if (parsedUser.userType !== 'lawyer') {
@@ -89,7 +89,7 @@ const LawyerDashboard = () => {
         return;
       }
       setUser(parsedUser);
-      
+
       // Fetch lawyer profile data (placeholder for now)
       fetchLawyerProfile(parsedUser.id, token);
     } catch (error) {
@@ -176,13 +176,16 @@ const LawyerDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Tab Navigation */}
-          <TabsList className="grid w-full grid-cols-5 lg:w-fit">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="consultations">Consultations</TabsTrigger>
-            <TabsTrigger value="clients">My Clients</TabsTrigger>
-            <TabsTrigger value="earnings">Earnings</TabsTrigger>
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto sm:overflow-visible">
+            <TabsList className="flex sm:grid sm:w-full sm:grid-cols-5 lg:w-fit gap-2 min-w-max sm:min-w-0 px-1">
+              <TabsTrigger value="overview" className="flex-shrink-0">Overview</TabsTrigger>
+              <TabsTrigger value="consultations" className="flex-shrink-0">Consultations</TabsTrigger>
+              <TabsTrigger value="clients" className="flex-shrink-0">My Clients</TabsTrigger>
+              <TabsTrigger value="earnings" className="flex-shrink-0">Earnings</TabsTrigger>
+              <TabsTrigger value="profile" className="flex-shrink-0">Profile</TabsTrigger>
+            </TabsList>
+          </div>
+
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
@@ -318,7 +321,7 @@ const LawyerDashboard = () => {
                       <span>Consultations</span>
                       <span className="text-xs opacity-80">Manage bookings</span>
                     </Button>
-                    
+
                     <Link href="/dashboard/lawyer/wallet" className="block">
                       <Button size="lg" variant="outline" className="w-full h-24 flex flex-col justify-center space-y-2 border-primary/50 text-primary hover:bg-primary/10 font-body">
                         <Wallet className="w-6 h-6" />
@@ -326,13 +329,13 @@ const LawyerDashboard = () => {
                         <span className="text-xs opacity-70">Earnings & withdrawals</span>
                       </Button>
                     </Link>
-                    
+
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-secondary/50 text-secondary hover:bg-secondary/10 font-body" onClick={() => setActiveTab('clients')}>
                       <Users className="w-6 h-6" />
                       <span>My Clients</span>
                       <span className="text-xs opacity-70">Client management</span>
                     </Button>
-                    
+
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('earnings')}>
                       <BarChart3 className="w-6 h-6" />
                       <span>View Analytics</span>
@@ -378,7 +381,7 @@ const LawyerDashboard = () => {
                     <h3 className="font-headline font-semibold mb-2">Growth Analytics</h3>
                     <p className="text-sm text-muted-foreground">Track your practice growth and revenue trends</p>
                   </div>
-                  
+
                   <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                       <UserCheck className="w-6 h-6 text-secondary" />
@@ -386,7 +389,7 @@ const LawyerDashboard = () => {
                     <h3 className="font-headline font-semibold mb-2">Client Satisfaction</h3>
                     <p className="text-sm text-muted-foreground">Monitor client feedback and ratings</p>
                   </div>
-                  
+
                   <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <Scale className="w-6 h-6 text-primary" />
@@ -411,7 +414,7 @@ const LawyerDashboard = () => {
                 Set Availability
               </Button>
             </div>
-            
+
             <div className="flex flex-col items-center justify-center text-center py-16">
               <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-6">
                 <Calendar className="w-10 h-10 text-primary" />
@@ -437,7 +440,7 @@ const LawyerDashboard = () => {
                 Client Management
               </Button>
             </div>
-            
+
             <div className="flex flex-col items-center justify-center text-center py-16">
               <div className="w-20 h-20 bg-secondary/20 rounded-3xl flex items-center justify-center mb-6">
                 <Users className="w-10 h-10 text-secondary" />
@@ -463,7 +466,7 @@ const LawyerDashboard = () => {
                 Download Report
               </Button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
@@ -482,7 +485,7 @@ const LawyerDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg font-headline">Last Month</CardTitle>
@@ -500,7 +503,7 @@ const LawyerDashboard = () => {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg font-headline">Total Earnings</CardTitle>
@@ -599,14 +602,14 @@ const LawyerDashboard = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {lawyerProfile?.bio && (
                   <div className="p-4 rounded-xl border border-border/50 bg-background/50">
                     <label className="text-sm font-medium text-muted-foreground block mb-2">Professional Bio</label>
                     <p className="text-base text-foreground leading-relaxed">{lawyerProfile.bio}</p>
                   </div>
                 )}
-                
+
                 <div className="pt-6 border-t border-border/50 flex gap-4">
                   <Button className="bg-primary hover:bg-primary/90">
                     <Settings className="mr-2 h-4 w-4" />
