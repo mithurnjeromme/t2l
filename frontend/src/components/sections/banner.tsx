@@ -6,7 +6,7 @@ const Banner = () => {
         <div className="animate-scroll whitespace-nowrap">
           <div className="inline-flex items-center gap-8 sm:gap-12 md:gap-16 text-white dark:text-white">
             {[
-              "SELECT FROM 100+ LAWYERS",
+              "SELECT FROM 200+ LAWYERS",
               "TRUSTED BY 100+ USERS",
               "POWERED BY AI",
               "MADE FOR INDIANS",

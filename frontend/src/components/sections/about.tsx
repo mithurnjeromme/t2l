@@ -1,4 +1,5 @@
 import { Clock, Handshake, Banknote, Video } from "lucide-react";
+import Image from "next/image";
 
 const features = [
   {
@@ -33,14 +34,14 @@ const features = [
 
 const About = () => {
   return (
-    <section id="about" className="pt-24 md:pt-32 pb-12 md:pb-16 bg-background">
-      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
-        <div className="space-y-8">
-          <div>
+    <section id="about" className="pt-16 md:pt-20 pb-12 md:pb-16 bg-background">
+      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-start">
+        <div className="flex flex-col h-full">
+          <div className="flex-shrink-0">
             <h2 className="text-4xl font-body font-semibold mb-6">
               What's <span className="text-primary">Turn2Law</span> ?
             </h2>
-            <p className="text-foreground/80 leading-relaxed font-body text-base">
+            <p className="text-foreground/80 leading-relaxed font-body text-base mb-8">
               Turn2Law is a next-generation legal platform designed to simplify
               access to legal services for everyone. Whether you're facing an
               emergency, drafting critical documents, or seeking legal advice,
@@ -52,23 +53,28 @@ const About = () => {
               businesses alike.
             </p>
           </div>
-          <div className="relative h-56 bg-muted rounded-2xl overflow-hidden border border-border/30">
-            <div className="w-full h-full bg-muted flex items-center justify-center text-muted-foreground text-base font-body">
-              Image
-            </div>
+          <div className="relative h-64 bg-muted rounded-2xl overflow-hidden border border-border/30 flex-shrink-0">
+            <Image
+              src="/images/what's turn2law.png"
+              alt="Turn2Law Legal Services Illustration"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectPosition: 'center 35%' }}
+            />
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="flex flex-col justify-between h-full" style={{ minHeight: 'fit-content' }}>
           {features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-4">
+            <div key={index} className="flex items-start gap-4 mb-6 last:mb-0">
               <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-xl mt-1 flex-shrink-0">
                 <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
               </div>
               <div>
-                <h3 className="text-xl font-body font-semibold text-foreground dark:text-white mb-2">
+                <h3 className="text-lg font-body font-semibold text-foreground dark:text-white mb-1.5">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground dark:text-white/90 font-body text-base leading-relaxed">
+                <p className="text-muted-foreground dark:text-white/90 font-body text-sm leading-relaxed">
                   {feature.description}
                 </p>
               </div>

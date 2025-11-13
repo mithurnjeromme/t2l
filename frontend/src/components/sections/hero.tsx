@@ -1,12 +1,30 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const Hero = () => {
+  const router = useRouter();
+
+  const handleConsultClick = () => {
+    // Check if user is logged in by checking for token in localStorage
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    
+    if (token) {
+      // User is logged in, redirect to consult page
+      router.push("/consult");
+    } else {
+      // User is not logged in, redirect to login page
+      router.push("/login");
+    }
+  };
+
   return (
     <section
       id="hero"
-      className="bg-background pt-32 pb-20 relative overflow-hidden"
+      className="bg-background pt-32 pb-8 relative overflow-hidden"
     >
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
         <div className="text-foreground z-10 relative">
@@ -21,9 +39,9 @@ const Hero = () => {
           <Button
             size="lg"
             className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg font-body"
-            asChild
+            onClick={handleConsultClick}
           >
-            <Link href="#find-lawyer">Consult a Lawyer</Link>
+            Consult a Lawyer
           </Button>
         </div>
 

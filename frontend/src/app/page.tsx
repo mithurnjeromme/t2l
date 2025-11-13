@@ -4,7 +4,6 @@ import Hero from '@/components/sections/hero';
 import ServicesGrid from '@/components/sections/services-grid';
 import About from '@/components/sections/about';
 import ThreePillarsSection from '@/components/sections/three-pillars';
-import Stats from '@/components/sections/stats';
 import Banner from '@/components/sections/banner';
 import KnowAboutUs from '@/components/sections/know-about-us';
 import ContactForm from '@/components/sections/contact-form';
@@ -18,7 +17,6 @@ export default function Home() {
         <ServicesGrid />
         <About />
         <ThreePillarsSection />
-        <Stats />
         <Banner />
         <KnowAboutUs />
         <ContactForm />
