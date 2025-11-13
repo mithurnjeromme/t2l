@@ -52,4 +52,5 @@ firestore-debug.log
 .eslintcache
 
 # Git internal files
-.git-rewrite/
+.git-rewrite/backend/ml-service/venv/
+*.log

@@ -16,10 +16,18 @@ import os
 from pathlib import Path
 import json
 import traceback
+from supabase import create_client, Client
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Supabase configuration
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://vjfpqtyinumanvpgqlbj.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTEyOTIsImV4cCI6MjA3MTA2NzI5Mn0.IL4G5wXabjKdpUZGBAdAq5bvm1W6Xvb-zg9ux9uq5LY")
+
+# Initialize Supabase client
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -65,6 +73,12 @@ class ClientRequest(BaseModel):
     urgency: str = Field(default="Medium", description="Urgency level: Low, Medium, High")
     preferred_experience: Optional[int] = Field(default=None, description="Minimum years of experience preferred")
     language_preference: Optional[str] = Field(default="English", description="Preferred language")
+
+
+class QuerySubmission(BaseModel):
+    """Model for client query submission"""
+    query: str = Field(..., description="Client's legal query/case description")
+    timestamp: str = Field(..., description="Submission timestamp")
 
 
 class LawyerProfile(BaseModel):
@@ -707,6 +721,60 @@ async def get_lawyer_by_id(lawyer_id: int):
     except Exception as e:
         logger.error(f"Error in get_lawyer_by_id: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+
+@app.post("/api/submit-query")
+async def submit_query(submission: QuerySubmission):
+    """
+    Submit a client query for lawyer matching.
+    This endpoint receives user queries from the consult page.
+    Stores queries in Supabase and logs for admin review.
+    """
+    try:
+        query_id = f"Q{int(pd.Timestamp.now().timestamp())}"
+        
+        # Log full query details to console
+        logger.info("="*80)
+        logger.info(f"📥 NEW CLIENT QUERY RECEIVED")
+        logger.info(f"Query ID: {query_id}")
+        logger.info(f"Timestamp: {submission.timestamp}")
+        logger.info(f"Full Query Text:")
+        logger.info(f"{submission.query}")
+        logger.info("="*80)
+        
+        # Save to Supabase
+        try:
+            response = supabase.table("client_queries").insert({
+                "query_id": query_id,
+                "query_text": submission.query,
+                "submitted_at": submission.timestamp,
+                "status": "pending"
+            }).execute()
+            logger.info(f"✅ Query saved to Supabase database")
+        except Exception as db_error:
+            logger.error(f"⚠️  Supabase error (query still logged): {str(db_error)}")
+        
+        # Also save query to file for backup
+        queries_file = BASE_DIR / "backend" / "ml-service" / "client_queries.log"
+        with open(queries_file, "a", encoding="utf-8") as f:
+            f.write(f"\n{'='*80}\n")
+            f.write(f"Query ID: {query_id}\n")
+            f.write(f"Timestamp: {submission.timestamp}\n")
+            f.write(f"Query:\n{submission.query}\n")
+            f.write(f"{'='*80}\n")
+        
+        logger.info(f"✅ Query backed up to {queries_file}")
+        
+        return {
+            "success": True,
+            "message": "Query received successfully. We'll contact you with a suitable lawyer soon.",
+            "query_id": query_id,
+            "timestamp": submission.timestamp
+        }
+        
+    except Exception as e:
+        logger.error(f"❌ Error submitting query: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to submit query: {str(e)}")
 
 
 if __name__ == "__main__":
