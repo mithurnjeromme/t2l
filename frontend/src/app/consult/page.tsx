@@ -959,12 +959,12 @@ const ConsultPage = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 bg-black">
+        <div className="flex-1 bg-gray-50 dark:bg-black">
           <div className="max-w-[1400px] mx-auto px-8 py-10">
             {/* Header */}
             <div className="text-center mb-12">
               <TypingEffect />
-              <p className="text-white/60 text-lg max-w-2xl mx-auto mb-10">
+              <p className="text-gray-600 dark:text-white/60 text-lg max-w-2xl mx-auto mb-10">
                 Browse our verified lawyers or describe your case for AI-powered
                 matches
               </p>
@@ -994,11 +994,11 @@ const ConsultPage = () => {
               )}
 
               {/* Results Count */}
-              <div className="inline-flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-yellow-400/20 rounded-full px-6 py-3 shadow-lg shadow-yellow-400/10">
-                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-                <p className="text-white/80 text-sm font-medium">
+              <div className="inline-flex items-center gap-3 bg-white dark:bg-white/5 backdrop-blur-sm border border-primary/30 dark:border-yellow-400/20 rounded-full px-6 py-3 shadow-lg shadow-primary/10 dark:shadow-yellow-400/10">
+                <div className="w-2 h-2 bg-primary dark:bg-yellow-400 rounded-full animate-pulse"></div>
+                <p className="text-gray-900 dark:text-white/80 text-sm font-medium">
                   Showing{" "}
-                  <span className="text-yellow-400 font-bold text-base">
+                  <span className="text-primary dark:text-yellow-400 font-bold text-base">
                     {filteredLawyers.length}
                   </span>{" "}
                   qualified lawyers
