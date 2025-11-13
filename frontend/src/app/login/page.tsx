@@ -188,8 +188,8 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left side - Image and branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden rounded-r-3xl">
-        <div className="absolute inset-0 bg-black flex flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-background relative overflow-hidden rounded-r-3xl">
+        <div className="absolute inset-0 bg-background flex flex-col justify-between p-12">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 group">
@@ -200,7 +200,7 @@ const LoginPage = () => {
 
           {/* Hero Text */}
           <div className="flex-1 flex flex-col justify-center">
-            <h1 className="text-5xl font-bold text-white mb-8 leading-tight">
+            <h1 className="text-5xl font-bold text-foreground mb-8 leading-tight">
               Welcome Back to<br />
               <span className="text-primary">Legal Excellence</span>
             </h1>
@@ -239,7 +239,7 @@ const LoginPage = () => {
           </div>
 
           {/* Header */}
-          <h2 className="text-3xl font-bold text-white mb-8">Welcome Back</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8">Welcome Back</h2>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -250,7 +250,7 @@ const LoginPage = () => {
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               placeholder="Email Address"
-              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
             />
 
@@ -261,7 +261,7 @@ const LoginPage = () => {
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
               placeholder="Password"
-              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
             />
 
@@ -278,7 +278,7 @@ const LoginPage = () => {
             {/* Submit Button */}
             <Button 
               type="submit" 
-              className="w-full bg-[#009E98] hover:bg-[#008882] text-white font-semibold py-3 rounded-xl"
+              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold py-3 rounded-xl"
               disabled={isLoading}
             >
               {isLoading ? 'Signing In...' : 'Sign In'}
@@ -298,7 +298,7 @@ const LoginPage = () => {
             
             <div className="relative mb-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/20"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
                 <span className="bg-background px-2 text-white/60">or</span>
@@ -308,7 +308,7 @@ const LoginPage = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="w-full bg-muted border-border text-foreground hover:bg-muted/80"
             >
               Sign in with Google
             </Button>

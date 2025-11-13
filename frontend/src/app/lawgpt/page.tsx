@@ -62,7 +62,7 @@ function LawGPTSidebar({
 }: LawGPTSidebarProps) {
   return (
     <div
-      className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-card dark:bg-[#202020] border-r border-border dark:border-[#232323] flex flex-col shadow-2xl"
+      className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-card border-r border-border flex flex-col shadow-2xl"
       style={{ minWidth: 340 }}
     >
       {/* Header with LawGPT icon and close button */}
@@ -147,7 +147,7 @@ function LawGPTSidebar({
       <div className="px-7 pt-4 pb-2">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 bg-[#3C9B97]/20 hover:bg-[#3C9B97]/30 text-foreground dark:text-white/90 font-bold transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-secondary/20 hover:bg-secondary/30 text-foreground font-bold transition-colors"
           style={{
             height: 42,
             borderRadius: 13,
@@ -189,10 +189,10 @@ function LawGPTSidebar({
                 key={session.id}
                 onClick={() => onSelectSession(session.id)}
                 className={
-                  `font-bold text-[1.18rem] text-foreground dark:text-white flex items-center transition-colors cursor-pointer select-none ` +
+                  `font-bold text-[1.18rem] text-foreground flex items-center transition-colors cursor-pointer select-none ` +
                   (session.id === currentSessionId
-                    ? "bg-muted dark:bg-[#3A3A3A] text-foreground dark:text-white"
-                    : "hover:bg-[#232323] text-white/90")
+                    ? "bg-muted text-foreground"
+                    : "hover:bg-muted/50 text-muted-foreground/90")
                 }
                 style={{
                   width: 239,
@@ -907,7 +907,7 @@ export default function LawGPTPage() {
                 <div className="flex-1">
                   <textarea
                     ref={textareaRef}
-                    className="w-full bg-transparent border-none outline-none text-white resize-none"
+                    className="w-full bg-transparent border-none outline-none text-foreground resize-none"
                     placeholder="Ask me anything about law"
                     value={message}
                     onChange={(e) => {
@@ -940,7 +940,7 @@ export default function LawGPTPage() {
 
               <div className="absolute bottom-4 right-4">
                 <button
-                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-100 transition-colors"
+                  className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center cursor-pointer hover:bg-secondary/80 transition-colors"
                   onClick={handleSend}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -1061,7 +1061,7 @@ export default function LawGPTPage() {
                 />
 
                 <button
-                  className="ml-4 w-9 h-9 bg-white rounded-full flex items-center justify-center cursor-pointer flex-shrink-0"
+                  className="ml-4 w-9 h-9 bg-secondary rounded-full flex items-center justify-center cursor-pointer flex-shrink-0"
                   onClick={handleSend}
                   style={{ marginLeft: "16px" }}
                 >

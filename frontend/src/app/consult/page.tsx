@@ -7,7 +7,7 @@ import Header from "@/components/layout/header";
 import { FlipWords } from "@/components/ui/flip-words";
 
 const TypingEffect = () => (
-  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight text-center">
+  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight text-center">
     Find the best{" "}
     <span className="text-primary">
       <FlipWords
@@ -74,7 +74,7 @@ const ConsultPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-hidden">
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Premium Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Gradient Orbs - Yellow/Green Theme */}
@@ -97,7 +97,7 @@ const ConsultPage = () => {
             <TypingEffect />
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Describe your case and we'll connect you with the right lawyer
             </p>
           </div>
@@ -115,7 +115,7 @@ const ConsultPage = () => {
                     onKeyDown={handleKeyDown}
                     placeholder="Describe your legal case here..."
                     disabled={isSubmitting}
-                    className="w-full h-80 px-8 py-8 text-lg text-white placeholder-gray-500 bg-black/50 backdrop-blur-sm border border-gray-800 hover:border-[#E8B931]/40 rounded-2xl focus:outline-none focus:border-[#E8B931] focus:ring-2 focus:ring-[#E8B931]/30 transition-all duration-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full h-80 px-8 py-8 text-lg text-foreground placeholder-muted-foreground bg-muted/50 backdrop-blur-sm border border-border hover:border-primary/40 rounded-2xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all duration-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
 
@@ -124,7 +124,7 @@ const ConsultPage = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={!userQuery.trim() || isSubmitting}
-                    className="group bg-gradient-to-r from-[#E8B931] to-[#F4D03F] hover:from-[#F4D03F] hover:to-[#E8B931] text-black font-medium text-sm py-3 px-8 rounded-full shadow-md shadow-[#E8B931]/20 hover:shadow-lg hover:shadow-[#E8B931]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
+                    className="group bg-gradient-to-r from-[#E8B931] to-[#F4D03F] hover:from-[#F4D03F] hover:to-[#E8B931] text-foreground font-medium text-sm py-3 px-8 rounded-full shadow-md shadow-[#E8B931]/20 hover:shadow-lg hover:shadow-[#E8B931]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -154,10 +154,10 @@ const ConsultPage = () => {
 
                 {/* Success Message */}
                 <div className="space-y-4 max-w-xl mx-auto">
-                  <h2 className="text-3xl font-bold text-white">
+                  <h2 className="text-3xl font-bold text-foreground">
                     Request Received!
                   </h2>
-                  <p className="text-lg text-gray-400 leading-relaxed">
+                  <p className="text-lg text-muted-foreground leading-relaxed">
                     Thank you for your query. We've received your case details and will contact you back soon with the right lawyer for your needs.
                   </p>
                 </div>

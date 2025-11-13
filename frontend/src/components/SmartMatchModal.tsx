@@ -67,26 +67,26 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-card border border-border rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom-4 duration-300">
         {/* Header */}
-        <div className="relative p-6 border-b border-gray-700">
+        <div className="relative p-6 border-b border-border">
           <Button
             variant="ghost"
             size="sm"
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-full hover:bg-gray-800 text-gray-400 hover:text-yellow-400 transition-colors"
+            className="absolute right-4 top-4 rounded-full hover:bg-muted text-muted-foreground hover:text-primary transition-colors"
           >
             <X className="w-5 h-5" />
           </Button>
           
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-black" />
+              <Sparkles className="w-6 h-6 text-primary-foreground" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-white">AI-Powered Lawyer Match</h2>
-              <p className="text-gray-400 text-sm">Get personalized lawyer recommendations based on your needs</p>
+              <h2 className="text-2xl font-bold text-foreground">AI-Powered Lawyer Match</h2>
+              <p className="text-muted-foreground text-sm">Get personalized lawyer recommendations based on your needs</p>
             </div>
           </div>
         </div>
@@ -95,22 +95,22 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Error Alert */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-red-400 text-sm font-medium">Error</p>
-                <p className="text-red-300 text-sm mt-1">{error}</p>
+                <p className="text-destructive text-sm font-medium">Error</p>
+                <p className="text-destructive/80 text-sm mt-1">{error}</p>
               </div>
             </div>
           )}
 
           {/* Case Type */}
           <div>
-            <Label htmlFor="caseType" className="text-gray-300 mb-2 block">
+            <Label htmlFor="caseType" className="text-foreground mb-2 block">
               Legal Category *
             </Label>
             <Select value={formData.caseType} onValueChange={(value) => handleInputChange('caseType', value)}>
-              <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+              <SelectTrigger className="bg-background border-border text-foreground">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
@@ -126,7 +126,7 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
 
           {/* Case Description */}
           <div>
-            <Label htmlFor="caseDescription" className="text-gray-300 mb-2 block">
+            <Label htmlFor="caseDescription" className="text-foreground mb-2 block">
               Describe Your Legal Issue *
             </Label>
             <Textarea
@@ -134,16 +134,16 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
               value={formData.caseDescription}
               onChange={(e) => handleInputChange('caseDescription', e.target.value)}
               placeholder="Please provide details about your legal situation..."
-              className="min-h-[100px] bg-gray-800 border-gray-600 text-white placeholder-gray-400 resize-none"
+              className="min-h-[100px] bg-background border-border text-foreground placeholder-muted-foreground resize-none"
               required
             />
-            <p className="text-xs text-gray-500 mt-1">Be specific to get the best matches</p>
+            <p className="text-xs text-muted-foreground mt-1">Be specific to get the best matches</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             {/* Location */}
             <div>
-              <Label htmlFor="location" className="text-gray-300 mb-2 block">
+              <Label htmlFor="location" className="text-foreground mb-2 block">
                 Preferred Location
               </Label>
               <Input
@@ -151,13 +151,13 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
                 placeholder="e.g., Chennai, Mumbai"
-                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                className="bg-background border-border text-foreground placeholder-muted-foreground"
               />
             </div>
 
             {/* Budget */}
             <div>
-              <Label htmlFor="budget" className="text-gray-300 mb-2 block">
+              <Label htmlFor="budget" className="text-foreground mb-2 block">
                 Budget (₹)
               </Label>
               <Input
@@ -166,7 +166,7 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
                 value={formData.budget}
                 onChange={(e) => handleInputChange('budget', e.target.value)}
                 placeholder="e.g., 3000"
-                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                className="bg-background border-border text-foreground placeholder-muted-foreground"
               />
             </div>
           </div>
@@ -174,11 +174,11 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
           <div className="grid grid-cols-2 gap-4">
             {/* Urgency */}
             <div>
-              <Label htmlFor="urgency" className="text-gray-300 mb-2 block">
+              <Label htmlFor="urgency" className="text-foreground mb-2 block">
                 Urgency Level
               </Label>
               <Select value={formData.urgency} onValueChange={(value: any) => handleInputChange('urgency', value)}>
-                <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+                <SelectTrigger className="bg-background border-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -191,7 +191,7 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
 
             {/* Preferred Experience */}
             <div>
-              <Label htmlFor="experience" className="text-gray-300 mb-2 block">
+              <Label htmlFor="experience" className="text-foreground mb-2 block">
                 Min. Experience (years)
               </Label>
               <Input
@@ -200,18 +200,18 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
                 value={formData.preferredExperience}
                 onChange={(e) => handleInputChange('preferredExperience', e.target.value)}
                 placeholder="e.g., 10"
-                className="bg-gray-800 border-gray-600 text-white placeholder-gray-400"
+                className="bg-background border-border text-foreground placeholder-muted-foreground"
               />
             </div>
           </div>
 
           {/* Language Preference */}
           <div>
-            <Label htmlFor="language" className="text-gray-300 mb-2 block">
+            <Label htmlFor="language" className="text-foreground mb-2 block">
               Language Preference
             </Label>
             <Select value={formData.languagePreference} onValueChange={(value) => handleInputChange('languagePreference', value)}>
-              <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
+              <SelectTrigger className="bg-background border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -230,11 +230,11 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
             <Button
               type="submit"
               disabled={isLoading || !formData.caseDescription}
-              className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-black font-semibold disabled:opacity-50 transition-all duration-300"
+              className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-primary-foreground font-semibold disabled:opacity-50 transition-all duration-300"
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin mr-2" />
+                  <div className="w-4 h-4 border-2 border-primary-foreground/20 border-t-primary-foreground rounded-full animate-spin mr-2" />
                   Finding Best Matches...
                 </>
               ) : (
@@ -248,13 +248,13 @@ export default function SmartMatchModal({ isOpen, onClose, onMatchComplete }: Sm
               type="button"
               variant="outline"
               onClick={onClose}
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 hover:text-yellow-400 hover:border-yellow-400"
+              className="border-border text-foreground hover:bg-muted hover:text-primary hover:border-primary"
             >
               Cancel
             </Button>
           </div>
 
-          <p className="text-xs text-gray-400 text-center">
+          <p className="text-xs text-muted-foreground text-center">
             Our AI analyzes your requirements to match you with the most suitable lawyers
           </p>
         </form>

@@ -85,7 +85,7 @@ const Pricing = () => {
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
 						</div>
-						<Button className="w-full rounded-full bg-gray-200 text-black hover:bg-gray-300 font-body">
+						<Button className="w-full rounded-full bg-muted text-muted-foreground hover:bg-muted/80 font-body">
 							Subscribe
 						</Button>
 					</div>
@@ -105,7 +105,7 @@ const Pricing = () => {
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
 						</div>
-						<Button className="w-full rounded-full bg-primary text-black hover:bg-primary/90 font-body">
+						<Button className="w-full rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-body">
 							Subscribe
 						</Button>
 					</div>
