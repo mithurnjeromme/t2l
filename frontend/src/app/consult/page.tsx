@@ -89,10 +89,10 @@ const ConsultPage = () => {
       <Header />
 
       {/* Main Content */}
-      <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-6">
-        <div className="w-full max-w-4xl">
+      <div className="relative z-10 pt-16 px-6">
+        <div className="w-full max-w-4xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12 space-y-4">
+          <div className="text-center mb-16 space-y-4">
             {/* Title with FlipWords */}
             <TypingEffect />
 
@@ -119,26 +119,26 @@ const ConsultPage = () => {
                   />
                 </div>
 
-                {/* Premium Submit Button */}
+                {/* Premium Capsule Submit Button */}
                 <div className="flex justify-center pt-4">
                   <button
                     onClick={handleSubmit}
                     disabled={!userQuery.trim() || isSubmitting}
-                    className="relative group overflow-hidden bg-gradient-to-r from-[#E8B931] via-[#F4D03F] to-[#E8B931] hover:from-[#F4D03F] hover:via-[#E8B931] hover:to-[#F4D03F] text-black font-bold text-lg py-5 px-16 rounded-2xl shadow-2xl shadow-[#E8B931]/30 hover:shadow-[#E8B931]/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 transform hover:scale-[1.02] active:scale-[0.98]"
+                    className="group bg-gradient-to-r from-[#E8B931] to-[#F4D03F] hover:from-[#F4D03F] hover:to-[#E8B931] text-black font-medium text-sm py-3 px-8 rounded-full shadow-md shadow-[#E8B931]/20 hover:shadow-lg hover:shadow-[#E8B931]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
                   >
-                    <div className="relative flex items-center gap-3">
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="w-6 h-6 animate-spin" />
-                          <span>Submitting...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Submit Case</span>
-                          <Send className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:scale-110" />
-                        </>
-                      )}
-                    </div>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Submit Case</span>
+                        <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
