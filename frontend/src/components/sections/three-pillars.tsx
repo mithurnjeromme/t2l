@@ -29,10 +29,10 @@ export default function ThreePillarsSection() {
               <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-[#DF9C49]" />
               </div>
-              <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-black dark:text-white font-headline">
+              <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
                 Online Client-Lawyer Matchmaking
               </h2>
-              <p className="mt-4 text-left text-base/6 text-black/90 dark:text-white/90 font-body">
+              <p className="mt-4 text-left text-base/6 text-foreground/80 font-body">
                 Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.
               </p>
             </div>
@@ -44,10 +44,10 @@ export default function ThreePillarsSection() {
             <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
               <FileText className="w-6 h-6 text-[#DF9C49]" />
             </div>
-            <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-black dark:text-white font-headline">
+            <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
               Automated Document Drafting
             </h2>
-            <p className="mt-4 max-w-[26rem] text-left text-base/6 text-black/80 dark:text-white/90 font-body">
+            <p className="mt-4 max-w-[26rem] text-left text-base/6 text-foreground/80 font-body">
               Generate professional legal documents in minutes. Our AI-powered system creates accurate, customized legal documents tailored to your needs.
             </p>
           </WobbleCard>
@@ -58,10 +58,10 @@ export default function ThreePillarsSection() {
               <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
                 <MessageSquare className="w-6 h-6 text-[#DF9C49]" />
               </div>
-              <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-black dark:text-white font-headline">
+              <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
                 Legal Services with AI Chatbot Access
               </h2>
-              <p className="mt-4 max-w-[26rem] text-left text-base/6 text-black/90 dark:text-white/90 font-body">
+              <p className="mt-4 max-w-[26rem] text-left text-base/6 text-foreground/80 font-body">
                 Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.
               </p>
             </div>

@@ -71,10 +71,10 @@ const About = () => {
                 <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
               </div>
               <div>
-                <h3 className="text-lg font-body font-semibold text-foreground dark:text-white mb-1.5">
+                <h3 className="text-lg font-body font-semibold text-foreground mb-1.5">
                   {feature.title}
                 </h3>
-                <p className="text-muted-foreground dark:text-white/90 font-body text-sm leading-relaxed">
+                <p className="text-muted-foreground font-body text-sm leading-relaxed">
                   {feature.description}
                 </p>
               </div>

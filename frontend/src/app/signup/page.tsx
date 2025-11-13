@@ -269,8 +269,8 @@ const SignupPage = () => {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left side - Image and branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden rounded-r-3xl">
-        <div className="absolute inset-0 bg-black flex flex-col justify-between p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-background relative overflow-hidden rounded-r-3xl">
+        <div className="absolute inset-0 bg-background flex flex-col justify-between p-12">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Link href="/" className="flex items-center gap-3 group">
@@ -281,7 +281,7 @@ const SignupPage = () => {
           
           {/* Main content */}
           <div className="flex-1 flex flex-col justify-center">
-            <h1 className="text-5xl font-bold text-white mb-8 leading-tight">
+            <h1 className="text-5xl font-bold text-foreground mb-8 leading-tight">
               We Simplify Legal<br />
               Access for <span className="text-primary">Everyone</span>.
             </h1>
@@ -299,7 +299,7 @@ const SignupPage = () => {
           </div>
           
           {/* Terms */}
-          <div className="text-white/60 text-sm">
+          <div className="text-muted-foreground text-sm">
             By Signing in, You accept our Terms & Condition and Privacy Policy
           </div>
         </div>
@@ -308,7 +308,7 @@ const SignupPage = () => {
       {/* Right side - Signup form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-12">
         <div className="max-w-md mx-auto w-full">
-          <h2 className="text-3xl font-bold text-white mb-8">Sign up</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8">Sign up</h2>
           
           {/* Signup type selector */}
           <div className="mb-8">
@@ -339,7 +339,7 @@ const SignupPage = () => {
               placeholder="Name"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
             />
 
@@ -348,7 +348,7 @@ const SignupPage = () => {
               placeholder="Email"
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
             />
 
@@ -357,7 +357,7 @@ const SignupPage = () => {
               placeholder="Password"
               value={formData.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className="bg-white/5 border-white/20 text-white placeholder-white/50"
+              className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
             />
 
@@ -368,7 +368,7 @@ const SignupPage = () => {
                 placeholder="+91"
                 value={formData.countryCode}
                 onChange={(e) => handleInputChange('countryCode', e.target.value)}
-                className="w-20 bg-white/5 border-white/20 text-white placeholder-white/50 text-center"
+                className="w-20 bg-background border-border text-foreground placeholder-muted-foreground text-center"
                 required
               />
               <Input
@@ -376,7 +376,7 @@ const SignupPage = () => {
                 placeholder="Mobile Number"
                 value={formData.mobile}
                 onChange={(e) => handleInputChange('mobile', e.target.value)}
-                className="flex-1 bg-white/5 border-white/20 text-white placeholder-white/50"
+                className="flex-1 bg-background border-border text-foreground placeholder-muted-foreground"
                 required
               />
             </div>
@@ -389,7 +389,7 @@ const SignupPage = () => {
                   placeholder="City"
                   value={formData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
               </>
@@ -403,7 +403,7 @@ const SignupPage = () => {
                   placeholder="Bar Council Registration Number"
                   value={formData.barNumber}
                   onChange={(e) => handleInputChange('barNumber', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
@@ -412,12 +412,12 @@ const SignupPage = () => {
                   placeholder="Years of Experience"
                   value={formData.experience}
                   onChange={(e) => handleInputChange('experience', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
                 <Select onValueChange={(value) => handleInputChange('specialization', value)}>
-                  <SelectTrigger className="bg-white/5 border-white/20 text-white">
+                  <SelectTrigger className="bg-background border-border text-foreground">
                     <SelectValue placeholder="Specialization" />
                   </SelectTrigger>
                   <SelectContent>
@@ -437,7 +437,7 @@ const SignupPage = () => {
                   placeholder="Educational Background"
                   value={formData.education}
                   onChange={(e) => handleInputChange('education', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
@@ -446,7 +446,7 @@ const SignupPage = () => {
                   placeholder="Court Practice Location"
                   value={formData.courtPractice}
                   onChange={(e) => handleInputChange('courtPractice', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
@@ -455,7 +455,7 @@ const SignupPage = () => {
                   placeholder="Languages Spoken"
                   value={formData.languages}
                   onChange={(e) => handleInputChange('languages', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
@@ -464,13 +464,13 @@ const SignupPage = () => {
                   placeholder="Consultation Fee (₹)"
                   value={formData.consultationFee}
                   onChange={(e) => handleInputChange('consultationFee', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
                 {/* Profile Image Upload */}
                 <div className="space-y-3">
-                  <label className="block text-white/70 text-sm font-medium">
+                  <label className="block text-muted-foreground/70 text-sm font-medium">
                     Profile Picture (Optional)
                   </label>
                   <div className="flex items-center gap-4">
@@ -479,7 +479,7 @@ const SignupPage = () => {
                         <img
                           src={imagePreview}
                           alt="Profile preview"
-                          className="w-16 h-16 rounded-full object-cover border-2 border-white/20"
+                          className="w-16 h-16 rounded-full object-cover border-2 border-border"
                         />
                         <button
                           type="button"
@@ -493,8 +493,8 @@ const SignupPage = () => {
                         </button>
                       </div>
                     ) : (
-                      <div className="w-16 h-16 rounded-full bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
+                        <svg className="w-6 h-6 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                       </div>
@@ -509,14 +509,14 @@ const SignupPage = () => {
                       />
                       <label
                         htmlFor="profile-image"
-                        className="cursor-pointer inline-flex items-center px-4 py-2 bg-white/10 border border-white/20 text-white text-sm rounded-lg hover:bg-white/20 transition-colors"
+                        className="cursor-pointer inline-flex items-center px-4 py-2 bg-muted border border-border text-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
                       >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         Upload Image
                       </label>
-                      <p className="text-white/50 text-xs mt-1">
+                      <p className="text-muted-foreground/50 text-xs mt-1">
                         Max 5MB, JPG/PNG only
                       </p>
                     </div>
@@ -527,7 +527,7 @@ const SignupPage = () => {
                   placeholder="Professional Bio"
                   value={formData.bio}
                   onChange={(e) => handleInputChange('bio', e.target.value)}
-                  className="bg-white/5 border-white/20 text-white placeholder-white/50 min-h-[100px]"
+                  className="bg-background border-border text-foreground placeholder-muted-foreground min-h-[100px]"
                   required
                 />
               </>
@@ -535,33 +535,33 @@ const SignupPage = () => {
 
             <Button
               type="submit"
-              className="w-full bg-[#009E98] hover:bg-[#008882] text-white font-semibold py-3 rounded-xl"
+              className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold py-3 rounded-xl"
             >
               Continue
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-white/60 mb-4">
+            <p className="text-muted-foreground mb-4">
               Already have an account?{' '}
-              <Link href="/login" className="text-[#009E98] hover:underline">
+              <Link href="/login" className="text-secondary hover:underline">
                 Login
               </Link>
             </p>
             
             <div className="relative mb-4">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/20"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-background px-2 text-white/60">or</span>
+                <span className="bg-background px-2 text-muted-foreground">or</span>
               </div>
             </div>
             
             <Button
               type="button"
               variant="outline"
-              className="w-full bg-white/10 border-white/20 text-white hover:bg-white/20"
+              className="w-full bg-muted border-border text-foreground hover:bg-muted/80"
             >
               Sign in with Google
             </Button>

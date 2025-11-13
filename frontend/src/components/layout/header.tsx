@@ -432,7 +432,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             </Link>
           )}
         </div>
-        <nav className="hidden md:flex items-center justify-center gap-8 text-foreground dark:text-white text-sm font-body justify-self-center font-medium">
+        <nav className="hidden md:flex items-center justify-center gap-8 text-foreground text-sm font-body justify-self-center font-medium">
           <Link
             href="/consult"
             className={cn(
@@ -480,7 +480,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             </Button>
             <Button
               asChild
-              className="rounded-full bg-primary dark:bg-[#009E98] hover:bg-primary/90 dark:hover:bg-[#009E98]/90 text-primary-foreground px-6 transition-colors"
+              className="rounded-full bg-primary dark:bg-secondary hover:bg-primary/90 dark:hover:bg-secondary/90 text-primary-foreground px-6 transition-colors"
             >
               <Link href="/signup">Signup</Link>
             </Button>

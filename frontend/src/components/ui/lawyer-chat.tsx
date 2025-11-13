@@ -183,33 +183,33 @@ export const LawyerChat = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/95 backdrop-blur-xl z-[60] flex items-center justify-center p-4 animate-in fade-in duration-300">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[60] flex items-center justify-center p-4 animate-in fade-in duration-300">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
 
-      <div className="relative bg-gradient-to-br from-gray-900/98 via-black/98 to-gray-900/98 border border-white/10 rounded-3xl max-w-5xl w-full h-[90vh] overflow-hidden shadow-[0_0_100px_rgba(250,204,21,0.1)] backdrop-blur-2xl flex flex-col">
+      <div className="relative bg-gradient-to-br from-card via-card to-card border border-border rounded-3xl max-w-5xl w-full h-[90vh] overflow-hidden shadow-lg backdrop-blur-2xl flex flex-col">
         {/* Chat Header */}
-        <div className="relative bg-gradient-to-r from-gray-900/95 via-gray-950/95 to-gray-900/95 border-b border-white/10 p-6">
+        <div className="relative bg-card border-b border-border p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {/* Lawyer Avatar */}
               <div className="relative">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border-2 border-yellow-400/30 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 border-2 border-primary/30 flex items-center justify-center">
                   <span className="text-2xl">⚖️</span>
                 </div>
-                <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 bg-secondary rounded-full border-2 border-card"></div>
               </div>
 
               {/* Lawyer Info */}
               <div>
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                   {maskName(lawyerName)}
-                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">
+                  <span className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary border border-primary/30">
                     Verified
                   </span>
                 </h3>
-                <p className="text-white/60 text-sm">{lawyerSpecialization}</p>
-                <p className="text-yellow-400 text-xs font-semibold mt-0.5">
+                <p className="text-muted-foreground text-sm">{lawyerSpecialization}</p>
+                <p className="text-primary text-xs font-semibold mt-0.5">
                   ₹{perMinuteRate}/min • Available Now
                 </p>
               </div>
@@ -217,32 +217,32 @@ export const LawyerChat = ({
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
-              <button className="w-10 h-10 rounded-full bg-white/5 hover:bg-green-500/20 border border-white/10 hover:border-green-500/50 flex items-center justify-center transition-all duration-300 group">
-                <Phone className="w-5 h-5 text-white/60 group-hover:text-green-400 transition-colors" />
+              <button className="w-10 h-10 rounded-full bg-muted hover:bg-secondary/20 border border-border hover:border-secondary/50 flex items-center justify-center transition-all duration-300 group">
+                <Phone className="w-5 h-5 text-muted-foreground group-hover:text-secondary transition-colors" />
               </button>
-              <button className="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-500/50 flex items-center justify-center transition-all duration-300 group">
-                <Video className="w-5 h-5 text-white/60 group-hover:text-blue-400 transition-colors" />
+              <button className="w-10 h-10 rounded-full bg-muted hover:bg-accent/20 border border-border hover:border-accent/50 flex items-center justify-center transition-all duration-300 group">
+                <Video className="w-5 h-5 text-muted-foreground group-hover:text-accent transition-colors" />
               </button>
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-500/50 flex items-center justify-center transition-all duration-300 group"
+                className="w-10 h-10 rounded-full bg-muted hover:bg-destructive/20 border border-border hover:border-destructive/50 flex items-center justify-center transition-all duration-300 group"
               >
-                <X className="w-5 h-5 text-white/60 group-hover:text-red-400 transition-colors" />
+                <X className="w-5 h-5 text-muted-foreground group-hover:text-destructive transition-colors" />
               </button>
             </div>
           </div>
 
           {/* Request Status Banner */}
           {chatRequest.status === "pending" && (
-            <div className="mt-4 bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-yellow-400/20 flex items-center justify-center">
-                <Clock className="w-4 h-4 text-yellow-400 animate-pulse" />
+            <div className="mt-4 bg-primary/10 border border-primary/30 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                <Clock className="w-4 h-4 text-primary animate-pulse" />
               </div>
               <div className="flex-1">
-                <p className="text-yellow-400 text-sm font-semibold">
+                <p className="text-primary text-sm font-semibold">
                   Request Pending
                 </p>
-                <p className="text-white/60 text-xs">
+                <p className="text-muted-foreground text-xs">
                   Waiting for lawyer to accept your consultation request...
                 </p>
               </div>
@@ -250,15 +250,15 @@ export const LawyerChat = ({
           )}
 
           {chatRequest.status === "accepted" && (
-            <div className="mt-4 bg-green-400/10 border border-green-400/30 rounded-xl p-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-green-400/20 flex items-center justify-center">
-                <CheckCheck className="w-4 h-4 text-green-400" />
+            <div className="mt-4 bg-secondary/10 border border-secondary/30 rounded-xl p-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
+                <CheckCheck className="w-4 h-4 text-secondary" />
               </div>
               <div className="flex-1">
-                <p className="text-green-400 text-sm font-semibold">
+                <p className="text-secondary text-sm font-semibold">
                   Request Accepted
                 </p>
-                <p className="text-white/60 text-xs">
+                <p className="text-muted-foreground text-xs">
                   You can now chat with your lawyer
                 </p>
               </div>
@@ -269,15 +269,15 @@ export const LawyerChat = ({
         {/* Messages Area */}
         <div
           ref={chatContainerRef}
-          className="flex-1 overflow-y-auto p-6 space-y-4 bg-black/20"
+          className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/20"
           style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         >
           {/* Date Separator */}
           <div className="flex items-center justify-center mb-6">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5">
-              <p className="text-white/60 text-xs font-medium">
+            <div className="bg-muted backdrop-blur-sm border border-border rounded-full px-4 py-1.5">
+              <p className="text-muted-foreground text-xs font-medium">
                 {formatDate(new Date())}
               </p>
             </div>
@@ -286,17 +286,17 @@ export const LawyerChat = ({
           {/* Initial Case Request Card */}
           <div className="flex justify-end mb-6">
             <div className="max-w-xl">
-              <div className="bg-gradient-to-br from-yellow-400/10 via-yellow-500/5 to-yellow-600/10 border border-yellow-400/30 rounded-2xl rounded-tr-md p-4 shadow-lg">
+              <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-primary/10 border border-primary/30 rounded-2xl rounded-tr-md p-4 shadow-lg">
                 <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-yellow-400" />
-                  <p className="text-xs font-bold text-yellow-400 uppercase tracking-wider">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <p className="text-xs font-bold text-primary uppercase tracking-wider">
                     Consultation Request
                   </p>
                 </div>
-                <p className="text-white text-sm mb-3 leading-relaxed">
+                <p className="text-foreground text-sm mb-3 leading-relaxed">
                   {chatRequest.caseDescription}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-white/50 pt-2 border-t border-white/10">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-2 border-t border-border">
                   <Clock className="w-3 h-3" />
                   <span>
                     Preferred:{" "}
@@ -304,10 +304,10 @@ export const LawyerChat = ({
                   </span>
                 </div>
                 <div className="flex items-center justify-end gap-1 mt-2">
-                  <span className="text-white/40 text-xs">
+                  <span className="text-muted-foreground/40 text-xs">
                     {formatTime(chatRequest.timestamp)}
                   </span>
-                  <CheckCheck className="w-4 h-4 text-yellow-400" />
+                  <CheckCheck className="w-4 h-4 text-primary" />
                 </div>
               </div>
             </div>
@@ -325,27 +325,27 @@ export const LawyerChat = ({
                 <div
                   className={`rounded-2xl p-4 shadow-lg ${
                     message.sender === "client"
-                      ? "bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 border border-yellow-400/30 rounded-tr-md"
-                      : "bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-tl-md"
+                      ? "bg-gradient-to-br from-primary/20 to-primary/10 border border-primary/30 rounded-tr-md"
+                      : "bg-gradient-to-br from-muted/50 to-muted/20 border border-border rounded-tl-md"
                   }`}
                 >
-                  <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
                     {message.content}
                   </p>
                   <div className="flex items-center justify-end gap-1 mt-2">
-                    <span className="text-white/40 text-xs">
+                    <span className="text-muted-foreground/40 text-xs">
                       {formatTime(message.timestamp)}
                     </span>
                     {message.sender === "client" && (
                       <>
                         {message.status === "sent" && (
-                          <Check className="w-4 h-4 text-white/40" />
+                          <Check className="w-4 h-4 text-muted-foreground/40" />
                         )}
                         {message.status === "delivered" && (
-                          <CheckCheck className="w-4 h-4 text-white/40" />
+                          <CheckCheck className="w-4 h-4 text-muted-foreground/40" />
                         )}
                         {message.status === "read" && (
-                          <CheckCheck className="w-4 h-4 text-yellow-400" />
+                          <CheckCheck className="w-4 h-4 text-primary" />
                         )}
                       </>
                     )}
@@ -358,18 +358,18 @@ export const LawyerChat = ({
           {/* Typing Indicator */}
           {isLawyerTyping && (
             <div className="flex justify-start">
-              <div className="bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10 rounded-2xl rounded-tl-md px-5 py-3">
+              <div className="bg-gradient-to-br from-muted/50 to-muted/20 border border-border rounded-2xl rounded-tl-md px-5 py-3">
                 <div className="flex items-center gap-1">
                   <div
-                    className="w-2 h-2 bg-white/40 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                     style={{ animationDelay: "0ms" }}
                   ></div>
                   <div
-                    className="w-2 h-2 bg-white/40 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                     style={{ animationDelay: "150ms" }}
                   ></div>
                   <div
-                    className="w-2 h-2 bg-white/40 rounded-full animate-bounce"
+                    className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                     style={{ animationDelay: "300ms" }}
                   ></div>
                 </div>
@@ -381,22 +381,22 @@ export const LawyerChat = ({
         </div>
 
         {/* Input Area */}
-        <div className="relative bg-gradient-to-r from-gray-900/95 via-gray-950/95 to-gray-900/95 border-t border-white/10 p-6">
+        <div className="relative bg-card border-t border-border p-6">
           {chatRequest.status === "pending" ? (
             // Locked Input
-            <div className="bg-white/5 border-2 border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center gap-3">
-              <div className="w-14 h-14 rounded-full bg-yellow-400/10 border border-yellow-400/30 flex items-center justify-center">
-                <Lock className="w-6 h-6 text-yellow-400" />
+            <div className="bg-muted border-2 border-border rounded-2xl p-6 flex flex-col items-center justify-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+                <Lock className="w-6 h-6 text-primary" />
               </div>
               <div className="text-center">
-                <p className="text-white font-semibold mb-1">Chat Locked</p>
-                <p className="text-white/60 text-sm">
+                <p className="text-foreground font-semibold mb-1">Chat Locked</p>
+                <p className="text-muted-foreground text-sm">
                   Waiting for lawyer to accept your request...
                 </p>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <Loader2 className="w-4 h-4 text-yellow-400 animate-spin" />
-                <span className="text-yellow-400 text-xs font-medium">
+                <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                <span className="text-primary text-xs font-medium">
                   Processing request
                 </span>
               </div>
@@ -415,19 +415,19 @@ export const LawyerChat = ({
                     }
                   }}
                   placeholder="Type your message..."
-                  className="min-h-[56px] max-h-32 resize-none bg-black/40 border-2 border-white/10 focus:border-yellow-400/50 rounded-2xl text-white placeholder-gray-500 focus:ring-2 focus:ring-yellow-400/20 transition-all px-4 py-3 pr-12"
+                  className="min-h-[56px] max-h-32 resize-none bg-muted/50 border-2 border-border focus:border-primary/50 rounded-2xl text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary/20 transition-all px-4 py-3 pr-12"
                   rows={1}
                 />
-                <div className="absolute bottom-3 right-3 text-xs text-white/30">
+                <div className="absolute bottom-3 right-3 text-xs text-muted-foreground/30">
                   {inputMessage.length}/1000
                 </div>
               </div>
               <Button
                 onClick={handleSendMessage}
                 disabled={!inputMessage.trim()}
-                className="h-14 w-14 rounded-2xl bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-600 hover:to-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-400/30 hover:shadow-xl hover:shadow-yellow-400/50 transition-all duration-300 flex items-center justify-center group p-0"
+                className="h-14 w-14 rounded-2xl bg-gradient-to-r from-primary via-primary to-primary hover:from-primary/90 hover:via-primary/90 hover:to-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/50 transition-all duration-300 flex items-center justify-center group p-0"
               >
-                <Send className="w-5 h-5 text-black group-hover:scale-110 transition-transform" />
+                <Send className="w-5 h-5 text-primary-foreground group-hover:scale-110 transition-transform" />
               </Button>
             </div>
           )}

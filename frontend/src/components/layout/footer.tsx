@@ -415,9 +415,9 @@ const IconLogo = () => (
 
 const Footer = () => {
   return (
-    <footer className="bg-white dark:bg-black text-gray-900 dark:text-white border-t border-gray-200 dark:border-white/5 relative overflow-hidden">
+    <footer className="bg-background text-foreground border-t border-border relative overflow-hidden">
       {/* Premium gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-black dark:via-[#0A0A0A] dark:to-black opacity-90 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-background dark:from-black dark:via-[#0A0A0A] dark:to-black opacity-90 pointer-events-none"></div>
 
       <div className="relative z-10">
         {/* Main Footer Content - Perfect Spacing */}
@@ -435,10 +435,10 @@ const Footer = () => {
                     <Turn2LawTextLogo />
                   </div>
                 </Link>
-                <p className="text-gray-600 dark:text-white/60 text-base leading-relaxed font-body max-w-md">
+                <p className="text-muted-foreground text-base leading-relaxed font-body max-w-md">
                   Simplifying legal access to everyone.
                 </p>
-                <p className="text-gray-500 dark:text-white/40 text-sm leading-relaxed font-body max-w-md">
+                <p className="text-muted-foreground/70 text-sm leading-relaxed font-body max-w-md">
                   Making legal services accessible, affordable, and efficient
                   through cutting-edge technology and expert legal
                   professionals.
@@ -447,14 +447,14 @@ const Footer = () => {
 
               {/* Quick Links - 3 columns */}
               <div className="lg:col-span-3">
-                <h3 className="font-heading font-semibold text-lg mb-6 text-gray-900 dark:text-white tracking-tight">
+                <h3 className="font-heading font-semibold text-lg mb-6 text-foreground tracking-tight">
                   Platform
                 </h3>
                 <ul className="space-y-3.5">
                   <li>
                     <Link
                       href="#about"
-                      className="text-gray-600 dark:text-white/60 hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
                       onClick={(e) => {
                         e.preventDefault();
                         document
@@ -470,7 +470,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/consult"
-                      className="text-gray-600 dark:text-white/60 hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">
                         Consult a Lawyer
@@ -480,7 +480,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/documents"
-                      className="text-gray-600 dark:text-white/60 hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">
                         Document Drafting
@@ -490,7 +490,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="/lawgpt"
-                      className="text-gray-600 dark:text-white/60 hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">
                         LawGPT AI Assistant
@@ -500,7 +500,7 @@ const Footer = () => {
                   <li>
                     <Link
                       href="#know-about-us"
-                      className="text-gray-600 dark:text-white/60 hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 text-[15px] font-body inline-flex items-center gap-2 group"
                       onClick={(e) => {
                         e.preventDefault();
                         document
@@ -518,7 +518,7 @@ const Footer = () => {
 
               {/* Connect Section - 4 columns */}
               <div className="lg:col-span-4">
-                <h3 className="font-heading font-semibold text-lg mb-6 text-gray-900 dark:text-white tracking-tight">
+                <h3 className="font-heading font-semibold text-lg mb-6 text-foreground tracking-tight">
                   Connect With Us
                 </h3>
                 <div className="flex flex-wrap gap-3 mb-6">
@@ -530,7 +530,7 @@ const Footer = () => {
                     aria-label="WhatsApp"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600 dark:text-white/70 group-hover:text-[#25D366] transition-colors duration-300"
+                      className="w-5 h-5 text-muted-foreground/70 group-hover:text-[#25D366] transition-colors duration-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -545,7 +545,7 @@ const Footer = () => {
                     aria-label="Instagram"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600 dark:text-white/70 group-hover:text-[#E4405F] transition-colors duration-300"
+                      className="w-5 h-5 text-muted-foreground/70 group-hover:text-[#E4405F] transition-colors duration-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -560,7 +560,7 @@ const Footer = () => {
                     aria-label="Facebook"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600 dark:text-white/70 group-hover:text-[#1877F2] transition-colors duration-300"
+                      className="w-5 h-5 text-muted-foreground/70 group-hover:text-[#1877F2] transition-colors duration-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -575,7 +575,7 @@ const Footer = () => {
                     aria-label="LinkedIn"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600 dark:text-white/70 group-hover:text-[#0A66C2] transition-colors duration-300"
+                      className="w-5 h-5 text-muted-foreground/70 group-hover:text-[#0A66C2] transition-colors duration-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -590,7 +590,7 @@ const Footer = () => {
                     aria-label="Twitter/X"
                   >
                     <svg
-                      className="w-5 h-5 text-gray-600 dark:text-white/70 group-hover:text-[#1DA1F2] transition-colors duration-300"
+                      className="w-5 h-5 text-muted-foreground/70 group-hover:text-[#1DA1F2] transition-colors duration-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
