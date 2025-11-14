@@ -13,23 +13,23 @@ function SkeletonLoader() {
   return (
     <div className="flex flex-col gap-3 mt-4">
       <div
-        className="h-3 rounded bg-neutral-400/60 animate-pulse"
+        className="h-3 rounded bg-neutral-300 dark:bg-neutral-400/60 animate-pulse"
         style={{ width: "80%" }}
       />
       <div
-        className="h-3 rounded bg-neutral-400/40 animate-pulse"
+        className="h-3 rounded bg-neutral-300/80 dark:bg-neutral-400/40 animate-pulse"
         style={{ width: "60%" }}
       />
       <div
-        className="h-3 rounded bg-neutral-400/50 animate-pulse"
+        className="h-3 rounded bg-neutral-300/90 dark:bg-neutral-400/50 animate-pulse"
         style={{ width: "70%" }}
       />
       <div
-        className="h-3 rounded bg-neutral-400/30 animate-pulse"
+        className="h-3 rounded bg-neutral-300/70 dark:bg-neutral-400/30 animate-pulse"
         style={{ width: "40%" }}
       />
       <div
-        className="h-3 rounded bg-neutral-400/20 animate-pulse"
+        className="h-3 rounded bg-neutral-300/60 dark:bg-neutral-400/20 animate-pulse"
         style={{ width: "30%" }}
       />
     </div>
@@ -62,12 +62,12 @@ function LawGPTSidebar({
 }: LawGPTSidebarProps) {
   return (
     <div
-      className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-card border-r border-border flex flex-col shadow-2xl"
+      className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col shadow-2xl"
       style={{ minWidth: 340 }}
     >
       {/* Header with LawGPT icon and close button */}
       <div
-        className="flex items-center justify-between px-7 pt-3 pb-2"
+        className="flex items-center justify-between px-7 pt-3 pb-2 border-b border-gray-200 dark:border-border/50"
         style={{ minHeight: 56 }}
       >
         <div className="flex items-center gap-3">
@@ -100,7 +100,7 @@ function LawGPTSidebar({
             />
           </svg>
           <span
-            className="font-bold text-2xl text-foreground/80 dark:text-white/80"
+            className="font-bold text-2xl text-gray-800 dark:text-white/80"
             style={{ fontFamily: "Instrument Sans, sans-serif" }}
           >
             LawGPT
@@ -108,11 +108,10 @@ function LawGPTSidebar({
         </div>
         <button
           onClick={onClose}
-          className="ml-2 flex items-center justify-center h-[45px] w-[45px] transition-colors focus:outline-none"
+          className="ml-2 flex items-center justify-center h-[45px] w-[45px] hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors focus:outline-none"
           style={{
             boxShadow: "none",
             background: "none",
-            borderRadius: 9999,
             padding: 0,
           }}
           aria-label="Close sidebar"
@@ -129,15 +128,13 @@ function LawGPTSidebar({
               fillRule="evenodd"
               clipRule="evenodd"
               d="M17.0484 8.0849C17.3881 8.42467 17.3881 8.97551 17.0484 9.31527L11.8635 14.5001L17.0484 19.6849C17.3881 20.0246 17.3881 20.5754 17.0484 20.9153C16.7086 21.255 16.1577 21.255 15.818 20.9153L10.018 15.1153C9.85484 14.9521 9.76318 14.7308 9.76318 14.5001C9.76318 14.2693 9.85484 14.0481 10.018 13.8849L15.818 8.0849C16.1577 7.74514 16.7086 7.74514 17.0484 8.0849Z"
-              fill="white"
-              style={{ fill: "white", fillOpacity: 1 }}
+              className="fill-gray-700 dark:fill-white"
             />
             <path
               fillRule="evenodd"
               clipRule="evenodd"
               d="M10.2852 8.0849C10.6249 8.42467 10.6249 8.97551 10.2852 9.31527L5.10035 14.5001L10.2852 19.6849C10.6249 20.0246 10.6249 20.5754 10.2852 20.9153C9.94542 21.255 9.39456 21.255 9.05481 20.9153L3.25481 15.1153C3.09166 14.9521 3 14.7308 3 14.5001C3 14.2693 3.09166 14.0481 3.25481 13.8849L9.05481 8.0849C9.39456 7.74514 9.94542 7.74514 10.2852 8.0849Z"
-              fill="white"
-              style={{ fill: "white", fillOpacity: 1 }}
+              className="fill-gray-700 dark:fill-white"
             />
           </svg>
         </button>
@@ -147,7 +144,7 @@ function LawGPTSidebar({
       <div className="px-7 pt-4 pb-2">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 bg-secondary/20 hover:bg-secondary/30 text-foreground font-bold transition-colors"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#3C9B97]/20 to-[#3C9B97]/10 hover:from-[#3C9B97]/30 hover:to-[#3C9B97]/20 text-gray-800 dark:text-foreground font-bold transition-all border border-[#3C9B97]/20"
           style={{
             height: 42,
             borderRadius: 13,
@@ -178,7 +175,7 @@ function LawGPTSidebar({
         <div className="flex flex-col gap-4">
           {chatSessions.length === 0 ? (
             <p
-              className="text-muted-foreground dark:text-white/40 text-sm text-center py-8"
+              className="text-gray-500 dark:text-white/40 text-sm text-center py-8"
               style={{ fontFamily: "Instrument Sans, sans-serif" }}
             >
               No chat history yet
@@ -189,23 +186,20 @@ function LawGPTSidebar({
                 key={session.id}
                 onClick={() => onSelectSession(session.id)}
                 className={
-                  `font-bold text-[1.18rem] text-foreground flex items-center transition-colors cursor-pointer select-none ` +
+                  `font-bold text-[1.18rem] flex items-center transition-all cursor-pointer select-none rounded-[13px] ` +
                   (session.id === currentSessionId
-                    ? "bg-muted text-foreground"
-                    : "hover:bg-muted/50 text-muted-foreground/90")
+                    ? "bg-gradient-to-r from-[#3C9B97]/20 to-[#3C9B97]/10 text-gray-800 dark:text-white border border-[#3C9B97]/30"
+                    : "hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-gray-400")
                 }
                 style={{
                   width: 239,
                   height: 42,
-                  borderRadius: 13,
                   paddingLeft: 22,
                   paddingRight: 22,
                   fontFamily: "Instrument Sans, sans-serif",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
                   textOverflow: "ellipsis",
-                  background:
-                    session.id === currentSessionId ? "#3A3A3A" : "none",
                   display: "flex",
                   alignItems: "center",
                   marginLeft: 0,
@@ -410,15 +404,13 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M11.9516 20.9151C11.6119 20.5753 11.6119 20.0245 11.9516 19.6847L17.1365 14.4999L11.9516 9.31508C11.6119 8.97539 11.6119 8.42458 11.9516 8.0847C12.2914 7.74502 12.8423 7.74502 13.182 8.0847L18.982 13.8847C19.1452 14.0479 19.2368 14.2692 19.2368 14.4999C19.2368 14.7307 19.1452 14.9519 18.982 15.1151L13.182 20.9151C12.8423 21.2549 12.2914 21.2549 11.9516 20.9151Z"
-                  fill="white"
-                  style={{ fill: "white", fillOpacity: 1 }}
+                  className="fill-gray-800 dark:fill-white"
                 />
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M19.2549 20.9151C18.9151 20.5753 18.9151 20.0245 19.2549 19.6847L24.4397 14.4999L19.2549 9.31508C18.9151 8.97539 18.9151 8.42458 19.2549 8.0847C19.5946 7.74502 20.1455 7.74502 20.4852 8.0847L26.2852 13.8847C26.4484 14.0479 26.54 14.2692 26.54 14.4999C26.54 14.7307 26.4484 14.9519 26.2852 15.1151L20.4852 20.9151C20.1455 21.2549 19.5946 21.2549 19.2549 20.9151Z"
-                  fill="white"
-                  style={{ fill: "white", fillOpacity: 1 }}
+                  className="fill-gray-800 dark:fill-white"
                 />
               </svg>
             ) : (
@@ -433,15 +425,13 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M11.9516 20.9151C11.6119 20.5753 11.6119 20.0245 11.9516 19.6847L17.1365 14.4999L11.9516 9.31508C11.6119 8.97539 11.6119 8.42458 11.9516 8.0847C12.2914 7.74502 12.8423 7.74502 13.182 8.0847L18.982 13.8847C19.1452 14.0479 19.2368 14.2692 19.2368 14.4999C19.2368 14.7307 19.1452 14.9519 18.982 15.1151L13.182 20.9151C12.8423 21.2549 12.2914 21.2549 11.9516 20.9151Z"
-                  fill="white"
-                  style={{ fill: "white", fillOpacity: 1 }}
+                  className="fill-gray-800 dark:fill-white"
                 />
                 <path
                   fillRule="evenodd"
                   clipRule="evenodd"
                   d="M19.2549 20.9151C18.9151 20.5753 18.9151 20.0245 19.2549 19.6847L24.4397 14.4999L19.2549 9.31508C18.9151 8.97539 18.9151 8.42458 19.2549 8.0847C19.5946 7.74502 20.1455 7.74502 20.4852 8.0847L26.2852 13.8847C26.4484 14.0479 26.54 14.2692 26.54 14.4999C26.54 14.7307 26.4484 14.9519 26.2852 15.1151L20.4852 20.9151C20.1455 21.2549 19.5946 21.2549 19.2549 20.9151Z"
-                  fill="white"
-                  style={{ fill: "white", fillOpacity: 1 }}
+                  className="fill-gray-800 dark:fill-white"
                 />
               </svg>
             )}
@@ -463,12 +453,12 @@ function LawGPTHeader({ onSidebarOpen, sidebarOpen }: LawGPTHeaderProps) {
               justifyContent: "center",
             }}
             aria-label="Separator"
+            className="dark:opacity-100 opacity-40"
           >
             <path
               d="M1 1V44"
-              stroke="#FEFEFE"
+              className="stroke-gray-400 dark:stroke-white"
               strokeOpacity="0.4"
-              style={{ stroke: "#FEFEFE", strokeOpacity: 0.4 }}
             />
           </svg>
 
@@ -849,7 +839,7 @@ export default function LawGPTPage() {
               />
             </svg>
             <span
-              className="font-semibold text-[20px] leading-6 text-foreground/60 dark:text-white/60"
+              className="font-semibold text-[20px] leading-6 text-gray-600 dark:text-white/60"
               style={{ fontFamily: "Instrument Sans, sans-serif" }}
             >
               LawGPT
@@ -857,7 +847,7 @@ export default function LawGPTPage() {
           </div>
 
           <h1
-            className="font-bold text-[40px] leading-[48px] text-foreground dark:text-white mb-8 text-center"
+            className="font-bold text-[40px] leading-[48px] text-gray-900 dark:text-white mb-8 text-center"
             style={{ fontFamily: "Instrument Sans, sans-serif" }}
           >
             What can I help with
@@ -876,38 +866,25 @@ export default function LawGPTPage() {
               minHeight: "132px",
             }}
           >
-            <svg
-              width="537"
-              height={Math.max(
-                132,
-                textareaRef.current
-                  ? textareaRef.current.scrollHeight + 80
-                  : 132,
-              )}
-              viewBox={`0 0 537 ${Math.max(132, textareaRef.current ? textareaRef.current.scrollHeight + 80 : 132)}`}
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="absolute inset-0"
-            >
-              <rect
-                width="537"
-                height={Math.max(
+            <div
+              className="absolute inset-0 bg-gray-100 dark:bg-[#232323] border-2 border-gray-200 dark:border-transparent shadow-lg dark:shadow-none"
+              style={{
+                borderRadius: 28,
+                height: Math.max(
                   132,
                   textareaRef.current
                     ? textareaRef.current.scrollHeight + 80
                     : 132,
-                )}
-                rx="28"
-                fill="#232323"
-              />
-            </svg>
+                ),
+              }}
+            />
 
             <div className="absolute inset-0 flex flex-col justify-start px-8 pt-6">
               <div className="flex items-start">
                 <div className="flex-1">
                   <textarea
                     ref={textareaRef}
-                    className="w-full bg-transparent border-none outline-none text-foreground resize-none"
+                    className="w-full bg-transparent border-none outline-none text-gray-800 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/50 resize-none"
                     placeholder="Ask me anything about law"
                     value={message}
                     onChange={(e) => {
@@ -923,7 +900,6 @@ export default function LawGPTPage() {
                       lineHeight: "1.44",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontWeight: "400",
-                      color: "rgba(255, 255, 255, 0.8)",
                       padding: "0",
                       margin: "0",
                       minHeight: "24px",
@@ -940,7 +916,7 @@ export default function LawGPTPage() {
 
               <div className="absolute bottom-4 right-4">
                 <button
-                  className="w-10 h-10 bg-secondary rounded-full flex items-center justify-center cursor-pointer hover:bg-secondary/80 transition-colors"
+                  className="w-10 h-10 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] rounded-full flex items-center justify-center cursor-pointer transition-all shadow-md hover:shadow-lg"
                   onClick={handleSend}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -948,7 +924,7 @@ export default function LawGPTPage() {
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M8 13C7.86739 13 7.74021 12.9473 7.64645 12.8536C7.55268 12.7598 7.5 12.6326 7.5 12.5L7.5 4.914L5.35355 7.06066C5.30631 7.1079 5.25 7.14504 5.1879 7.17025C5.12581 7.19547 5.05901 7.20826 4.99155 7.20826C4.92409 7.20826 4.85729 7.19547 4.7952 7.17025C4.7331 7.14504 4.67678 7.1079 4.62955 7.06066C4.58231 7.01343 4.54517 6.95711 4.51995 6.89502C4.49474 6.83292 4.48195 6.76612 4.48195 6.69866C4.48195 6.6312 4.49474 6.5644 4.51995 6.50231C4.54517 6.44021 4.58231 6.38389 4.62955 6.33666L7.62955 3.33666C7.67678 3.28942 7.7331 3.25228 7.7952 3.22707C7.85729 3.20185 7.92409 3.18906 7.99155 3.18906C8.05901 3.18906 8.12581 3.20185 8.1879 3.22707C8.25 3.25228 8.30632 3.28942 8.35355 3.33666L11.3536 6.33666C11.4008 6.38389 11.4379 6.44021 11.4632 6.50231C11.4884 6.5644 11.5012 6.6312 11.5012 6.69866C11.5012 6.76612 11.4884 6.83292 11.4632 6.89502C11.4379 6.95711 11.4008 7.01343 11.3536 7.06066C11.2598 7.15443 11.1326 7.20711 11 7.20711C10.9325 7.20711 10.8657 7.19432 10.8036 7.16911C10.7415 7.14389 10.6852 7.10675 10.638 7.05952L8.5 4.914L8.5 12.5C8.5 12.6326 8.44732 12.7598 8.35355 12.8536C8.25979 12.9473 8.13261 13 8 13Z"
-                      fill="#0E0E0E"
+                      fill="white"
                     />
                   </svg>
                 </button>
@@ -986,7 +962,7 @@ export default function LawGPTPage() {
                       <div className="flex flex-col gap-4 w-full">
                         {chat.title && (
                           <h2
-                            className="text-foreground dark:text-white text-[2.5rem] font-bold"
+                            className="text-gray-900 dark:text-white text-[2.5rem] font-bold"
                             style={{
                               fontFamily: "Instrument Sans, sans-serif",
                             }}
@@ -995,7 +971,7 @@ export default function LawGPTPage() {
                           </h2>
                         )}
                         <div
-                          className="text-foreground/90 dark:text-white/90 text-lg leading-7"
+                          className="text-gray-700 dark:text-white/90 text-lg leading-7"
                           style={{ fontFamily: "Instrument Sans, sans-serif" }}
                         >
                           {chat.content}
@@ -1014,32 +990,15 @@ export default function LawGPTPage() {
             </div>
           </div>
 
-          <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-50">
+          <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-50 backdrop-blur-sm">
             <div
-              className="relative"
-              style={{ width: "537px", height: "62px" }}
+              className="relative bg-gray-100 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 shadow-lg"
+              style={{ width: "537px", height: "62px", borderRadius: 31 }}
             >
-              <svg
-                width="537"
-                height="62"
-                viewBox="0 0 537 62"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="absolute inset-0"
-              >
-                <rect
-                  width="537"
-                  height="62"
-                  rx="31"
-                  fill="#D9D9D9"
-                  fillOpacity="0.1"
-                />
-              </svg>
-
               <div className="absolute inset-0 flex items-center px-6">
                 <textarea
                   ref={bottomTextareaRef}
-                  className="flex-1 bg-transparent border-none outline-none text-foreground dark:text-white font-medium resize-none placeholder:text-muted-foreground dark:placeholder:text-white/50"
+                  className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-white font-medium resize-none placeholder:text-gray-500 dark:placeholder:text-white/50"
                   placeholder="Ask me anything about law"
                   value={message}
                   onChange={(e) => {
@@ -1061,7 +1020,7 @@ export default function LawGPTPage() {
                 />
 
                 <button
-                  className="ml-4 w-9 h-9 bg-secondary rounded-full flex items-center justify-center cursor-pointer flex-shrink-0"
+                  className="ml-4 w-9 h-9 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] rounded-full flex items-center justify-center cursor-pointer flex-shrink-0 transition-all shadow-md hover:shadow-lg"
                   onClick={handleSend}
                   style={{ marginLeft: "16px" }}
                 >
@@ -1070,8 +1029,7 @@ export default function LawGPTPage() {
                       fillRule="evenodd"
                       clipRule="evenodd"
                       d="M8 13C7.86739 13 7.74021 12.9473 7.64645 12.8536C7.55268 12.7598 7.5 12.6326 7.5 12.5L7.5 4.914L5.35355 7.06066C5.30631 7.1079 5.25 7.14504 5.1879 7.17025C5.12581 7.19547 5.05901 7.20826 4.99155 7.20826C4.92409 7.20826 4.85729 7.19547 4.7952 7.17025C4.7331 7.14504 4.67678 7.1079 4.62955 7.06066C4.58231 7.01343 4.54517 6.95711 4.51995 6.89502C4.49474 6.83292 4.48195 6.76612 4.48195 6.69866C4.48195 6.6312 4.49474 6.5644 4.51995 6.50231C4.54517 6.44021 4.58231 6.38389 4.62955 6.33666L7.62955 3.33666C7.67678 3.28942 7.7331 3.25228 7.7952 3.22707C7.85729 3.20185 7.92409 3.18906 7.99155 3.18906C8.05901 3.18906 8.12581 3.20185 8.1879 3.22707C8.25 3.25228 8.30632 3.28942 8.35355 3.33666L11.3536 6.33666C11.4008 6.38389 11.4379 6.44021 11.4632 6.50231C11.4884 6.5644 11.5012 6.6312 11.5012 6.69866C11.5012 6.76612 11.4884 6.83292 11.4632 6.89502C11.4379 6.95711 11.4008 7.01343 11.3536 7.06066C11.2598 7.15443 11.1326 7.20711 11 7.20711C10.9325 7.20711 10.8657 7.19432 10.8036 7.16911C10.7415 7.14389 10.6852 7.10675 10.638 7.05952L8.5 4.914L8.5 12.5C8.5 12.6326 8.44732 12.7598 8.35355 12.8536C8.25979 12.9473 8.13261 13 8 13Z"
-                      fill="#0E0E0E"
-                      fillOpacity="0.933333"
+                      fill="white"
                     />
                   </svg>
                 </button>
