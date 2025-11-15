@@ -240,7 +240,7 @@ const SignupPage = () => {
         
         console.log('Submitting lawyer registration with form data and image');
         
-        const response = await fetch('http://localhost:3001/api/auth/register/lawyer', {
+        const response = await fetch('https://turn2law-website.onrender.com/api/auth/register/lawyer', {
           method: 'POST',
           body: formDataToSend
         });
@@ -267,7 +267,7 @@ const SignupPage = () => {
         
         console.log('Submitting client registration:', dataToSend);
         
-        const response = await fetch('http://localhost:3001/api/auth/register/client', {
+        const response = await fetch('https://turn2law-website.onrender.com/api/auth/register/client', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dataToSend)
