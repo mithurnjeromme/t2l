@@ -53,6 +53,16 @@ import {
   ExternalLink
 } from 'lucide-react';
 import Header from '@/components/layout/header';
+import { 
+  getCurrentUser, 
+  getUserProfile, 
+  getWalletBalance, 
+  getTransactions,
+  createTransaction,
+  updateWalletBalance,
+  type WalletBalance,
+  type Transaction as SupabaseTransaction
+} from '@/lib/supabase';
 
 interface User {
   id: string;
@@ -71,8 +81,8 @@ interface Transaction {
   date: string;
   category: string;
   paymentMethod?: string;
-  razorpayOrderId?: string;
-  razorpayPaymentId?: string;
+  paytmOrderId?: string;
+  paytmTransactionId?: string;
 }
 
 interface WalletData {
@@ -82,86 +92,16 @@ interface WalletData {
   pendingAmount: number;
 }
 
-// Declare Razorpay on window
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
-}
-
 const ClientWallet = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [walletData, setWalletData] = useState<WalletData>({
-    balance: 5250.00,
-    totalEarnings: 12000.00,
-    totalSpent: 6750.00,
-    pendingAmount: 500.00
+    balance: 0,
+    totalEarnings: 0,
+    totalSpent: 0,
+    pendingAmount: 0
   });
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: '1',
-      type: 'debit',
-      amount: 1500,
-      description: 'Legal Consultation - Civil Law',
-      status: 'success',
-      date: '2025-10-28T10:30:00',
-      category: 'Consultation',
-      paymentMethod: 'Razorpay',
-      razorpayPaymentId: 'pay_' + Math.random().toString(36).substr(2, 9)
-    },
-    {
-      id: '2',
-      type: 'credit',
-      amount: 5000,
-      description: 'Wallet Top-up',
-      status: 'success',
-      date: '2025-10-25T15:20:00',
-      category: 'Top-up',
-      paymentMethod: 'Razorpay',
-      razorpayPaymentId: 'pay_' + Math.random().toString(36).substr(2, 9)
-    },
-    {
-      id: '3',
-      type: 'debit',
-      amount: 2250,
-      description: 'Legal Consultation - Family Law',
-      status: 'success',
-      date: '2025-10-22T11:00:00',
-      category: 'Consultation',
-      paymentMethod: 'Razorpay'
-    },
-    {
-      id: '4',
-      type: 'credit',
-      amount: 3000,
-      description: 'Wallet Top-up',
-      status: 'success',
-      date: '2025-10-20T09:15:00',
-      category: 'Top-up',
-      paymentMethod: 'Razorpay'
-    },
-    {
-      id: '5',
-      type: 'debit',
-      amount: 3000,
-      description: 'Legal Document Review',
-      status: 'success',
-      date: '2025-10-18T14:45:00',
-      category: 'Service',
-      paymentMethod: 'Razorpay'
-    },
-    {
-      id: '6',
-      type: 'credit',
-      amount: 4000,
-      description: 'Wallet Top-up',
-      status: 'success',
-      date: '2025-10-15T16:30:00',
-      category: 'Top-up',
-      paymentMethod: 'Razorpay'
-    }
-  ]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const [addMoneyAmount, setAddMoneyAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -172,38 +112,66 @@ const ClientWallet = () => {
   const [processingPayment, setProcessingPayment] = useState(false);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (!userData || !token) {
-      window.location.href = '/login';
-      return;
-    }
-    
-    try {
-      const parsedUser = JSON.parse(userData);
-      if (parsedUser.userType !== 'client') {
-        window.location.href = '/dashboard/lawyer';
-        return;
+    const loadWalletData = async () => {
+      try {
+        // Get current user from Supabase
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+          window.location.href = '/login';
+          return;
+        }
+
+        // Get user profile
+        const userProfile = await getUserProfile(currentUser.id);
+        if (!userProfile || userProfile.user_type !== 'client') {
+          window.location.href = '/dashboard/lawyer';
+          return;
+        }
+
+        setUser({
+          id: userProfile.id,
+          email: userProfile.email,
+          fullName: userProfile.full_name,
+          userType: userProfile.user_type,
+          city: userProfile.city
+        });
+
+        // Get wallet balance from Supabase
+        const wallet = await getWalletBalance(currentUser.id);
+        if (wallet) {
+          setWalletData({
+            balance: wallet.balance,
+            totalEarnings: wallet.total_earnings,
+            totalSpent: wallet.total_spent,
+            pendingAmount: wallet.pending_amount
+          });
+        }
+
+        // Get transactions from Supabase
+        const txns = await getTransactions(currentUser.id);
+        const formattedTransactions: Transaction[] = txns.map((txn: SupabaseTransaction) => ({
+          id: txn.id,
+          type: txn.type,
+          amount: txn.amount,
+          description: txn.description,
+          status: txn.status,
+          date: txn.created_at,
+          category: txn.description.includes('Top-up') ? 'Top-up' : 
+                   txn.description.includes('Consultation') ? 'Service' : 
+                   txn.description.includes('Withdrawal') ? 'Withdrawal' : 'Other',
+          paymentMethod: txn.payment_method || 'Paytm',
+          paytmOrderId: txn.razorpay_order_id, // Reuse field for Paytm Order ID
+          paytmTransactionId: txn.razorpay_payment_id // Reuse field for Paytm Transaction ID
+        }));
+        setTransactions(formattedTransactions);
+      } catch (error) {
+        console.error('Error loading wallet data:', error);
+      } finally {
+        setLoading(false);
       }
-      setUser(parsedUser);
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      window.location.href = '/login';
-    } finally {
-      setLoading(false);
-    }
-
-    // Load Razorpay script
-    const script = document.createElement('script');
-    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
     };
+
+    loadWalletData();
   }, []);
 
   const handleAddMoney = async () => {
@@ -223,77 +191,89 @@ const ClientWallet = () => {
       return;
     }
 
+    if (!user) return;
+
     setProcessingPayment(true);
 
     try {
-      // In production, you'll call your backend to create a Razorpay order
-      // For now, we'll simulate the Razorpay integration
-      
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_YOUR_KEY_ID', // Replace with your Razorpay key
-        amount: amount * 100, // Razorpay accepts amount in paise
-        currency: 'INR',
-        name: 'Turn2Law',
+      // Call backend to initiate Paytm payment
+      const response = await fetch('/api/paytm/initiate-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          amount: amount,
+          email: user.email,
+          phone: '', // Add phone if available
+          orderType: 'WALLET_TOPUP'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to initiate payment');
+      }
+
+      // Create pending transaction in Supabase
+      const pendingTxn = await createTransaction({
+        user_id: user.id,
+        type: 'credit',
+        amount: amount,
         description: 'Wallet Top-up',
-        image: '/favicon.svg',
-        handler: function (response: any) {
-          // Payment successful
-          const newTransaction: Transaction = {
-            id: Date.now().toString(),
-            type: 'credit',
-            amount: amount,
-            description: 'Wallet Top-up',
-            status: 'success',
-            date: new Date().toISOString(),
-            category: 'Top-up',
-            paymentMethod: 'Razorpay',
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpayOrderId: response.razorpay_order_id
-          };
+        status: 'pending',
+        payment_method: 'Paytm',
+        razorpay_order_id: data.orderId, // Using this field for Paytm Order ID
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
 
-          setTransactions(prev => [newTransaction, ...prev]);
-          setWalletData(prev => ({
-            ...prev,
-            balance: prev.balance + amount,
-            totalEarnings: prev.totalEarnings + amount
-          }));
-
-          setAddMoneyAmount('');
-          setIsAddMoneyOpen(false);
-          setProcessingPayment(false);
-
-          // Show success message
-          alert(`₹${amount} added successfully to your wallet!`);
-        },
-        prefill: {
-          name: user?.fullName,
-          email: user?.email,
-        },
-        theme: {
-          color: '#3C9B97'
-        },
-        modal: {
-          ondismiss: function() {
-            setProcessingPayment(false);
-          }
-        }
-      };
-
-      if (typeof window !== 'undefined' && window.Razorpay) {
-        const razorpay = new window.Razorpay(options);
-        razorpay.open();
+      // Redirect to Paytm payment page
+      if (data.paymentUrl) {
+        window.location.href = data.paymentUrl;
       } else {
-        alert('Payment gateway is loading. Please try again in a moment.');
-        setProcessingPayment(false);
+        // For testing: simulate successful payment
+        alert('Paytm payment gateway is being set up. For now, simulating successful payment.');
+        
+        // Update transaction to success
+        const newTransaction: Transaction = {
+          id: pendingTxn.data?.id || Date.now().toString(),
+          type: 'credit',
+          amount: amount,
+          description: 'Wallet Top-up',
+          status: 'success',
+          date: new Date().toISOString(),
+          category: 'Top-up',
+          paymentMethod: 'Paytm',
+          paytmOrderId: data.orderId,
+          paytmTransactionId: `PTM${Date.now()}`
+        };
+
+        // Update wallet balance in Supabase
+        await updateWalletBalance(user.id, amount, 'credit');
+
+        setTransactions(prev => [newTransaction, ...prev]);
+        setWalletData(prev => ({
+          ...prev,
+          balance: prev.balance + amount,
+          totalEarnings: prev.totalEarnings + amount
+        }));
+
+        setAddMoneyAmount('');
+        setIsAddMoneyOpen(false);
+        alert(`₹${amount} added successfully to your wallet!`);
       }
     } catch (error) {
       console.error('Payment error:', error);
       alert('Failed to process payment. Please try again.');
+    } finally {
       setProcessingPayment(false);
     }
   };
 
-  const handleWithdraw = () => {
+  const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
       alert('Please enter a valid amount');
@@ -310,28 +290,49 @@ const ClientWallet = () => {
       return;
     }
 
-    // Add withdrawal transaction
-    const newTransaction: Transaction = {
-      id: Date.now().toString(),
-      type: 'debit',
-      amount: amount,
-      description: 'Withdrawal to Bank Account',
-      status: 'pending',
-      date: new Date().toISOString(),
-      category: 'Withdrawal',
-      paymentMethod: 'Bank Transfer'
-    };
+    if (!user) return;
 
-    setTransactions(prev => [newTransaction, ...prev]);
-    setWalletData(prev => ({
-      ...prev,
-      balance: prev.balance - amount,
-      pendingAmount: prev.pendingAmount + amount
-    }));
+    try {
+      // Create withdrawal transaction in Supabase
+      const txn = await createTransaction({
+        user_id: user.id,
+        type: 'debit',
+        amount: amount,
+        description: 'Withdrawal to Bank Account',
+        status: 'pending',
+        payment_method: 'Bank Transfer',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
 
-    setWithdrawAmount('');
-    setIsWithdrawOpen(false);
-    alert(`Withdrawal request for ₹${amount} submitted successfully. It will be processed within 2-3 business days.`);
+      // Update wallet balance in Supabase (deduct from balance, add to pending)
+      await updateWalletBalance(user.id, amount, 'debit');
+
+      const newTransaction: Transaction = {
+        id: txn.data?.id || Date.now().toString(),
+        type: 'debit',
+        amount: amount,
+        description: 'Withdrawal to Bank Account',
+        status: 'pending',
+        date: new Date().toISOString(),
+        category: 'Withdrawal',
+        paymentMethod: 'Bank Transfer'
+      };
+
+      setTransactions(prev => [newTransaction, ...prev]);
+      setWalletData(prev => ({
+        ...prev,
+        balance: prev.balance - amount,
+        pendingAmount: prev.pendingAmount + amount
+      }));
+
+      setWithdrawAmount('');
+      setIsWithdrawOpen(false);
+      alert(`Withdrawal request for ₹${amount} submitted successfully. It will be processed within 2-3 business days.`);
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      alert('Failed to process withdrawal. Please try again.');
+    }
   };
 
   const getFilteredTransactions = () => {
@@ -437,7 +438,7 @@ const ClientWallet = () => {
                       Add Money to Wallet
                     </DialogTitle>
                     <DialogDescription>
-                      Add funds to your wallet using Razorpay secure payment gateway
+                      Add funds to your wallet using Paytm secure payment gateway
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
@@ -478,7 +479,7 @@ const ClientWallet = () => {
                         <div className="text-sm">
                           <p className="font-semibold text-foreground mb-1">100% Secure Payment</p>
                           <p className="text-muted-foreground text-xs">
-                            Your payment is processed securely through Razorpay with bank-level encryption
+                            Your payment is processed securely through Paytm with bank-level encryption
                           </p>
                         </div>
                       </div>
@@ -733,8 +734,8 @@ const ClientWallet = () => {
                     <CreditCard className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="font-semibold">Razorpay Payment Gateway</p>
-                    <p className="text-sm text-muted-foreground">Cards, UPI, Net Banking & More</p>
+                    <p className="font-semibold">Paytm Payment Gateway</p>
+                    <p className="text-sm text-muted-foreground">Cards, UPI, Paytm Wallet & More</p>
                   </div>
                 </div>
                 <Badge className="bg-green-500/20 text-green-600 border-green-500/30">Active</Badge>
@@ -835,10 +836,10 @@ const ClientWallet = () => {
                             <CreditCard className="w-3 h-3" />
                             {transaction.paymentMethod || 'N/A'}
                           </span>
-                          {transaction.razorpayPaymentId && (
+                          {transaction.paytmTransactionId && (
                             <span className="flex items-center gap-1 text-xs">
                               <FileText className="w-3 h-3" />
-                              {transaction.razorpayPaymentId}
+                              {transaction.paytmTransactionId}
                             </span>
                           )}
                         </div>

@@ -21,7 +21,7 @@ const Banner = () => {
 
             {/* Duplicate for seamless scroll */}
             {[
-              "SELECT FROM 100+ LAWYERS",
+              "SELECT FROM 200+ LAWYERS",
               "TRUSTED BY 100+ USERS",
               "POWERED BY AI",
               "MADE FOR INDIANS",

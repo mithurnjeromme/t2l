@@ -521,70 +521,90 @@ export default function LawGPTPage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomTextareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load chat sessions from localStorage on mount
+  // Load user and chat sessions from Supabase on mount
   useEffect(() => {
-    const savedSessions = localStorage.getItem("lawgpt_sessions");
-    if (savedSessions) {
+    const loadUserAndSessions = async () => {
       try {
-        const parsed = JSON.parse(savedSessions);
-        // Convert date strings back to Date objects
-        const sessions = parsed.map((s: any) => ({
-          ...s,
-          createdAt: new Date(s.createdAt),
-          updatedAt: new Date(s.updatedAt),
-          messages: s.messages.map((m: any) => ({
-            ...m,
-            timestamp: new Date(m.timestamp),
-          })),
-        }));
-        setChatSessions(sessions);
+        const { getCurrentUser, getLawGPTSessions } = await import('@/lib/supabase');
+        
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUserId(currentUser.id);
+          
+          // Load existing chat sessions
+          const sessions = await getLawGPTSessions(currentUser.id);
+          const formattedSessions: ChatSession[] = sessions.map((session: any) => ({
+            id: session.id,
+            title: session.title,
+            messages: session.messages || [],
+            createdAt: new Date(session.created_at),
+            updatedAt: new Date(session.updated_at)
+          }));
+          
+          setChatSessions(formattedSessions);
+        }
       } catch (error) {
-        console.error("Error loading chat sessions:", error);
+        console.error('Error loading chat sessions:', error);
       }
-    }
+    };
+
+    loadUserAndSessions();
   }, []);
 
-  // Save chat sessions to localStorage whenever they change
+  // Save chat session to Supabase whenever chatHistory changes
   useEffect(() => {
-    if (chatSessions.length > 0) {
-      localStorage.setItem("lawgpt_sessions", JSON.stringify(chatSessions));
-    }
-  }, [chatSessions]);
+    const saveSession = async () => {
+      if (!userId || chatHistory.length === 0) return;
 
-  // Save or update current session when chat history changes
-  useEffect(() => {
-    if (chatHistory.length > 0 && currentSessionId) {
-      const firstUserMessage = chatHistory.find((m) => m.type === "user");
-      const sessionTitle = firstUserMessage
-        ? firstUserMessage.content.substring(0, 40) +
-          (firstUserMessage.content.length > 40 ? "..." : "")
-        : "New Chat";
+      try {
+        const { createLawGPTSession, updateLawGPTSession } = await import('@/lib/supabase');
+        
+        // Generate title from first user message
+        const title = chatHistory.find(msg => msg.type === 'user')?.content.substring(0, 50) + '...' || 'New Chat';
 
-      setChatSessions((prev) => {
-        const existingIndex = prev.findIndex((s) => s.id === currentSessionId);
-        const updatedSession: ChatSession = {
-          id: currentSessionId,
-          title: sessionTitle,
-          messages: chatHistory,
-          createdAt:
-            existingIndex >= 0 ? prev[existingIndex].createdAt : new Date(),
-          updatedAt: new Date(),
-        };
-
-        if (existingIndex >= 0) {
-          const updated = [...prev];
-          updated[existingIndex] = updatedSession;
-          return updated;
+        if (!currentSessionId) {
+          // Create new session
+          const { data, error } = await createLawGPTSession(userId, title);
+          if (data && !error) {
+            setCurrentSessionId(data.id);
+            
+            // Update session with messages
+            await updateLawGPTSession(data.id, chatHistory);
+            
+            // Add to sessions list
+            setChatSessions(prev => [{
+              id: data.id,
+              title,
+              messages: chatHistory,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }, ...prev]);
+          }
         } else {
-          return [updatedSession, ...prev];
+          // Update existing session
+          await updateLawGPTSession(currentSessionId, chatHistory);
+          
+          // Update in sessions list
+          setChatSessions(prev => prev.map(session => 
+            session.id === currentSessionId
+              ? { ...session, messages: chatHistory, updatedAt: new Date() }
+              : session
+          ));
         }
-      });
-    }
-  }, [chatHistory, currentSessionId]);
+      } catch (error) {
+        console.error('Error saving chat session:', error);
+      }
+    };
+
+    // Debounce the save operation
+    const timeoutId = setTimeout(saveSession, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [chatHistory, userId, currentSessionId]);
 
   const handleNewChat = () => {
     setChatHistory([]);
@@ -675,15 +695,10 @@ export default function LawGPTPage() {
 
   const getAiResponse = async (userMessage: string): Promise<string> => {
     try {
-      console.log("🚀 Sending query to LawGPT API:", userMessage);
-      
       // Create an AbortController for timeout
       // Render.com free tier can take up to 2 minutes to cold start
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        console.log("⏰ Request timeout after 180 seconds");
-        controller.abort();
-      }, 180000); // 3 minute timeout for cold starts
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minute timeout
 
       const response = await fetch("https://turn2law-lawgpt-2.onrender.com/api/query", {
         method: "POST",
@@ -697,34 +712,26 @@ export default function LawGPTPage() {
       });
 
       clearTimeout(timeoutId);
-      console.log("📡 API Response status:", response.status);
 
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
 
       const responseText = await response.text();
-      console.log("📄 Raw response text:", responseText.substring(0, 200));
       
       // Parse JSON response and extract the "response" field
       try {
         const jsonResponse = JSON.parse(responseText);
-        console.log("✅ Parsed JSON response:", jsonResponse);
         if (jsonResponse.response) {
-          console.log("💬 Extracted response:", jsonResponse.response);
           // Clean the response to remove emojis
           const cleanedResponse = cleanMarkdownContent(jsonResponse.response);
           return cleanedResponse;
         }
-        console.log("⚠️ No 'response' field found, returning full text");
-        return cleanMarkdownContent(responseText); // Fallback to raw text if no "response" field
+        return cleanMarkdownContent(responseText);
       } catch (parseError) {
-        console.log("⚠️ Failed to parse JSON, returning raw text");
-        // If not JSON, return as is
         return cleanMarkdownContent(responseText);
       }
     } catch (error) {
-      console.error("❌ AI response error:", error);
       if (error instanceof Error && error.name === 'AbortError') {
         return "⏰ The server is taking longer than expected to respond. This usually happens when the server needs to wake up (cold start on free tier hosting). Please try your question again - it should be much faster now!";
       }
@@ -752,11 +759,9 @@ export default function LawGPTPage() {
 
       setChatHistory((prev) => [...prev, userMessage]);
       setAiLoading(true);
-      console.log("🔄 AI Loading set to true");
 
       try {
         const aiResponseContent = await getAiResponse(currentMessage);
-        console.log("✅ Got AI response:", aiResponseContent);
 
         const aiMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
@@ -765,18 +770,11 @@ export default function LawGPTPage() {
           timestamp: new Date(),
         };
 
-        console.log("📝 Adding AI message to chat history:", aiMessage);
-        setChatHistory((prev) => {
-          const newHistory = [...prev, aiMessage];
-          console.log("📊 New chat history length:", newHistory.length);
-          return newHistory;
-        });
+        setChatHistory((prev) => [...prev, aiMessage]);
         
         // Set loading to false after message is added
         setAiLoading(false);
-        console.log("🏁 AI Loading set to false");
       } catch (error) {
-        console.error("❌ Error getting AI response:", error);
         const aiMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           type: "ai",
@@ -979,10 +977,8 @@ export default function LawGPTPage() {
               }}
             >
               <div className="space-y-8">
-                {chatHistory.map((chat, index) => {
-                  console.log(`🎨 Rendering message ${index}:`, chat.type, chat.content.substring(0, 50));
-                  return (
-                    <div key={chat.id} className="w-full">
+                {chatHistory.map((chat, index) => (
+                  <div key={chat.id} className="w-full">
                       {chat.type === "user" ? (
                         <div className="flex justify-end w-full">
                           <div className="max-w-lg">
@@ -1070,8 +1066,8 @@ export default function LawGPTPage() {
                         </div>
                       )}
                     </div>
-                  );
-                })}
+                  )
+                )}
 
                 {aiLoading && (
                   <div className="flex flex-col gap-4 w-full">

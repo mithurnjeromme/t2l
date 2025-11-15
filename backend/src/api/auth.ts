@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../config/supabase';
+import { supabase, supabaseAdmin } from '../config/supabase';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import { z } from 'zod';
 import { upload, handleMulterError, getFileUrl } from '../utils/fileUpload';
@@ -87,9 +87,52 @@ router.post('/register/client', async (req: Request, res: Response) => {
       });
     }
 
-    // For now, return success with the auth user data
-    // The user profile will be created via a database trigger or 
-    // we'll handle database insertion differently
+    // Insert user record into database using admin client to bypass RLS
+    console.log('✅ Creating user record in database for:', authUser.user.id);
+    const { error: userInsertError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        id: authUser.user.id,
+        email: email,
+        full_name: name,
+        phone: mobile,
+        country_code: countryCode,
+        user_type: 'client',
+        city: city,
+        email_verified: false
+      });
+
+    if (userInsertError) {
+      console.error('❌ Error creating user record:', userInsertError);
+      // Continue anyway since auth user was created
+    } else {
+      console.log('✅ User record created successfully');
+    }
+
+    // Create wallet balance record for the client
+    console.log('✅ Creating wallet balance for user:', authUser.user.id);
+    const { error: walletError } = await supabaseAdmin
+      .from('wallet_balances')
+      .insert({
+        user_id: authUser.user.id,
+        balance: 0,
+        total_earnings: 0,
+        total_spent: 0,
+        pending_amount: 0
+      });
+
+    if (walletError) {
+      // Ignore duplicate key errors (wallet already exists)
+      if (walletError.code === '23505') {
+        console.log('ℹ️  Wallet balance already exists for user');
+      } else {
+        console.error('❌ Error creating wallet balance:', walletError);
+      }
+      // Continue anyway
+    } else {
+      console.log('✅ Wallet balance created successfully');
+    }
+
     const token = generateToken(authUser.user.id, 'client');
 
     return res.status(201).json({
@@ -179,6 +222,73 @@ router.post('/register/lawyer', upload.single('profileImage'), handleMulterError
       });
     }
 
+    // Insert user record into database using admin client to bypass RLS
+    const { error: userInsertError } = await supabaseAdmin
+      .from('users')
+      .insert({
+        id: authUser.user.id,
+        email: email,
+        full_name: name,
+        phone: mobile,
+        country_code: countryCode,
+        user_type: 'lawyer',
+        email_verified: false,
+        profile_image_url: profileImageUrl
+      });
+
+    if (userInsertError) {
+      console.error('Error creating user record:', userInsertError);
+      // Continue anyway since auth user was created
+    }
+
+    // Insert lawyer profile record
+    const { error: lawyerProfileError } = await supabaseAdmin
+      .from('lawyer_profiles')
+      .insert({
+        user_id: authUser.user.id,
+        bar_number: barNumber,
+        experience_years: parseInt(experience),
+        specialization: specialization,
+        education: education,
+        court_practice: courtPractice,
+        languages: languages,
+        bio: bio,
+        consultation_fee: parseFloat(consultationFee),
+        profile_image_url: profileImageUrl,
+        verified: false,
+        rating: 0.0,
+        total_reviews: 0,
+        total_consultations: 0,
+        availability_status: 'available',
+        is_active: true
+      });
+
+    if (lawyerProfileError) {
+      console.error('Error creating lawyer profile:', lawyerProfileError);
+      // Continue anyway
+    }
+
+    // Create wallet balance record for the lawyer
+    const { error: walletError } = await supabaseAdmin
+      .from('wallet_balances')
+      .insert({
+        user_id: authUser.user.id,
+        balance: 0,
+        total_earnings: 0,
+        total_spent: 0,
+        pending_amount: 0
+      });
+
+    if (walletError) {
+      // Ignore duplicate key errors (wallet already exists)
+      if (walletError.code === '23505') {
+        console.log('ℹ️  Wallet balance already exists for user');
+      } else {
+        console.error('❌ Error creating wallet balance:', walletError);
+      }
+      // Continue anyway
+    }
+
     const token = generateToken(authUser.user.id, 'lawyer');
 
     return res.status(201).json({
@@ -242,25 +352,105 @@ router.post('/login', async (req: Request, res: Response) => {
     const user = authData.user;
     const userType = user.user_metadata?.user_type || 'client';
 
+    // Check if user record exists in database, create if not
+    const { data: existingUser } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (!existingUser) {
+      // Create user record if it doesn't exist
+      const { error: userInsertError } = await supabaseAdmin
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email!,
+          full_name: user.user_metadata?.full_name || user.email || 'User',
+          phone: user.user_metadata?.phone || '',
+          country_code: user.user_metadata?.country_code || '+91',
+          user_type: userType,
+          email_verified: user.email_confirmed_at ? true : false,
+          city: user.user_metadata?.city,
+          profile_image_url: user.user_metadata?.profile_image_url
+        });
+
+      if (userInsertError) {
+        console.error('Error creating user record on login:', userInsertError);
+      }
+
+      // Create wallet balance if doesn't exist
+      const { error: walletError } = await supabaseAdmin
+        .from('wallet_balances')
+        .insert({
+          user_id: user.id,
+          balance: 0,
+          total_earnings: 0,
+          total_spent: 0,
+          pending_amount: 0
+        });
+
+      if (walletError && walletError.code !== '23505') {
+        // Only log if it's not a duplicate key error
+        console.error('Error creating wallet on login:', walletError);
+      }
+
+      // If lawyer, create lawyer profile
+      if (userType === 'lawyer') {
+        const { error: lawyerProfileError } = await supabaseAdmin
+          .from('lawyer_profiles')
+          .insert({
+            user_id: user.id,
+            bar_number: user.user_metadata?.bar_number || 'PENDING',
+            experience_years: user.user_metadata?.experience_years || 0,
+            specialization: user.user_metadata?.specialization || 'General',
+            education: user.user_metadata?.education || '',
+            court_practice: user.user_metadata?.court_practice || '',
+            languages: user.user_metadata?.languages || 'English',
+            bio: user.user_metadata?.bio || '',
+            consultation_fee: user.user_metadata?.consultation_fee || 1000,
+            profile_image_url: user.user_metadata?.profile_image_url,
+            verified: false,
+            rating: 0.0,
+            total_reviews: 0,
+            total_consultations: 0,
+            availability_status: 'available',
+            is_active: true
+          });
+
+        if (lawyerProfileError) {
+          console.error('Error creating lawyer profile on login:', lawyerProfileError);
+        }
+      }
+    }
+
     // Create user object from auth metadata
     const userData = {
       id: user.id,
       email: user.email!,
-      fullName: user.user_metadata?.full_name || user.email,
+      fullName: user.user_metadata?.full_name || user.email || 'User',
       userType: userType,
       city: user.user_metadata?.city
     };
 
-    // Create lawyer profile if user is a lawyer
+    // Fetch lawyer profile if user is a lawyer
     let lawyerProfile: any = null;
     if (userType === 'lawyer') {
-      lawyerProfile = {
-        barNumber: user.user_metadata?.bar_number,
-        specialization: user.user_metadata?.specialization,
-        experienceYears: user.user_metadata?.experience_years,
-        consultationFee: user.user_metadata?.consultation_fee,
-        verified: false
-      };
+      const { data: profile } = await supabaseAdmin
+        .from('lawyer_profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (profile) {
+        lawyerProfile = {
+          barNumber: profile.bar_number,
+          specialization: profile.specialization,
+          experienceYears: profile.experience_years,
+          consultationFee: profile.consultation_fee,
+          verified: profile.verified
+        };
+      }
     }
 
     const token = generateToken(user.id, userType);
@@ -289,6 +479,49 @@ router.post('/login', async (req: Request, res: Response) => {
     return res.status(500).json({ 
       success: false, 
       error: 'Internal server error' 
+    });
+  }
+});
+
+// Test endpoint to verify database setup
+router.get('/test/db-check', async (req: Request, res: Response) => {
+  try {
+    console.log('🔍 Testing database connection...');
+    
+    // Test if we can query the users table
+    const { data: users, error: usersError } = await supabaseAdmin
+      .from('users')
+      .select('id, email, user_type')
+      .limit(1);
+    
+    // Test if we can query the wallet_balances table
+    const { data: wallets, error: walletsError } = await supabaseAdmin
+      .from('wallet_balances')
+      .select('user_id, balance')
+      .limit(1);
+    
+    return res.status(200).json({
+      success: true,
+      message: 'Database connection test',
+      results: {
+        usersTable: {
+          accessible: !usersError,
+          error: usersError?.message || null,
+          sampleCount: users?.length || 0
+        },
+        walletBalancesTable: {
+          accessible: !walletsError,
+          error: walletsError?.message || null,
+          sampleCount: wallets?.length || 0
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Database test error:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Database test failed',
+      details: error
     });
   }
 });

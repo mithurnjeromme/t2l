@@ -5,11 +5,39 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 const Logo = () => (
-  <svg width="32" height="40" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-300">
-    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
-  </svg>
+  <>
+    {/* Black logo for Light Mode */}
+    <svg
+      width="32"
+      height="40"
+      viewBox="0 0 23 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="dark:hidden transition-all duration-300"
+    >
+      <path
+        d="M17.2048 0L11.4096 6.19541L13.4028 8.16545L15.8223 5.57886V20.2762L2.51237 6.72721C1.58129 5.77941 0 6.45738 0 7.80434V30H2.76506V10.9846L16.075 24.5337C17.006 25.4814 18.5874 24.8036 18.5874 23.4565V5.57886L21.0069 8.16545L23 6.19541L17.2048 0Z"
+        fill="black"
+      />
+    </svg>
+    {/* White logo for Dark Mode */}
+    <svg
+      width="32"
+      height="40"
+      viewBox="0 0 62 79"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="hidden dark:block transition-all duration-300"
+    >
+      <path
+        d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z"
+        fill="white"
+      />
+    </svg>
+  </>
 );
 
 const Turn2LawTextLogo = () => (
@@ -136,6 +164,7 @@ const Turn2LawTextLogo = () => (
 );
 
 const LoginPage = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -163,15 +192,18 @@ const LoginPage = () => {
       const result = await response.json();
       
       if (response.ok && result.success) {
-        // Store token
+        // Store token and user data
         localStorage.setItem('token', result.data.token);
         localStorage.setItem('user', JSON.stringify(result.data.user));
+        localStorage.setItem('isCustomAuth', 'true'); // Flag for custom backend auth
         
-        // Redirect based on user type
+        console.log('Login successful, user type:', result.data.user.userType);
+        
+        // Use Next.js router for client-side navigation
         if (result.data.user.userType === 'lawyer') {
-          window.location.href = '/dashboard/lawyer';
+          router.push('/dashboard/lawyer');
         } else {
-          window.location.href = '/dashboard/client';
+          router.push('/dashboard/client');
         }
       } else {
         alert(result.error || 'Login failed');
@@ -204,7 +236,7 @@ const LoginPage = () => {
               Welcome Back to<br />
               <span className="text-primary">Legal Excellence</span>
             </h1>
-            <p className="text-xl text-white/80 leading-relaxed mb-8">
+            <p className="text-xl text-muted-foreground leading-relaxed mb-8">
               Access your personalized legal dashboard and continue your journey with India's premier legal platform.
             </p>
             
@@ -221,7 +253,7 @@ const LoginPage = () => {
           </div>
 
           {/* Terms */}
-          <div className="text-white/60 text-sm">
+          <div className="text-muted-foreground text-sm">
             By Signing in, You accept our Terms & Condition and Privacy Policy
           </div>
         </div>
@@ -286,7 +318,7 @@ const LoginPage = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-white/60 mb-4">
+            <p className="text-muted-foreground mb-4">
               New to Turn2Law?{' '}
               <Link 
                 href="/signup" 
@@ -301,7 +333,7 @@ const LoginPage = () => {
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-background px-2 text-white/60">or</span>
+                <span className="bg-background px-2 text-muted-foreground">or</span>
               </div>
             </div>
             

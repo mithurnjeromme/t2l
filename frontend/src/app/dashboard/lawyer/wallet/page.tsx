@@ -68,6 +68,16 @@ import {
   Gavel
 } from 'lucide-react';
 import Header from '@/components/layout/header';
+import {
+  getCurrentUser,
+  getUserProfile,
+  getWalletBalance,
+  getTransactions,
+  createTransaction,
+  updateWalletBalance,
+  getUserConsultations,
+  type Transaction as SupabaseTransaction
+} from '@/lib/supabase';
 
 interface Transaction {
   id: string;
@@ -77,7 +87,7 @@ interface Transaction {
   status: 'success' | 'pending' | 'failed';
   date: string;
   paymentMethod?: string;
-  razorpayPaymentId?: string;
+  paytmTransactionId?: string;
   clientName?: string;
   consultationId?: string;
 }
@@ -96,7 +106,7 @@ const LawyerWalletPage = () => {
   const [loading, setLoading] = useState(true);
   
   // Wallet states
-  const [walletBalance, setWalletBalance] = useState(125000);
+  const [walletBalance, setWalletBalance] = useState(0);
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [selectedBank, setSelectedBank] = useState('');
@@ -108,105 +118,109 @@ const LawyerWalletPage = () => {
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false);
   const [isAddBankOpen, setIsAddBankOpen] = useState(false);
   
-  // Mock data
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: 'TXN001',
-      type: 'credit',
-      amount: 5000,
-      description: 'Consultation Fee - Property Law',
-      status: 'success',
-      date: '2025-10-30T14:30:00',
-      paymentMethod: 'Razorpay',
-      razorpayPaymentId: 'pay_MkXYZ123456',
-      clientName: 'Rahul Sharma',
-      consultationId: 'CONS001'
-    },
-    {
-      id: 'TXN002',
-      type: 'credit',
-      amount: 3500,
-      description: 'Consultation Fee - Corporate Law',
-      status: 'success',
-      date: '2025-10-29T10:15:00',
-      paymentMethod: 'Razorpay',
-      razorpayPaymentId: 'pay_MkABC789012',
-      clientName: 'Priya Gupta',
-      consultationId: 'CONS002'
-    },
-    {
-      id: 'TXN003',
-      type: 'debit',
-      amount: 50000,
-      description: 'Withdrawal to Bank Account',
-      status: 'success',
-      date: '2025-10-28T16:45:00',
-      paymentMethod: 'Bank Transfer'
-    },
-    {
-      id: 'TXN004',
-      type: 'credit',
-      amount: 4500,
-      description: 'Consultation Fee - Family Law',
-      status: 'success',
-      date: '2025-10-27T11:20:00',
-      paymentMethod: 'Razorpay',
-      razorpayPaymentId: 'pay_MkDEF345678',
-      clientName: 'Amit Patel',
-      consultationId: 'CONS003'
-    },
-    {
-      id: 'TXN005',
-      type: 'debit',
-      amount: 30000,
-      description: 'Withdrawal to Bank Account',
-      status: 'pending',
-      date: '2025-10-26T09:00:00',
-      paymentMethod: 'Bank Transfer'
-    },
-  ]);
-
-  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([
-    {
-      id: 'BANK001',
-      accountNumber: '1234567890',
-      accountHolderName: 'Advocate John Doe',
-      ifscCode: 'HDFC0001234',
-      bankName: 'HDFC Bank',
-      isDefault: true
-    },
-  ]);
+  // Data from Supabase
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
 
   // Statistics
-  const totalEarningsThisMonth = 45000;
-  const totalWithdrawn = 80000;
-  const pendingAmount = 30000;
-  const monthlyGrowth = 12.5;
-  const totalConsultations = 32;
-  const averageFee = 4200;
+  const [totalEarningsThisMonth, setTotalEarningsThisMonth] = useState(0);
+  const [totalWithdrawn, setTotalWithdrawn] = useState(0);
+  const [pendingAmount, setPendingAmount] = useState(0);
+  const [monthlyGrowth, setMonthlyGrowth] = useState(0);
+  const [totalConsultations, setTotalConsultations] = useState(0);
+  const [averageFee, setAverageFee] = useState(0);
 
   useEffect(() => {
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-    
-    if (!userData || !token) {
-      window.location.href = '/login';
-      return;
-    }
-    
-    try {
-      const parsedUser = JSON.parse(userData);
-      if (parsedUser.userType !== 'lawyer') {
-        window.location.href = '/dashboard/client';
-        return;
+    const loadWalletData = async () => {
+      try {
+        // Get current user from Supabase
+        const currentUser = await getCurrentUser();
+        if (!currentUser) {
+          window.location.href = '/login';
+          return;
+        }
+
+        // Get user profile
+        const userProfile = await getUserProfile(currentUser.id);
+        if (!userProfile || userProfile.user_type !== 'lawyer') {
+          window.location.href = '/dashboard/client';
+          return;
+        }
+
+        setUser({
+          id: userProfile.id,
+          email: userProfile.email,
+          fullName: userProfile.full_name,
+          userType: userProfile.user_type
+        });
+
+        // Get wallet balance from Supabase
+        const wallet = await getWalletBalance(currentUser.id);
+        if (wallet) {
+          setWalletBalance(wallet.balance);
+          setTotalWithdrawn(wallet.total_spent);
+          setPendingAmount(wallet.pending_amount);
+        }
+
+        // Get transactions from Supabase
+        const txns = await getTransactions(currentUser.id);
+        
+        // Get consultations to enrich transaction data with client names
+        const consultations = await getUserConsultations(currentUser.id, 'lawyer');
+        
+        const formattedTransactions: Transaction[] = txns.map((txn: SupabaseTransaction) => {
+          const consultation = consultations.find((c: any) => c.id === txn.consultation_id);
+          return {
+            id: txn.id,
+            type: txn.type,
+            amount: txn.amount,
+            description: txn.description,
+            status: txn.status,
+            date: txn.created_at,
+            paymentMethod: txn.payment_method || 'Paytm',
+            paytmTransactionId: txn.razorpay_payment_id, // Reuse field for Paytm
+            clientName: consultation?.client?.full_name || undefined,
+            consultationId: txn.consultation_id || undefined
+          };
+        });
+        
+        setTransactions(formattedTransactions);
+
+        // Calculate statistics
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const thisYear = now.getFullYear();
+        
+        const thisMonthTxns = formattedTransactions.filter(txn => {
+          const txnDate = new Date(txn.date);
+          return txn.type === 'credit' && 
+                 txn.status === 'success' &&
+                 txnDate.getMonth() === thisMonth &&
+                 txnDate.getFullYear() === thisYear;
+        });
+
+        const monthlyEarnings = thisMonthTxns.reduce((sum, txn) => sum + txn.amount, 0);
+        setTotalEarningsThisMonth(monthlyEarnings);
+        setTotalConsultations(thisMonthTxns.length);
+        setAverageFee(thisMonthTxns.length > 0 ? monthlyEarnings / thisMonthTxns.length : 0);
+
+        // Calculate growth (mock for now - would need previous month data)
+        setMonthlyGrowth(12.5);
+
+        // Load bank accounts (from localStorage for now, move to Supabase later)
+        const savedBanks = localStorage.getItem(`banks_${currentUser.id}`);
+        if (savedBanks) {
+          setBankAccounts(JSON.parse(savedBanks));
+        }
+
+      } catch (error) {
+        console.error('Error loading wallet data:', error);
+      } finally {
+        setLoading(false);
       }
-      setUser(parsedUser);
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      window.location.href = '/login';
-    } finally {
-      setLoading(false);
-    }
+    };
+
+    loadWalletData();
   }, []);
 
   const handleWithdraw = async () => {
@@ -223,26 +237,50 @@ const LawyerWalletPage = () => {
       alert('Please select a bank account');
       return;
     }
+    if (!user) return;
 
-    // Create withdrawal transaction
-    const newTransaction: Transaction = {
-      id: `TXN${Date.now()}`,
-      type: 'debit',
-      amount: amount,
-      description: `Withdrawal to Bank Account`,
-      status: 'pending',
-      date: new Date().toISOString(),
-      paymentMethod: 'Bank Transfer'
-    };
+    try {
+      // Get bank details
+      const bank = bankAccounts.find(b => b.id === selectedBank);
+      
+      // Create withdrawal transaction in Supabase
+      const txn = await createTransaction({
+        user_id: user.id,
+        type: 'debit',
+        amount: amount,
+        description: `Withdrawal to ${bank?.bankName || 'Bank Account'}`,
+        status: 'pending',
+        payment_method: 'Bank Transfer',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
 
-    setTransactions([newTransaction, ...transactions]);
-    setWalletBalance(walletBalance - amount);
-    setIsWithdrawOpen(false);
-    setWithdrawAmount('');
-    setSelectedBank('');
+      // Update wallet balance in Supabase
+      await updateWalletBalance(user.id, amount, 'debit');
 
-    // Show success message
-    alert(`Withdrawal of ₹${amount} initiated successfully! It will be processed in 2-3 business days.`);
+      const newTransaction: Transaction = {
+        id: txn.data?.id || `TXN${Date.now()}`,
+        type: 'debit',
+        amount: amount,
+        description: `Withdrawal to ${bank?.bankName || 'Bank Account'}`,
+        status: 'pending',
+        date: new Date().toISOString(),
+        paymentMethod: 'Bank Transfer'
+      };
+
+      setTransactions([newTransaction, ...transactions]);
+      setWalletBalance(walletBalance - amount);
+      setPendingAmount(pendingAmount + amount);
+      setIsWithdrawOpen(false);
+      setWithdrawAmount('');
+      setSelectedBank('');
+
+      // Show success message
+      alert(`Withdrawal of ₹${amount} initiated successfully! It will be processed in 2-3 business days.`);
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      alert('Failed to process withdrawal. Please try again.');
+    }
   };
 
   const filteredTransactions = transactions.filter(txn => {
@@ -753,10 +791,10 @@ const LawyerWalletPage = () => {
                                   <span>{transaction.paymentMethod}</span>
                                 </div>
                               )}
-                              {transaction.razorpayPaymentId && (
+                              {transaction.paytmTransactionId && (
                                 <div className="flex items-center gap-1">
                                   <ExternalLink className="w-3 h-3" />
-                                  <span className="font-mono text-xs">{transaction.razorpayPaymentId}</span>
+                                  <span className="font-mono text-xs">{transaction.paytmTransactionId}</span>
                                 </div>
                               )}
                               <div>{getStatusBadge(transaction.status)}</div>
@@ -805,7 +843,7 @@ const LawyerWalletPage = () => {
                   <CheckCircle className="w-5 h-5 text-secondary mt-0.5" />
                   <div>
                     <p className="font-medium text-sm">PCI DSS Compliant</p>
-                    <p className="text-xs text-muted-foreground">Razorpay Level 1 PCI DSS certified</p>
+                    <p className="text-xs text-muted-foreground">Paytm PCI DSS certified payment gateway</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-background/50">

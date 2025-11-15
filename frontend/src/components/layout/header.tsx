@@ -460,12 +460,6 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           >
             Document Drafting
           </Link>
-          <Link
-            href="#pricing"
-            className="hover:text-primary transition-colors"
-          >
-            Pricing
-          </Link>
         </nav>
         {/* Right side: auth actions + mobile menu button */}
         {!hideAuthButtons && !user && (
@@ -553,15 +547,6 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
               >
                 <FileText className="w-5 h-5 text-foreground/80" />
                 <span className="font-medium">Document Drafting</span>
-              </Link>
-
-              <Link
-                href="#pricing"
-                className="flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <BarChart3 className="w-5 h-5 text-foreground/80" />
-                <span className="font-medium">Pricing</span>
               </Link>
 
               {/* Chat & Notifications */}

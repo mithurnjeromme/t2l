@@ -9,9 +9,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const Logo = () => (
-  <svg width="32" height="40" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-[0_0_8px_rgba(255,255,255,0.6)] hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)] transition-all duration-300">
-    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
-  </svg>
+  <>
+    {/* Black logo for Light Mode */}
+    <svg
+      width="32"
+      height="40"
+      viewBox="0 0 23 30"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="dark:hidden transition-all duration-300"
+    >
+      <path
+        d="M17.2048 0L11.4096 6.19541L13.4028 8.16545L15.8223 5.57886V20.2762L2.51237 6.72721C1.58129 5.77941 0 6.45738 0 7.80434V30H2.76506V10.9846L16.075 24.5337C17.006 25.4814 18.5874 24.8036 18.5874 23.4565V5.57886L21.0069 8.16545L23 6.19541L17.2048 0Z"
+        fill="black"
+      />
+    </svg>
+    {/* White logo for Dark Mode */}
+    <svg
+      width="32"
+      height="40"
+      viewBox="0 0 62 79"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="hidden dark:block transition-all duration-300"
+    >
+      <path
+        d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z"
+        fill="white"
+      />
+    </svg>
+  </>
 );
 
 const Turn2LawTextLogo = () => (
@@ -470,7 +497,7 @@ const SignupPage = () => {
                 
                 {/* Profile Image Upload */}
                 <div className="space-y-3">
-                  <label className="block text-muted-foreground/70 text-sm font-medium">
+                  <label className="block text-foreground text-sm font-medium">
                     Profile Picture (Optional)
                   </label>
                   <div className="flex items-center gap-4">
@@ -494,7 +521,7 @@ const SignupPage = () => {
                       </div>
                     ) : (
                       <div className="w-16 h-16 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
-                        <svg className="w-6 h-6 text-muted-foreground/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                       </div>
@@ -511,12 +538,12 @@ const SignupPage = () => {
                         htmlFor="profile-image"
                         className="cursor-pointer inline-flex items-center px-4 py-2 bg-muted border border-border text-foreground text-sm rounded-lg hover:bg-muted/80 transition-colors"
                       >
-                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 mr-2 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         Upload Image
                       </label>
-                      <p className="text-muted-foreground/50 text-xs mt-1">
+                      <p className="text-muted-foreground text-xs mt-1">
                         Max 5MB, JPG/PNG only
                       </p>
                     </div>

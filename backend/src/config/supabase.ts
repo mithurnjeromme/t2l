@@ -5,6 +5,12 @@ const supabaseUrl = process.env.SUPABASE_URL || 'https://vjfpqtyinumanvpgqlbj.su
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTEyOTIsImV4cCI6MjA3MTA2NzI5Mn0.IL4G5wXabjKdpUZGBAdAq5bvm1W6Xvb-zg9ux9uq5LY';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTQ5MTI5MiwiZXhwIjoyMDcxMDY3MjkyfQ.5lvDGZcMrE6J6rJtLpjBdZv1V0V2d0OKAkXNzlR7V8E';
 
+// Debug logging
+console.log('🔑 Supabase Config:');
+console.log('   URL:', supabaseUrl);
+console.log('   Anon Key:', supabaseAnonKey ? supabaseAnonKey.substring(0, 20) + '...' : 'NOT SET');
+console.log('   Service Key:', supabaseServiceKey ? supabaseServiceKey.substring(0, 20) + '...' : 'NOT SET');
+
 // Create Supabase client for public operations
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -18,7 +24,16 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
+    persistSession: false,
+    detectSessionInUrl: false
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'apikey': supabaseServiceKey
+    }
   }
 });
 

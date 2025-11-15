@@ -40,6 +40,15 @@ import {
   Wallet
 } from 'lucide-react';
 import Header from '@/components/layout/header';
+import { 
+  getCurrentUser, 
+  getLawyerProfile, 
+  getLawyerStats, 
+  getRecentActivity,
+  getUserConsultations,
+  signOut
+} from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -50,14 +59,26 @@ interface User {
 
 interface LawyerProfile {
   bar_number?: string;
-  experience?: string;
+  experience_years?: number;
   specialization?: string;
   education?: string;
   court_practice?: string;
   languages?: string;
   bio?: string;
-  consultation_fee?: string;
+  consultation_fee?: number;
   profile_image_url?: string;
+  rating?: number;
+  verified?: boolean;
+}
+
+interface LawyerStats {
+  totalClients: number;
+  totalConsultations: number;
+  completedConsultations: number;
+  walletBalance: number;
+  monthlyEarnings: number;
+  totalEarnings: number;
+  rating: number;
 }
 
 const Logo = () => (
@@ -67,52 +88,85 @@ const Logo = () => (
 );
 
 const LawyerDashboard = () => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [stats, setStats] = useState<LawyerStats>({
+    totalClients: 0,
+    totalConsultations: 0,
+    completedConsultations: 0,
+    walletBalance: 0,
+    monthlyEarnings: 0,
+    totalEarnings: 0,
+    rating: 5.0
+  });
+  const [recentActivity, setRecentActivity] = useState<any[]>([]);
+  const [consultations, setConsultations] = useState<any[]>([]);
 
   useEffect(() => {
-    // Get user data from localStorage
-    const userData = localStorage.getItem('user');
-    const token = localStorage.getItem('token');
-
-    if (!userData || !token) {
-      window.location.href = '/login';
-      return;
-    }
-
-    try {
-      const parsedUser = JSON.parse(userData);
-      if (parsedUser.userType !== 'lawyer') {
-        window.location.href = '/dashboard/client';
-        return;
-      }
-      setUser(parsedUser);
-
-      // Fetch lawyer profile data (placeholder for now)
-      fetchLawyerProfile(parsedUser.id, token);
-    } catch (error) {
-      console.error('Error parsing user data:', error);
-      window.location.href = '/login';
-    }
+    loadDashboardData();
   }, []);
 
-  const fetchLawyerProfile = async (userId: string, token: string) => {
+  const loadDashboardData = async () => {
     try {
-      // For now, we'll set loading to false
-      // In a real app, you'd fetch the lawyer profile from the backend
+      // Check localStorage first
+      const userData = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      const isCustomAuth = localStorage.getItem('isCustomAuth');
+
+      if (!userData || !token) {
+        router.push('/login');
+        return;
+      }
+
+      const parsedUser = JSON.parse(userData);
+      
+      // Only verify with Supabase if not using custom backend auth
+      if (!isCustomAuth) {
+        const currentUser = await getCurrentUser();
+        
+        if (!currentUser) {
+          router.push('/login');
+          return;
+        }
+      }
+      
+      if (parsedUser.userType !== 'lawyer') {
+        router.push('/dashboard/client');
+        return;
+      }
+      
+      setUser(parsedUser);
+
+      // Fetch real data from Supabase using the correct user ID
+      const userId = isCustomAuth ? parsedUser.id : (await getCurrentUser())?.id;
+      
+      if (userId) {
+        const [profile, lawyerStats, activity, userConsultations] = await Promise.all([
+          getLawyerProfile(userId),
+          getLawyerStats(userId),
+          getRecentActivity(userId, 'lawyer', 5),
+          getUserConsultations(userId, 'lawyer')
+        ]);
+        
+        setLawyerProfile(profile);
+        setStats(lawyerStats);
+        setRecentActivity(activity);
+        setConsultations(userConsultations);
+      }
+      
     } catch (error) {
-      console.error('Error fetching lawyer profile:', error);
+      console.error('Error loading dashboard:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    window.location.href = '/';
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/');
   };
 
   if (loading) {
@@ -230,7 +284,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Total Clients</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">0</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.totalClients}</p>
                       <p className="text-xs text-secondary mt-1">Lifetime clients served</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -245,7 +299,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Monthly Earnings</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">₹0</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</p>
                       <p className="text-xs text-secondary mt-1">This month's revenue</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -260,8 +314,8 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Consultations</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">0</p>
-                      <p className="text-xs text-muted-foreground mt-1">Sessions completed</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.totalConsultations}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{stats.completedConsultations} completed</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
                       <Calendar className="w-6 h-6 text-primary" />
@@ -275,7 +329,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Success Rating</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">5.0</p>
+                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.rating.toFixed(1)}</p>
                       <p className="text-xs text-secondary mt-1">Client satisfaction</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -291,10 +345,10 @@ const LawyerDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground mb-1">Wallet Balance</p>
-                        <p className="text-3xl font-headline font-semibold text-foreground">₹125,000</p>
+                        <p className="text-3xl font-headline font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</p>
                         <p className="text-xs text-primary mt-1 flex items-center gap-1">
                           <TrendingUp className="w-3 h-3" />
-                          +12.5% this month
+                          View earnings
                         </p>
                       </div>
                       <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center group-hover:bg-primary/30 transition-colors">
@@ -352,16 +406,58 @@ const LawyerDashboard = () => {
                   <p className="text-sm text-muted-foreground font-body">Your latest client interactions</p>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-col items-center justify-center text-center py-12">
-                    <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
-                      <Briefcase className="w-8 h-8 text-muted-foreground" />
+                  {recentActivity.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-center py-12">
+                      <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
+                        <Briefcase className="w-8 h-8 text-muted-foreground" />
+                      </div>
+                      <h3 className="font-headline font-semibold text-foreground mb-2">No Recent Activity</h3>
+                      <p className="text-sm text-muted-foreground mb-4 max-w-sm font-body">Your consultations, client interactions, and practice updates will appear here</p>
+                      <Button variant="outline" size="sm" className="font-body" onClick={() => setActiveTab('consultations')}>
+                        Start Taking Consultations
+                      </Button>
                     </div>
-                    <h3 className="font-headline font-semibold text-foreground mb-2">No Recent Activity</h3>
-                    <p className="text-sm text-muted-foreground mb-4 max-w-sm font-body">Your consultations, client interactions, and practice updates will appear here</p>
-                    <Button variant="outline" size="sm" className="font-body" onClick={() => setActiveTab('consultations')}>
-                      Start Taking Consultations
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {recentActivity.map((activity: any) => (
+                        <div key={activity.id} className="flex items-start gap-4 p-4 rounded-lg border border-border/50 hover:bg-card/50 transition-colors">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            activity.type === 'consultation' ? 'bg-primary/20' : 'bg-secondary/20'
+                          }`}>
+                            {activity.type === 'consultation' ? (
+                              <Calendar className="w-5 h-5 text-primary" />
+                            ) : (
+                              <DollarSign className="w-5 h-5 text-secondary" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground">
+                              {activity.type === 'consultation' ? activity.title : activity.description}
+                            </p>
+                            {activity.type === 'consultation' && activity.participant && (
+                              <p className="text-sm text-muted-foreground">Client: {activity.participant}</p>
+                            )}
+                            {activity.type === 'transaction' && (
+                              <p className="text-sm font-medium text-secondary">
+                                +₹{activity.amount}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(activity.date).toLocaleDateString('en-IN', { 
+                                month: 'short', 
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                          <Badge variant={activity.status === 'completed' || activity.status === 'success' ? 'default' : 'secondary'}>
+                            {activity.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -475,9 +571,9 @@ const LawyerDashboard = () => {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
-                      <p className="text-sm text-muted-foreground">0 consultations</p>
-                      <p className="text-xs text-secondary mt-1">+0% from last month</p>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</div>
+                      <p className="text-sm text-muted-foreground">{stats.totalConsultations} consultations</p>
+                      <p className="text-xs text-secondary mt-1">Monthly revenue</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
                       <TrendingUp className="w-6 h-6 text-primary" />
@@ -488,17 +584,17 @@ const LawyerDashboard = () => {
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-headline">Last Month</CardTitle>
+                  <CardTitle className="text-lg font-headline">Wallet Balance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
-                      <p className="text-sm text-muted-foreground">0 consultations</p>
-                      <p className="text-xs text-muted-foreground mt-1">Previous period</p>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</div>
+                      <p className="text-sm text-muted-foreground">Available balance</p>
+                      <p className="text-xs text-muted-foreground mt-1">Ready to withdraw</p>
                     </div>
                     <div className="w-12 h-12 bg-muted/50 rounded-2xl flex items-center justify-center">
-                      <TrendingDown className="w-6 h-6 text-muted-foreground" />
+                      <Wallet className="w-6 h-6 text-muted-foreground" />
                     </div>
                   </div>
                 </CardContent>
@@ -511,7 +607,7 @@ const LawyerDashboard = () => {
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹0</div>
+                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.totalEarnings.toLocaleString('en-IN')}</div>
                       <p className="text-sm text-muted-foreground">All time revenue</p>
                       <p className="text-xs text-secondary mt-1">Your practice income</p>
                     </div>
@@ -578,7 +674,7 @@ const LawyerDashboard = () => {
                         </div>
                         <div className="p-4 rounded-xl border border-border/50 bg-background/50">
                           <label className="text-sm font-medium text-muted-foreground block mb-1">Years of Experience</label>
-                          <p className="text-lg text-foreground">{lawyerProfile?.experience || 'Not set'}</p>
+                          <p className="text-lg text-foreground">{lawyerProfile?.experience_years || 'Not set'}</p>
                         </div>
                       </div>
                       <div className="space-y-4">
