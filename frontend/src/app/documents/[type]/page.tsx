@@ -146,95 +146,90 @@ export default function DocumentCreatePage() {
 
   /* ------------------ GENERATE DOCUMENT ------------------ */
   async function handleGenerate() {
-    setGenerating(true);
+  setGenerating(true);
+  setDraft("Please wait… generating document"); // ⭐ SHOW LOADING MESSAGE
 
-    try {
-      const form = new FormData();
-      form.append("doc_type", docType);
-      form.append("language", formData.language || "en");
+  try {
+    const form = new FormData();
+    form.append("doc_type", docType);
+    form.append("language", formData.language || "en");
 
-      let scenarioObject: Record<string, string> = {};
-      // OFFER LETTER
-      if (docType === "Offer_Letter") {
-        scenarioObject = {
-          Name: formData.Name,
-          Company: formData.Company,
-          Position: formData.Position,
-          Start_Date: formData.Start_Date,
-          Salary: formData.Salary,
-          UserScenario: formData.UserScenario,
-        };
-      }
+    let scenarioObject: Record<string, string> = {};
 
-      // NEW: IP AGREEMENT
-      if (docType === "IP_Agreement") {
-        scenarioObject = {
-          Name: formData.Name,
-          Company: formData.Company,
-          Date: formData.Date,
-          Term: formData.Term,
-          Jurisdiction: formData.Jurisdiction,
-          UserScenario: formData.UserScenario,
-        };
-      }
-
-      // MOU
-      else if (docType === "MOU") {
-        scenarioObject = {
-          PartyA_Name: formData.PartyA_Name,
-          PartyB_Name: formData.PartyB_Name,
-          Date: formData.Date,
-          Purpose: formData.Purpose,
-          Term: formData.Term,
-          Jurisdiction: formData.Jurisdiction,
-          UserScenario: formData.UserScenario,
-        };
-      }
-
-      // NDA
-      else {
-        scenarioObject = {
-          Name: formData.Name,
-          Company: formData.Company,
-          Date: formData.Date,
-          Term: formData.Term,
-          Jurisdiction: formData.Jurisdiction,
-          DisclosingParty: formData.DisclosingParty,
-          ReceivingParty: formData.ReceivingParty,
-          UserScenario: formData.UserScenario,
-        };
-      }
-
-      form.append("scenario", JSON.stringify(scenarioObject));
-
-      const res = await fetch(
-        "http://localhost:8000/api/v1/documents/generate",
-        {
-          method: "POST",
-          body: form,
-        }
-      );
-
-      const json = await res.json();
-
-      if (json.download_url) {
-        setDraft(
-          `${docType} Generated Successfully.\n\nDownload URL:\n${
-            json.download_url
-          }\n\nMetadata:\n${JSON.stringify(json.metadata, null, 2)}`
-        );
-
-        downloadFile(json.download_url);
-      } else {
-        setDraft(`Failed to generate ${docType}`);
-      }
-    } catch (err) {
-      console.error(err);
-      setDraft(`Error generating ${docType}`);
+    // OFFER LETTER
+    if (docType === "Offer_Letter") {
+      scenarioObject = {
+        Name: formData.Name,
+        Company: formData.Company,
+        Position: formData.Position,
+        Start_Date: formData.Start_Date,
+        Salary: formData.Salary,
+        UserScenario: formData.UserScenario,
+      };
+    }
+    // IP AGREEMENT
+    else if (docType === "IP_Agreement") {
+      scenarioObject = {
+        Name: formData.Name,
+        Company: formData.Company,
+        Date: formData.Date,
+        Term: formData.Term,
+        Jurisdiction: formData.Jurisdiction,
+        UserScenario: formData.UserScenario,
+      };
+    }
+    // MOU
+    else if (docType === "MOU") {
+      scenarioObject = {
+        PartyA_Name: formData.PartyA_Name,
+        PartyB_Name: formData.PartyB_Name,
+        Date: formData.Date,
+        Purpose: formData.Purpose,
+        Term: formData.Term,
+        Jurisdiction: formData.Jurisdiction,
+        UserScenario: formData.UserScenario,
+      };
+    }
+    // NDA
+    else {
+      scenarioObject = {
+        Name: formData.Name,
+        Company: formData.Company,
+        Date: formData.Date,
+        Term: formData.Term,
+        Jurisdiction: formData.Jurisdiction,
+        DisclosingParty: formData.DisclosingParty,
+        ReceivingParty: formData.ReceivingParty,
+        UserScenario: formData.UserScenario,
+      };
     }
 
-    setGenerating(false);
+    form.append("scenario", JSON.stringify(scenarioObject));
+
+    const res = await fetch(
+      "http://localhost:8000/api/v1/documents/generate",
+      { method: "POST", body: form }
+    );
+
+    const json = await res.json();
+
+    if (json.download_url) {
+      setDraft(
+        ` ${docType.replace("_", " ")} Generated Successfully!\n\nDownload Link:\n${json.download_url}`
+      );
+
+      // Auto-download
+      downloadFile(json.download_url);
+    } else {
+      setDraft("Failed to generate document");
+    }
+  } catch (err) {
+    console.error(err);
+    setDraft("❌ Error generating document");
   }
+
+  setGenerating(false);
+}
 
   /* ------------------ COPY + TXT ------------------ */
   function handleCopy() {
