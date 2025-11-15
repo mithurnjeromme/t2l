@@ -3,10 +3,9 @@
 import React, { useRef, useEffect, useState } from "react";
 import Header from "@/components/layout/header";
 import WowAhhAnimation from "./Animation";
-import {
-  getLegalAIResponse,
-  type ChatMessage as AIMessage,
-} from "@/lib/nebius-ai";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 // Simple skeleton loader component
 function SkeletonLoader() {
@@ -668,47 +667,72 @@ export default function LawGPTPage() {
 
   const handleSidebarToggle = () => setSidebarOpen((open) => !open);
 
+  // Function to clean markdown content - remove emojis but keep formatting
+  const cleanMarkdownContent = (content: string): string => {
+    // Remove all emojis and special symbols, but keep regular punctuation and markdown syntax
+    return content.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+  };
+
   const getAiResponse = async (userMessage: string): Promise<string> => {
     try {
-      const conversationHistory: AIMessage[] = chatHistory.map((chat) => ({
-        role: chat.type === "user" ? ("user" as const) : ("assistant" as const),
-        content: chat.content,
-      }));
+      console.log("🚀 Sending query to LawGPT API:", userMessage);
+      
+      // Create an AbortController for timeout
+      // Render.com free tier can take up to 2 minutes to cold start
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log("⏰ Request timeout after 180 seconds");
+        controller.abort();
+      }, 180000); // 3 minute timeout for cold starts
 
-      const aiResponse = await getLegalAIResponse(
-        userMessage,
-        conversationHistory,
-      );
-      return aiResponse;
+      const response = await fetch("https://turn2law-lawgpt-2.onrender.com/api/query", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: userMessage,
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      console.log("📡 API Response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      const responseText = await response.text();
+      console.log("📄 Raw response text:", responseText.substring(0, 200));
+      
+      // Parse JSON response and extract the "response" field
+      try {
+        const jsonResponse = JSON.parse(responseText);
+        console.log("✅ Parsed JSON response:", jsonResponse);
+        if (jsonResponse.response) {
+          console.log("💬 Extracted response:", jsonResponse.response);
+          // Clean the response to remove emojis
+          const cleanedResponse = cleanMarkdownContent(jsonResponse.response);
+          return cleanedResponse;
+        }
+        console.log("⚠️ No 'response' field found, returning full text");
+        return cleanMarkdownContent(responseText); // Fallback to raw text if no "response" field
+      } catch (parseError) {
+        console.log("⚠️ Failed to parse JSON, returning raw text");
+        // If not JSON, return as is
+        return cleanMarkdownContent(responseText);
+      }
     } catch (error) {
-      console.error("AI response error:", error);
+      console.error("❌ AI response error:", error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        return "⏰ The server is taking longer than expected to respond. This usually happens when the server needs to wake up (cold start on free tier hosting). Please try your question again - it should be much faster now!";
+      }
       return "I'm experiencing technical difficulties right now. For immediate legal assistance, please book a consultation with one of our qualified lawyers through our platform. They can provide personalized advice for your specific situation.";
     }
   };
 
-  const generateTitle = (msg: string): string => {
-    const lowerMsg = msg.toLowerCase();
-    if (
-      lowerMsg.includes("copyright") ||
-      lowerMsg.includes("intellectual property")
-    )
-      return "Intellectual Property Law";
-    if (lowerMsg.includes("divorce") || lowerMsg.includes("marriage"))
-      return "Family Law";
-    if (lowerMsg.includes("property") || lowerMsg.includes("real estate"))
-      return "Property Law";
-    if (lowerMsg.includes("criminal") || lowerMsg.includes("crime"))
-      return "Criminal Law";
-    if (lowerMsg.includes("contract") || lowerMsg.includes("agreement"))
-      return "Contract Law";
-    if (lowerMsg.includes("employment") || lowerMsg.includes("workplace"))
-      return "Employment Law";
-    if (lowerMsg.includes("tax") || lowerMsg.includes("taxation"))
-      return "Tax Law";
-    if (lowerMsg.includes("consumer") || lowerMsg.includes("rights"))
-      return "Consumer Law";
-    return "Legal Guidance";
-  };
+
 
   const handleSend = async () => {
     if (message.trim() !== "") {
@@ -728,32 +752,40 @@ export default function LawGPTPage() {
 
       setChatHistory((prev) => [...prev, userMessage]);
       setAiLoading(true);
+      console.log("🔄 AI Loading set to true");
 
       try {
         const aiResponseContent = await getAiResponse(currentMessage);
+        console.log("✅ Got AI response:", aiResponseContent);
 
         const aiMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           type: "ai",
           content: aiResponseContent,
-          title: generateTitle(currentMessage),
           timestamp: new Date(),
         };
 
-        setChatHistory((prev) => [...prev, aiMessage]);
+        console.log("📝 Adding AI message to chat history:", aiMessage);
+        setChatHistory((prev) => {
+          const newHistory = [...prev, aiMessage];
+          console.log("📊 New chat history length:", newHistory.length);
+          return newHistory;
+        });
+        
+        // Set loading to false after message is added
+        setAiLoading(false);
+        console.log("🏁 AI Loading set to false");
       } catch (error) {
-        console.error("Error getting AI response:", error);
+        console.error("❌ Error getting AI response:", error);
         const aiMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
           type: "ai",
           content:
             "I'm experiencing technical difficulties. For immediate legal assistance, please book a consultation with one of our qualified lawyers. You can find experienced lawyers in your area through our consultation booking system.",
-          title: "Service Unavailable",
           timestamp: new Date(),
         };
 
         setChatHistory((prev) => [...prev, aiMessage]);
-      } finally {
         setAiLoading(false);
       }
 
@@ -947,39 +979,99 @@ export default function LawGPTPage() {
               }}
             >
               <div className="space-y-8">
-                {chatHistory.map((chat, index) => (
-                  <div key={chat.id} className="w-full">
-                    {chat.type === "user" ? (
-                      <div className="flex justify-end w-full">
-                        <div className="max-w-lg">
-                          <AutoBubble
-                            message={chat.content}
-                            messageId={chat.id}
-                          />
+                {chatHistory.map((chat, index) => {
+                  console.log(`🎨 Rendering message ${index}:`, chat.type, chat.content.substring(0, 50));
+                  return (
+                    <div key={chat.id} className="w-full">
+                      {chat.type === "user" ? (
+                        <div className="flex justify-end w-full">
+                          <div className="max-w-lg">
+                            <AutoBubble
+                              message={chat.content}
+                              messageId={chat.id}
+                            />
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-4 w-full">
-                        {chat.title && (
-                          <h2
-                            className="text-gray-900 dark:text-white text-[2.5rem] font-bold"
-                            style={{
-                              fontFamily: "Instrument Sans, sans-serif",
-                            }}
+                      ) : (
+                        <div className="flex flex-col gap-4 w-full">
+                          <div
+                            className="text-gray-700 dark:text-white/90 text-lg leading-7 prose prose-lg dark:prose-invert max-w-none"
+                            style={{ fontFamily: "Instrument Sans, sans-serif" }}
                           >
-                            {chat.title}
-                          </h2>
-                        )}
-                        <div
-                          className="text-gray-700 dark:text-white/90 text-lg leading-7"
-                          style={{ fontFamily: "Instrument Sans, sans-serif" }}
-                        >
-                          {chat.content}
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                              components={{
+                                h1: ({ node, ...props }) => (
+                                  <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white" {...props} />
+                                ),
+                                h2: ({ node, ...props }) => (
+                                  <h2 className="text-xl font-bold mt-5 mb-3 text-gray-900 dark:text-white" {...props} />
+                                ),
+                                h3: ({ node, ...props }) => (
+                                  <h3 className="text-lg font-bold mt-4 mb-2 text-gray-900 dark:text-white" {...props} />
+                                ),
+                                p: ({ node, ...props }) => (
+                                  <p className="mb-3 text-gray-700 dark:text-white/90" {...props} />
+                                ),
+                                ul: ({ node, ...props }) => (
+                                  <ul className="list-disc pl-6 mb-3 space-y-1" {...props} />
+                                ),
+                                ol: ({ node, ...props }) => (
+                                  <ol className="list-decimal pl-6 mb-3 space-y-1" {...props} />
+                                ),
+                                li: ({ node, ...props }) => (
+                                  <li className="text-gray-700 dark:text-white/90" {...props} />
+                                ),
+                                strong: ({ node, ...props }) => (
+                                  <strong className="font-bold text-gray-900 dark:text-white" {...props} />
+                                ),
+                                em: ({ node, ...props }) => (
+                                  <em className="italic" {...props} />
+                                ),
+                                table: ({ node, ...props }) => (
+                                  <div className="overflow-x-auto my-4">
+                                    <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600" {...props} />
+                                  </div>
+                                ),
+                                thead: ({ node, ...props }) => (
+                                  <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
+                                ),
+                                tbody: ({ node, ...props }) => (
+                                  <tbody {...props} />
+                                ),
+                                tr: ({ node, ...props }) => (
+                                  <tr className="border-b border-gray-300 dark:border-gray-600" {...props} />
+                                ),
+                                th: ({ node, ...props }) => (
+                                  <th className="px-4 py-2 text-left font-bold text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" {...props} />
+                                ),
+                                td: ({ node, ...props }) => (
+                                  <td className="px-4 py-2 text-gray-700 dark:text-white/90 border border-gray-300 dark:border-gray-600" {...props} />
+                                ),
+                                code: ({ node, inline, ...props }: any) => (
+                                  inline ? (
+                                    <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                                  ) : (
+                                    <code className="block bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm font-mono overflow-x-auto" {...props} />
+                                  )
+                                ),
+                                blockquote: ({ node, ...props }) => (
+                                  <blockquote className="border-l-4 border-[#3C9B97] pl-4 my-3 italic text-gray-600 dark:text-gray-400" {...props} />
+                                ),
+                                hr: ({ node, ...props }) => (
+                                  <hr className="my-6 border-gray-300 dark:border-gray-600" {...props} />
+                                ),
+                              }}
+                            >
+                              {chat.content}
+                            </ReactMarkdown>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      )}
+                    </div>
+                  );
+                })}
 
                 {aiLoading && (
                   <div className="flex flex-col gap-4 w-full">
