@@ -14,9 +14,15 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:9002'],
-  credentials: true
+    ? [
+        'https://turn2law.tech',
+        'https://www.turn2law.tech',
+        'https://turn2law-frontend.vercel.app'  // Add your Vercel domain if different
+      ]
+    : ['http://localhost:3000', 'http://localhost:9002', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
