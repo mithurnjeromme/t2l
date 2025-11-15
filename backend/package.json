@@ -7,6 +7,7 @@
     "dev": "nodemon src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "postinstall": "npm run build",
     "test": "jest",
     "lint": "eslint src/**/*.ts",
     "supabase:start": "supabase start",
@@ -24,6 +25,8 @@
     "multer": "^1.4.5-lts.1",
     "razorpay": "^2.9.6",
     "socket.io": "^4.8.1",
+    "typescript": "^5.7.3",
+    "ts-node": "^10.9.2",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -38,9 +41,7 @@
     "@typescript-eslint/parser": "^8.18.2",
     "eslint": "^9.18.0",
     "jest": "^29.7.0",
-    "nodemon": "^3.1.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "nodemon": "^3.1.9"
   },
   "keywords": [
     "legal",
