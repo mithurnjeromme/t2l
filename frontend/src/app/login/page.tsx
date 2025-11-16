@@ -183,7 +183,10 @@ const LoginPage = () => {
     try {
       console.log('Attempting login with:', formData);
       
-      const response = await fetch('http://localhost:3001/api/auth/login', {
+      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      console.log('Using API URL:', apiUrl);
+      
+      const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
