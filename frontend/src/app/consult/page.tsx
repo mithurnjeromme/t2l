@@ -51,9 +51,17 @@ const ConsultPage = () => {
     try {
       // Use backend URL from environment
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = `${backendUrl}/api/submit-query`;
+      
+      console.log('🔍 Backend URL:', backendUrl);
+      console.log('🔍 API URL:', apiUrl);
+      console.log('🔍 Environment check:', {
+        NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
+      });
       
       // Send query to backend API
-      const response = await fetch(`${backendUrl}/api/submit-query`, {
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,8 +74,16 @@ const ConsultPage = () => {
         }),
       });
 
+      console.log('📡 Response status:', response.status, response.statusText);
+      
       if (!response.ok) {
-        throw new Error("Failed to submit query");
+        const errorText = await response.text();
+        console.error('❌ Response not OK:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        throw new Error(`Failed to submit query: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
