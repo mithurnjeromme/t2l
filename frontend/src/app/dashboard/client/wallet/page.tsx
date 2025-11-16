@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -93,6 +94,7 @@ interface WalletData {
 }
 
 const ClientWallet = () => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [walletData, setWalletData] = useState<WalletData>({
@@ -114,58 +116,85 @@ const ClientWallet = () => {
   useEffect(() => {
     const loadWalletData = async () => {
       try {
-        // Get current user from Supabase
-        const currentUser = await getCurrentUser();
-        if (!currentUser) {
-          window.location.href = '/login';
+        // Check localStorage first for quick access (same as dashboard)
+        const userData = localStorage.getItem('user');
+        const token = localStorage.getItem('token');
+        const isCustomAuth = localStorage.getItem('isCustomAuth');
+        
+        if (!userData || !token) {
+          console.log('[Wallet] No user data or token in localStorage, redirecting to login');
+          router.push('/login');
           return;
         }
-
-        // Get user profile
-        const userProfile = await getUserProfile(currentUser.id);
-        if (!userProfile || userProfile.user_type !== 'client') {
-          window.location.href = '/dashboard/lawyer';
+        
+        const parsedUser = JSON.parse(userData);
+        console.log('[Wallet] Parsed user from localStorage:', parsedUser);
+        
+        // Only verify with Supabase if not using custom backend auth
+        if (!isCustomAuth) {
+          console.log('[Wallet] Verifying with Supabase (not custom auth)');
+          const currentUser = await getCurrentUser();
+          
+          if (!currentUser) {
+            console.log('[Wallet] Supabase verification failed, redirecting to login');
+            router.push('/login');
+            return;
+          }
+        } else {
+          console.log('[Wallet] Using custom auth, skipping Supabase verification');
+        }
+        
+        // Check user type
+        if (parsedUser.userType !== 'client') {
+          console.log('[Wallet] User is not a client, redirecting to lawyer dashboard');
+          router.push('/dashboard/lawyer');
           return;
         }
+        
+        setUser(parsedUser);
+        console.log('[Wallet] User set successfully:', parsedUser);
+        
+        // Fetch real data from Supabase using the correct user ID
+        const userId = isCustomAuth ? parsedUser.id : (await getCurrentUser())?.id;
+        console.log('[Wallet] Fetching wallet data for userId:', userId);
+        
+        if (userId) {
+          // Get wallet balance from Supabase
+          const wallet = await getWalletBalance(userId);
+          if (wallet) {
+            console.log('[Wallet] Wallet balance loaded:', wallet);
+            setWalletData({
+              balance: wallet.balance,
+              totalEarnings: wallet.total_earnings,
+              totalSpent: wallet.total_spent,
+              pendingAmount: wallet.pending_amount
+            });
+          } else {
+            console.log('[Wallet] No wallet data found for user');
+          }
 
-        setUser({
-          id: userProfile.id,
-          email: userProfile.email,
-          fullName: userProfile.full_name,
-          userType: userProfile.user_type,
-          city: userProfile.city
-        });
-
-        // Get wallet balance from Supabase
-        const wallet = await getWalletBalance(currentUser.id);
-        if (wallet) {
-          setWalletData({
-            balance: wallet.balance,
-            totalEarnings: wallet.total_earnings,
-            totalSpent: wallet.total_spent,
-            pendingAmount: wallet.pending_amount
-          });
+          // Get transactions from Supabase
+          const txns = await getTransactions(userId);
+          console.log('[Wallet] Transactions loaded:', txns.length);
+          const formattedTransactions: Transaction[] = txns.map((txn: SupabaseTransaction) => ({
+            id: txn.id,
+            type: txn.type,
+            amount: txn.amount,
+            description: txn.description,
+            status: txn.status,
+            date: txn.created_at,
+            category: txn.description.includes('Top-up') ? 'Top-up' : 
+                     txn.description.includes('Consultation') ? 'Service' : 
+                     txn.description.includes('Withdrawal') ? 'Withdrawal' : 'Other',
+            paymentMethod: txn.payment_method || 'Paytm',
+            paytmOrderId: txn.razorpay_order_id, // Reuse field for Paytm Order ID
+            paytmTransactionId: txn.razorpay_payment_id // Reuse field for Paytm Transaction ID
+          }));
+          setTransactions(formattedTransactions);
         }
-
-        // Get transactions from Supabase
-        const txns = await getTransactions(currentUser.id);
-        const formattedTransactions: Transaction[] = txns.map((txn: SupabaseTransaction) => ({
-          id: txn.id,
-          type: txn.type,
-          amount: txn.amount,
-          description: txn.description,
-          status: txn.status,
-          date: txn.created_at,
-          category: txn.description.includes('Top-up') ? 'Top-up' : 
-                   txn.description.includes('Consultation') ? 'Service' : 
-                   txn.description.includes('Withdrawal') ? 'Withdrawal' : 'Other',
-          paymentMethod: txn.payment_method || 'Paytm',
-          paytmOrderId: txn.razorpay_order_id, // Reuse field for Paytm Order ID
-          paytmTransactionId: txn.razorpay_payment_id // Reuse field for Paytm Transaction ID
-        }));
-        setTransactions(formattedTransactions);
       } catch (error) {
-        console.error('Error loading wallet data:', error);
+        console.error('[Wallet] Error loading wallet data:', error);
+        // Don't redirect on error, just show empty state
       } finally {
         setLoading(false);
       }
