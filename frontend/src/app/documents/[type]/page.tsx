@@ -232,20 +232,7 @@ export default function DocumentCreatePage() {
 }
 
   /* ------------------ COPY + TXT ------------------ */
-  function handleCopy() {
-    if (draft) navigator.clipboard.writeText(draft);
-  }
-
-  function handleDownloadTxt() {
-    if (!draft) return;
-    const blob = new Blob([draft], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${docType}_Preview.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  
 
   /* ------------------ RENDER INPUT FIELD ------------------ */
   function renderField(field: any, idx: number) {
@@ -347,24 +334,10 @@ export default function DocumentCreatePage() {
 
           {/* RIGHT PREVIEW */}
           <SpotlightCard className="p-5 rounded-2xl col-span-1 lg:col-span-2">
-            <div className="flex items-center gap-2 mb-3 sticky top-0 bg-background/60 p-3 backdrop-blur border-b -mx-5 px-5">
-              <Button
-                variant="secondary"
-                disabled={!draft}
-                onClick={handleCopy}
-                className="gap-2 rounded-xl h-10"
-              >
-                <ClipboardCopy className="h-4 w-4" /> Copy
-              </Button>
+           
+             
 
-              <Button
-                disabled={!draft}
-                onClick={handleDownloadTxt}
-                className="gap-2 rounded-xl h-10"
-              >
-                <Download className="h-4 w-4" /> Download TXT
-              </Button>
-            </div>
+              
 
             {draft ? (
               <pre className="min-h-[320px] whitespace-pre-wrap text-sm bg-muted/30 p-5 rounded-md leading-6">
