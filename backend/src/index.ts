@@ -89,11 +89,13 @@ import authRoutes from './api/auth';
 import lawyersRoutes from './api/lawyers';
 import consultationsRoutes from './api/consultations';
 import paymentsRoutes from './api/payments';
+import queriesRoutes from './api/queries';
 
 app.use('/api/auth', authRoutes);
 app.use('/api', lawyersRoutes);
 app.use('/api', consultationsRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api', queriesRoutes);
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
