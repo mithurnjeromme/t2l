@@ -125,7 +125,7 @@ export default function DocumentCreatePage() {
   /* ------------------ DOWNLOAD HANDLER ------------------ */
   async function downloadFile(url: string) {
     try {
-      const fullUrl = "http://localhost:8000" + url;
+      const fullUrl = "https://legal-doc-ai-7q8h.onrender.com" + url;
       const res = await fetch(fullUrl);
       if (!res.ok) throw new Error("Failed");
 
@@ -207,7 +207,7 @@ export default function DocumentCreatePage() {
     form.append("scenario", JSON.stringify(scenarioObject));
 
     const res = await fetch(
-      "http://localhost:8000/api/v1/documents/generate",
+      "https://legal-doc-ai-7q8h.onrender.com/api/v1/documents/generate",
       { method: "POST", body: form }
     );
 
