@@ -522,39 +522,71 @@ export default function LawGPTPage() {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [dailyMessageCount, setDailyMessageCount] = useState(0);
+  const [showLimitModal, setShowLimitModal] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomTextareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+      
+      if (token && user) {
+        setIsAuthenticated(true);
+        const userData = JSON.parse(user);
+        setUserId(userData.id);
+        
+        // Load daily message count from localStorage
+        const today = new Date().toDateString();
+        const storedData = localStorage.getItem(`lawgpt_daily_${userData.id}`);
+        if (storedData) {
+          const { date, count } = JSON.parse(storedData);
+          if (date === today) {
+            setDailyMessageCount(count);
+          } else {
+            // Reset count for new day
+            localStorage.setItem(`lawgpt_daily_${userData.id}`, JSON.stringify({ date: today, count: 0 }));
+            setDailyMessageCount(0);
+          }
+        }
+      } else {
+        setIsAuthenticated(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
+
   // Load user and chat sessions from Supabase on mount
   useEffect(() => {
     const loadUserAndSessions = async () => {
+      if (!userId) return;
+      
       try {
-        const { getCurrentUser, getLawGPTSessions } = await import('@/lib/supabase');
+        const { getLawGPTSessions } = await import('@/lib/supabase');
         
-        const currentUser = await getCurrentUser();
-        if (currentUser) {
-          setUserId(currentUser.id);
-          
-          // Load existing chat sessions
-          const sessions = await getLawGPTSessions(currentUser.id);
-          const formattedSessions: ChatSession[] = sessions.map((session: any) => ({
-            id: session.id,
-            title: session.title,
-            messages: session.messages || [],
-            createdAt: new Date(session.created_at),
-            updatedAt: new Date(session.updated_at)
-          }));
-          
-          setChatSessions(formattedSessions);
-        }
+        // Load existing chat sessions
+        const sessions = await getLawGPTSessions(userId);
+        const formattedSessions: ChatSession[] = sessions.map((session: any) => ({
+          id: session.id,
+          title: session.title,
+          messages: session.messages || [],
+          createdAt: new Date(session.created_at),
+          updatedAt: new Date(session.updated_at)
+        }));
+        
+        setChatSessions(formattedSessions);
       } catch (error) {
         console.error('Error loading chat sessions:', error);
       }
     };
 
     loadUserAndSessions();
-  }, []);
+  }, [userId]);
 
   // Save chat session to Supabase whenever chatHistory changes
   useEffect(() => {
@@ -743,7 +775,34 @@ export default function LawGPTPage() {
 
   const handleSend = async () => {
     if (message.trim() !== "") {
+      // Check authentication
+      if (!isAuthenticated || !userId) {
+        const shouldLogin = confirm(
+          "Please login or sign up to use LawGPT.\n\n" +
+          "Click OK to go to Login page, or Cancel to go to Signup page."
+        );
+        
+        if (shouldLogin) {
+          window.location.href = '/login';
+        } else {
+          window.location.href = '/signup';
+        }
+        return;
+      }
+
+      // Check daily message limit (5 messages per day)
+      if (dailyMessageCount >= 5) {
+        setShowLimitModal(true);
+        return;
+      }
+
       const currentMessage = message.trim();
+
+      // Increment daily message count
+      const newCount = dailyMessageCount + 1;
+      setDailyMessageCount(newCount);
+      const today = new Date().toDateString();
+      localStorage.setItem(`lawgpt_daily_${userId}`, JSON.stringify({ date: today, count: newCount }));
 
       // Create a new session if this is the first message and no session exists
       if (chatHistory.length === 0 && !currentSessionId) {
@@ -1120,6 +1179,47 @@ export default function LawGPTPage() {
                       fill="white"
                     />
                   </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Daily Limit Modal */}
+      {showLimitModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]" onClick={() => setShowLimitModal(false)}>
+          <div className="bg-white dark:bg-card rounded-2xl p-8 max-w-md mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-2">Daily Limit Reached</h3>
+              <p className="text-muted-foreground mb-2">
+                You've used all <strong>5 free messages</strong> for today.
+              </p>
+              <p className="text-sm text-muted-foreground mb-6">
+                Come back tomorrow to continue your conversation with LawGPT!
+              </p>
+              <div className="bg-muted/50 rounded-lg p-4 mb-6">
+                <p className="text-sm text-muted-foreground">
+                  💡 <strong>Tip:</strong> For unlimited legal assistance, book a consultation with one of our qualified lawyers.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowLimitModal(false)}
+                  className="flex-1 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg font-medium transition-colors"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => window.location.href = '/consult'}
+                  className="flex-1 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
+                >
+                  Book Consultation
                 </button>
               </div>
             </div>

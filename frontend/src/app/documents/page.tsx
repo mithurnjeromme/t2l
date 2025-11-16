@@ -122,6 +122,25 @@ function DocumentsPageContent(): JSX.Element {
 
   async function handleGenerate(): Promise<void> {
     if (!selectedType) return;
+    
+    // Check authentication
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    
+    if (!token || !user) {
+      const shouldLogin = confirm(
+        "Please login or sign up to generate documents.\n\n" +
+        "Click OK to go to Login page, or Cancel to go to Signup page."
+      );
+      
+      if (shouldLogin) {
+        window.location.href = '/login';
+      } else {
+        window.location.href = '/signup';
+      }
+      return;
+    }
+    
     setGenerating(true);
     try {
       let data: Record<string, unknown> = { ...formData };
