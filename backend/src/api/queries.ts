@@ -41,16 +41,20 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
       });
     }
 
+    // Generate unique query_id
+    const queryId = `Q${Date.now()}`;
+    
     // Insert query into client_queries table
     const { data: insertedQuery, error: insertError } = await supabase
       .from('client_queries')
       .insert([{
-        user_id: userId,
+        query_id: queryId,
         query_text: query,
+        user_id: userId,
         user_name: userProfile.full_name,
         user_email: userProfile.email,
         user_phone: userProfile.phone || null,
-        status: 'pending', // pending, in_progress, resolved
+        status: 'pending',
         submitted_at: timestamp || new Date().toISOString()
       }])
       .select()
