@@ -53,12 +53,25 @@ const ConsultPage = () => {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const apiUrl = `${backendUrl}/api/submit-query`;
       
+      const userData = JSON.parse(user);
+      const userId = userData.id;
+      
       console.log('🔍 Backend URL:', backendUrl);
       console.log('🔍 API URL:', apiUrl);
+      console.log('🔍 User ID:', userId);
+      console.log('🔍 User Data:', userData);
       console.log('🔍 Environment check:', {
         NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
         NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
       });
+      
+      const requestBody = {
+        query: userQuery,
+        timestamp: new Date().toISOString(),
+        userId: userId
+      };
+      
+      console.log('📤 Sending request:', requestBody);
       
       // Send query to backend API
       const response = await fetch(apiUrl, {
@@ -67,11 +80,7 @@ const ConsultPage = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}` // Include auth token
         },
-        body: JSON.stringify({
-          query: userQuery,
-          timestamp: new Date().toISOString(),
-          userId: JSON.parse(user).id // Include user ID
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       console.log('📡 Response status:', response.status, response.statusText);
@@ -83,7 +92,18 @@ const ConsultPage = () => {
           statusText: response.statusText,
           body: errorText
         });
-        throw new Error(`Failed to submit query: ${response.status} ${response.statusText}`);
+        
+        // Try to parse error message
+        let errorMessage = 'Failed to submit query';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          // Use default message if JSON parse fails
+        }
+        
+        alert(`Error: ${errorMessage}`);
+        throw new Error(`Failed to submit query: ${response.status} - ${errorMessage}`);
       }
 
       const data = await response.json();

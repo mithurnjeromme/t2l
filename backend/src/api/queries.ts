@@ -11,6 +11,12 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
   try {
     const { query, timestamp, userId } = req.body;
 
+    console.log('📝 Received query submission:', {
+      userId,
+      queryLength: query?.length,
+      timestamp
+    });
+
     // Validate input
     if (!query || !query.trim()) {
       return res.status(400).json({
@@ -35,9 +41,10 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
 
     if (userError) {
       console.error('Error fetching user profile:', userError);
-      return res.status(404).json({
+      return res.status(400).json({
         success: false,
-        error: 'User not found'
+        error: 'User not found. Please make sure you are logged in with a valid account.',
+        details: userError.message
       });
     }
 
