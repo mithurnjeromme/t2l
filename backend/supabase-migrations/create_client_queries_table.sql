@@ -2,9 +2,9 @@
 -- This table stores queries submitted by clients through the consult page
 -- Run this SQL in your Supabase SQL Editor
 
-CREATE TABLE IF NOT EXISTS client_queries (
+CREATE TABLE IF NOT EXISTS public.client_queries (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   query_text TEXT NOT NULL,
   user_name TEXT,
   user_email TEXT,
@@ -12,11 +12,8 @@ CREATE TABLE IF NOT EXISTS client_queries (
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'resolved', 'closed')),
   submitted_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
-  assigned_lawyer_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
-  notes TEXT,
-  
-  -- Indexes for better query performance
-  CONSTRAINT client_queries_pkey PRIMARY KEY (id)
+  assigned_lawyer_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+  notes TEXT
 );
 
 -- Create indexes
@@ -40,37 +37,24 @@ CREATE TRIGGER client_queries_updated_at
   EXECUTE FUNCTION update_client_queries_updated_at();
 
 -- Add RLS (Row Level Security) policies
-ALTER TABLE client_queries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.client_queries ENABLE ROW LEVEL SECURITY;
 
--- Allow users to see their own queries
+-- Allow authenticated users to insert queries
+CREATE POLICY "Authenticated users can insert queries"
+  ON public.client_queries FOR INSERT
+  TO authenticated
+  WITH CHECK (true);
+
+-- Allow users to view their own queries
 CREATE POLICY "Users can view their own queries"
-  ON client_queries FOR SELECT
+  ON public.client_queries FOR SELECT
+  TO authenticated
   USING (auth.uid() = user_id);
 
--- Allow users to insert their own queries
-CREATE POLICY "Users can insert their own queries"
-  ON client_queries FOR INSERT
-  WITH CHECK (auth.uid() = user_id);
-
--- Allow users to update their own queries
-CREATE POLICY "Users can update their own queries"
-  ON client_queries FOR UPDATE
-  USING (auth.uid() = user_id);
-
--- Allow lawyers and admins to view all queries (you can customize this based on your needs)
-CREATE POLICY "Lawyers can view all queries"
-  ON client_queries FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.user_type = 'lawyer'
-    )
-  );
-
--- Allow service role to do everything (for backend API)
+-- Allow service role full access (for backend API with service_role key)
 CREATE POLICY "Service role has full access"
-  ON client_queries
+  ON public.client_queries
+  TO service_role
   USING (true)
   WITH CHECK (true);
 

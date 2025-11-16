@@ -7,7 +7,7 @@ const router = Router();
  * Submit a new client query
  * This stores the query in Supabase with user details
  */
-router.post('/submit-query', async (req: Request, res: Response) => {
+router.post('/submit-query', async (req: Request, res: Response): Promise<any> => {
   try {
     const { query, timestamp, userId } = req.body;
 
@@ -105,7 +105,7 @@ router.post('/submit-query', async (req: Request, res: Response) => {
 /**
  * Get all queries for a specific user
  */
-router.get('/user-queries/:userId', async (req: Request, res: Response) => {
+router.get('/user-queries/:userId', async (req: Request, res: Response): Promise<any> => {
   try {
     const { userId } = req.params;
 
@@ -141,7 +141,7 @@ router.get('/user-queries/:userId', async (req: Request, res: Response) => {
 /**
  * Get all queries (admin/lawyer access)
  */
-router.get('/all-queries', async (req: Request, res: Response) => {
+router.get('/all-queries', async (req: Request, res: Response): Promise<any> => {
   try {
     const { data: queries, error } = await supabase
       .from('client_queries')
