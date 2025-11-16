@@ -240,7 +240,8 @@ const SignupPage = () => {
         
         console.log('Submitting lawyer registration with form data and image');
         
-        const response = await fetch('https://turn2law-website.onrender.com/api/auth/register/lawyer', {
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://turn2law-backend.onrender.com';
+        const response = await fetch(`${apiUrl}/api/auth/register/lawyer`, {
           method: 'POST',
           body: formDataToSend
         });
@@ -267,13 +268,15 @@ const SignupPage = () => {
         
         console.log('Submitting client registration:', dataToSend);
         
-        const response = await fetch('https://turn2law-website.onrender.com/api/auth/register/client', {
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://turn2law-backend.onrender.com';
+        const response = await fetch(`${apiUrl}/api/auth/register/client`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dataToSend)
         });
         
         const result = await response.json();
+        console.log('Registration response:', result);
         
         if (response.ok && result.success) {
           // Store token and redirect
@@ -283,7 +286,10 @@ const SignupPage = () => {
           alert('Client registration successful! Redirecting to dashboard...');
           window.location.href = '/dashboard/client';
         } else {
-          alert(result.error || 'Registration failed');
+          // Show detailed error message
+          const errorMessage = result.error || result.message || 'Registration failed';
+          const errorDetails = result.details ? '\n\nDetails: ' + JSON.stringify(result.details, null, 2) : '';
+          alert(errorMessage + errorDetails);
         }
       }
       

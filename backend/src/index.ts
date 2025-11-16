@@ -12,11 +12,33 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
+
+// CORS configuration - allow production domains
+const allowedOrigins = [
+  'https://turn2law.tech',
+  'https://www.turn2law.tech',
+  'https://turn2law-frontend.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:9002',
+  'http://localhost:3001'
+];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:3000', 'http://localhost:9002'],
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -67,11 +89,13 @@ import authRoutes from './api/auth';
 import lawyersRoutes from './api/lawyers';
 import consultationsRoutes from './api/consultations';
 import paymentsRoutes from './api/payments';
+import queriesRoutes from './api/queries';
 
 app.use('/api/auth', authRoutes);
 app.use('/api', lawyersRoutes);
 app.use('/api', consultationsRoutes);
 app.use('/api/payments', paymentsRoutes);
+app.use('/api', queriesRoutes);
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
