@@ -70,6 +70,11 @@ app.get('/', (req: Request, res: Response) => {
       },
       payments: {
         create: 'POST /api/payments/create-payment'
+      },
+      queries: {
+        submit: 'POST /api/submit-query',
+        userQueries: 'GET /api/user-queries/:userId',
+        allQueries: 'GET /api/all-queries'
       }
     }
   });
