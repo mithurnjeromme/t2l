@@ -27,18 +27,42 @@ const ConsultPage = () => {
   const handleSubmit = async () => {
     if (!userQuery.trim()) return;
 
+    // Check if user is logged in
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    
+    if (!token || !user) {
+      // User is not logged in - prompt them to login/signup
+      const shouldLogin = confirm(
+        "Please login or sign up first to submit your query.\n\n" +
+        "Click OK to go to Login page, or Cancel to go to Signup page."
+      );
+      
+      if (shouldLogin) {
+        router.push('/login');
+      } else {
+        router.push('/signup');
+      }
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Use backend URL from environment
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      
       // Send query to backend API
-      const response = await fetch("http://localhost:8000/api/submit-query", {
+      const response = await fetch(`${backendUrl}/api/submit-query`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Include auth token
         },
         body: JSON.stringify({
           query: userQuery,
           timestamp: new Date().toISOString(),
+          userId: JSON.parse(user).id // Include user ID
         }),
       });
 
@@ -58,11 +82,8 @@ const ConsultPage = () => {
       }, 5000);
     } catch (error) {
       console.error("❌ Error submitting query:", error);
-      // Show success anyway for better UX (query is still recorded in console)
-      setShowSuccess(true);
-      setTimeout(() => {
-        router.push("/");
-      }, 5000);
+      setIsSubmitting(false);
+      alert("Failed to submit query. Please try again.");
     }
   };
 
