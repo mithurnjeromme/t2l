@@ -798,6 +798,16 @@ export default function LawGPTPage() {
 
       const currentMessage = message.trim();
 
+      // Clear the message input immediately
+      setMessage("");
+      const currentTextarea =
+        chatHistory.length === 0
+          ? textareaRef.current
+          : bottomTextareaRef.current;
+      if (currentTextarea) {
+        currentTextarea.style.height = "24px";
+      }
+
       // Increment daily message count
       const newCount = dailyMessageCount + 1;
       setDailyMessageCount(newCount);
@@ -846,15 +856,7 @@ export default function LawGPTPage() {
         setAiLoading(false);
       }
 
-      setMessage("");
-      const currentTextarea =
-        chatHistory.length === 0
-          ? textareaRef.current
-          : bottomTextareaRef.current;
-      if (currentTextarea) {
-        currentTextarea.style.height = "24px";
-      }
-
+      // Scroll to bottom after messages are added
       const scrollToBottom = () => {
         if (chatContainerRef.current) {
           chatContainerRef.current.scrollTop =
