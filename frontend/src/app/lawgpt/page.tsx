@@ -591,7 +591,12 @@ export default function LawGPTPage() {
   // Save chat session to Supabase whenever chatHistory changes
   useEffect(() => {
     const saveSession = async () => {
-      if (!userId || chatHistory.length === 0) return;
+      if (!userId || chatHistory.length === 0) {
+        console.log('[LawGPT] Skipping save - userId:', userId, 'chatHistory length:', chatHistory.length);
+        return;
+      }
+
+      console.log('[LawGPT] Attempting to save session - userId:', userId, 'currentSessionId:', currentSessionId, 'messages:', chatHistory.length);
 
       try {
         const { createLawGPTSession, updateLawGPTSession } = await import('@/lib/supabase');
@@ -601,12 +606,26 @@ export default function LawGPTPage() {
 
         if (!currentSessionId) {
           // Create new session
+          console.log('[LawGPT] Creating new session with title:', title);
           const { data, error } = await createLawGPTSession(userId, title);
-          if (data && !error) {
+          
+          if (error) {
+            console.error('[LawGPT] Error creating session:', error);
+            return;
+          }
+          
+          if (data) {
+            console.log('[LawGPT] Session created successfully:', data);
             setCurrentSessionId(data.id);
             
             // Update session with messages
-            await updateLawGPTSession(data.id, chatHistory);
+            console.log('[LawGPT] Updating session with messages:', chatHistory.length);
+            const updateResult = await updateLawGPTSession(data.id, chatHistory);
+            if (updateResult.error) {
+              console.error('[LawGPT] Error updating session messages:', updateResult.error);
+            } else {
+              console.log('[LawGPT] Session messages updated successfully');
+            }
             
             // Add to sessions list
             setChatSessions(prev => [{
@@ -616,10 +635,18 @@ export default function LawGPTPage() {
               createdAt: new Date(),
               updatedAt: new Date()
             }, ...prev]);
+            console.log('[LawGPT] Session added to sessions list');
           }
         } else {
           // Update existing session
-          await updateLawGPTSession(currentSessionId, chatHistory);
+          console.log('[LawGPT] Updating existing session:', currentSessionId);
+          const { data, error } = await updateLawGPTSession(currentSessionId, chatHistory);
+          
+          if (error) {
+            console.error('[LawGPT] Error updating session:', error);
+          } else {
+            console.log('[LawGPT] Session updated successfully');
+          }
           
           // Update in sessions list
           setChatSessions(prev => prev.map(session => 
@@ -629,7 +656,7 @@ export default function LawGPTPage() {
           ));
         }
       } catch (error) {
-        console.error('Error saving chat session:', error);
+        console.error('[LawGPT] Exception saving chat session:', error);
       }
     };
 

@@ -1,5 +1,13 @@
--- Create lawgpt_sessions table for storing chat history
--- NOTE: user_id can be either UUID (Supabase auth) or TEXT (custom backend auth)
+-- ============================================
+-- LawGPT Sessions Table - Simplified Version
+-- ============================================
+-- This version works with custom backend authentication (not Supabase auth)
+-- Run this in Supabase SQL Editor
+
+-- Drop existing table if you need to start fresh (CAREFUL: This deletes data!)
+-- DROP TABLE IF EXISTS lawgpt_sessions CASCADE;
+
+-- Create the table
 CREATE TABLE IF NOT EXISTS lawgpt_sessions (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id TEXT NOT NULL,
@@ -9,21 +17,13 @@ CREATE TABLE IF NOT EXISTS lawgpt_sessions (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Create index for faster queries
+-- Create indexes for faster queries
 CREATE INDEX IF NOT EXISTS idx_lawgpt_sessions_user_id ON lawgpt_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_lawgpt_sessions_updated_at ON lawgpt_sessions(updated_at DESC);
 
--- Disable Row Level Security for now (using custom backend auth, not Supabase auth)
--- RLS policies won't work with custom auth user IDs
+-- Disable Row Level Security (RLS)
+-- We're using custom backend auth, not Supabase auth, so RLS won't work
 ALTER TABLE lawgpt_sessions DISABLE ROW LEVEL SECURITY;
-
--- NOTE: Since we're using custom backend authentication (not Supabase auth),
--- RLS policies based on auth.uid() won't work. The application layer handles
--- authorization by passing the correct user_id from localStorage.
--- If you want to enable RLS later, you'll need to:
--- 1. Migrate to Supabase auth, OR
--- 2. Use service role key with RLS bypassed, OR
--- 3. Create custom RLS policies that don't rely on auth.uid()
 
 -- Create trigger to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_lawgpt_sessions_updated_at()
@@ -34,7 +34,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS update_lawgpt_sessions_updated_at_trigger ON lawgpt_sessions;
 CREATE TRIGGER update_lawgpt_sessions_updated_at_trigger
   BEFORE UPDATE ON lawgpt_sessions
   FOR EACH ROW
   EXECUTE FUNCTION update_lawgpt_sessions_updated_at();
+
+-- Verify the table was created
+-- Run this after creating the table:
+-- SELECT * FROM lawgpt_sessions;
