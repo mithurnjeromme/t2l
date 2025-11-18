@@ -522,39 +522,51 @@ export default function LawGPTPage() {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true); // New state to track auth check
   const [dailyMessageCount, setDailyMessageCount] = useState(0);
   const [showLimitModal, setShowLimitModal] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bottomTextareaRef = useRef<HTMLTextAreaElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Check authentication on mount
+  // Check authentication on mount using Supabase Auth
   useEffect(() => {
-    const checkAuth = () => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-      
-      if (token && user) {
-        setIsAuthenticated(true);
-        const userData = JSON.parse(user);
-        setUserId(userData.id);
+    const checkAuth = async () => {
+      try {
+        console.log('[LawGPT] Checking Supabase Auth session...');
+        setIsAuthChecking(true);
+        const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
         
-        // Load daily message count from localStorage
-        const today = new Date().toDateString();
-        const storedData = localStorage.getItem(`lawgpt_daily_${userData.id}`);
-        if (storedData) {
-          const { date, count } = JSON.parse(storedData);
-          if (date === today) {
-            setDailyMessageCount(count);
-          } else {
-            // Reset count for new day
-            localStorage.setItem(`lawgpt_daily_${userData.id}`, JSON.stringify({ date: today, count: 0 }));
-            setDailyMessageCount(0);
+        const session = await getSession();
+        
+        if (session && session.user) {
+          console.log('[LawGPT] User authenticated:', session.user.id);
+          setIsAuthenticated(true);
+          setUserId(session.user.id);
+          
+          // Load daily message count from localStorage
+          const today = new Date().toDateString();
+          const storedData = localStorage.getItem(`lawgpt_daily_${session.user.id}`);
+          if (storedData) {
+            const { date, count } = JSON.parse(storedData);
+            if (date === today) {
+              setDailyMessageCount(count);
+            } else {
+              // Reset count for new day
+              localStorage.setItem(`lawgpt_daily_${session.user.id}`, JSON.stringify({ date: today, count: 0 }));
+              setDailyMessageCount(0);
+            }
           }
+        } else {
+          console.log('[LawGPT] No active session');
+          setIsAuthenticated(false);
         }
-      } else {
+      } catch (error) {
+        console.error('[LawGPT] Auth check error:', error);
         setIsAuthenticated(false);
+      } finally {
+        setIsAuthChecking(false);
       }
     };
     
@@ -802,7 +814,12 @@ export default function LawGPTPage() {
 
   const handleSend = async () => {
     if (message.trim() !== "") {
-      // Check authentication
+      // Wait for auth check to complete, then check authentication
+      if (isAuthChecking) {
+        // Still checking auth, wait a moment
+        return;
+      }
+      
       if (!isAuthenticated || !userId) {
         const shouldLogin = confirm(
           "Please login or sign up to use LawGPT.\n\n" +
@@ -901,6 +918,24 @@ export default function LawGPTPage() {
       handleSend();
     }
   };
+
+  // Show loading state while checking authentication
+  if (isAuthChecking) {
+    return (
+      <div className="relative w-screen h-screen overflow-hidden bg-background dark:bg-black">
+        <LawGPTHeader
+          onSidebarOpen={handleSidebarToggle}
+          sidebarOpen={false}
+        />
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-400">Checking authentication...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
