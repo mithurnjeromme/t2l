@@ -187,11 +187,16 @@ export const getUserProfile = async (userId: string) => {
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single();
+    .maybeSingle(); // Use maybeSingle instead of single to handle no results gracefully
 
   if (error) {
     console.error('[Supabase Auth] Get profile error:', error);
     throw error;
+  }
+
+  if (!data) {
+    console.error('[Supabase Auth] Profile not found for user:', userId);
+    throw new Error('Profile not found. Please contact support or try signing up again.');
   }
 
   return data;
