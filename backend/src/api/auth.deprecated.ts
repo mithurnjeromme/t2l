@@ -1,3 +1,23 @@
+/**
+ * ⚠️ DEPRECATED - DO NOT USE
+ * 
+ * This file contains the old custom authentication implementation.
+ * 
+ * Authentication is now handled by Supabase Auth on the frontend.
+ * This file is kept as a backup only and should not be imported.
+ * 
+ * Migration Date: November 18, 2025
+ * 
+ * New Auth Implementation:
+ * - Frontend: /frontend/src/lib/supabase-auth.ts
+ * - Login: Uses signInWithEmail()
+ * - Signup: Uses signUpWithEmail()
+ * - Logout: Uses signOut()
+ * - Session: Managed automatically by Supabase
+ * 
+ * See: /backend/BACKEND_MIGRATION.md for details
+ */
+
 import { Router, Request, Response } from 'express';
 import { supabase, supabaseAdmin } from '../config/supabase';
 import jwt, { SignOptions } from 'jsonwebtoken';

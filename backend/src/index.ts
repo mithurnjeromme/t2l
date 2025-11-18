@@ -50,16 +50,14 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Turn2Law Backend API',
-    version: '1.0.0',
+    version: '2.0.0',
     status: 'Running',
+    auth: 'Supabase Auth (frontend)',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',
-      auth: {
-        signup: 'POST /api/auth/signup',
-        login: 'POST /api/auth/login'
-      },
+      note: 'Authentication is handled by Supabase Auth on the frontend',
       lawyers: {
         list: 'GET /api/lawyers',
         profile: 'GET /api/lawyers/:id'
@@ -89,14 +87,17 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
-// API Routes - Budget-friendly stack
-import authRoutes from './api/auth';
+// API Routes - Using Supabase Auth only
+// Auth is now handled by Supabase Auth on the frontend
+// No custom auth endpoints needed
+
 import lawyersRoutes from './api/lawyers';
 import consultationsRoutes from './api/consultations';
 import paymentsRoutes from './api/payments';
 import queriesRoutes from './api/queries';
 
-app.use('/api/auth', authRoutes);
+// Removed: app.use('/api/auth', authRoutes); 
+// Auth is now handled by Supabase Auth directly from frontend
 app.use('/api', lawyersRoutes);
 app.use('/api', consultationsRoutes);
 app.use('/api/payments', paymentsRoutes);
