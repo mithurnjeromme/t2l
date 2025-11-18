@@ -27,43 +27,40 @@ const ConsultPage = () => {
   const handleSubmit = async () => {
     if (!userQuery.trim()) return;
 
-    // Check if user is logged in
-    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    const user = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    
-    if (!token || !user) {
-      // User is not logged in - prompt them to login/signup
-      const shouldLogin = confirm(
-        "Please login or sign up first to submit your query.\n\n" +
-        "Click OK to go to Login page, or Cancel to go to Signup page."
-      );
-      
-      if (shouldLogin) {
-        router.push('/login');
-      } else {
-        router.push('/signup');
-      }
-      return;
-    }
-
-    setIsSubmitting(true);
-
     try {
+      // Check if user is logged in using Supabase Auth
+      const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
+      const session = await getSession();
+      
+      if (!session || !session.user) {
+        // User is not logged in - prompt them to login/signup
+        const shouldLogin = confirm(
+          "Please login or sign up first to submit your query.\n\n" +
+          "Click OK to go to Login page, or Cancel to go to Signup page."
+        );
+        
+        if (shouldLogin) {
+          router.push('/login');
+        } else {
+          router.push('/signup');
+        }
+        return;
+      }
+
+      setIsSubmitting(true);
+      
+      // Get user profile for submission
+      const profile = await getUserProfile(session.user.id);
+      const userId = profile.id;
+      
       // Use backend URL from environment
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const apiUrl = `${backendUrl}/api/submit-query`;
       
-      const userData = JSON.parse(user);
-      const userId = userData.id;
-      
       console.log('🔍 Backend URL:', backendUrl);
       console.log('🔍 API URL:', apiUrl);
       console.log('🔍 User ID:', userId);
-      console.log('🔍 User Data:', userData);
-      console.log('🔍 Environment check:', {
-        NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
-        NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
-      });
+      console.log('🔍 Profile:', profile);
       
       const requestBody = {
         query: userQuery,
@@ -73,12 +70,15 @@ const ConsultPage = () => {
       
       console.log('📤 Sending request:', requestBody);
       
+      // Get session token for authorization
+      const token = session.access_token;
+      
       // Send query to backend API
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // Include auth token
+          "Authorization": `Bearer ${token}` // Include Supabase auth token
         },
         body: JSON.stringify(requestBody),
       });
