@@ -8,15 +8,21 @@ import { useRouter } from "next/navigation";
 const Hero = () => {
   const router = useRouter();
 
-  const handleConsultClick = () => {
-    // Check if user is logged in by checking for token in localStorage
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    
-    if (token) {
-      // User is logged in, redirect to consult page
-      router.push("/consult");
-    } else {
-      // User is not logged in, redirect to login page
+  const handleConsultClick = async () => {
+    // Check if user is logged in using Supabase Auth
+    try {
+      const { getSession } = await import('@/lib/supabase-auth');
+      const session = await getSession();
+      
+      if (session && session.user) {
+        // User is logged in, redirect to consult page
+        router.push("/consult");
+      } else {
+        // User is not logged in, redirect to login page
+        router.push("/login");
+      }
+    } catch (error) {
+      // If error checking auth, redirect to login to be safe
       router.push("/login");
     }
   };

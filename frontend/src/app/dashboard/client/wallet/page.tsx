@@ -116,46 +116,50 @@ const ClientWallet = () => {
   useEffect(() => {
     const loadWalletData = async () => {
       try {
-        // Check localStorage first for quick access (same as dashboard)
-        const userData = localStorage.getItem('user');
-        const token = localStorage.getItem('token');
-        const isCustomAuth = localStorage.getItem('isCustomAuth');
+        // Check authentication using Supabase Auth
+        console.log('[Wallet] Checking Supabase Auth session...');
+        const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
         
-        if (!userData || !token) {
-          console.log('[Wallet] No user data or token in localStorage, redirecting to login');
+        const session = await getSession();
+        
+        if (!session || !session.user) {
+          console.log('[Wallet] No active session, redirecting to login');
           router.push('/login');
           return;
         }
         
-        const parsedUser = JSON.parse(userData);
-        console.log('[Wallet] Parsed user from localStorage:', parsedUser);
+        console.log('[Wallet] User authenticated:', session.user.id);
         
-        // Only verify with Supabase if not using custom backend auth
-        if (!isCustomAuth) {
-          console.log('[Wallet] Verifying with Supabase (not custom auth)');
-          const currentUser = await getCurrentUser();
-          
-          if (!currentUser) {
-            console.log('[Wallet] Supabase verification failed, redirecting to login');
-            router.push('/login');
-            return;
-          }
-        } else {
-          console.log('[Wallet] Using custom auth, skipping Supabase verification');
+        // Get user profile from Supabase
+        const profile = await getUserProfile(session.user.id);
+        
+        if (!profile) {
+          console.log('[Wallet] Profile not found, redirecting to login');
+          router.push('/login');
+          return;
         }
         
+        console.log('[Wallet] User profile loaded:', profile);
+        
         // Check user type
-        if (parsedUser.userType !== 'client') {
+        if (profile.user_type !== 'client') {
           console.log('[Wallet] User is not a client, redirecting to lawyer dashboard');
           router.push('/dashboard/lawyer');
           return;
         }
         
-        setUser(parsedUser);
-        console.log('[Wallet] User set successfully:', parsedUser);
+        // Set user state with profile data
+        setUser({
+          id: profile.id,
+          email: profile.email,
+          fullName: profile.full_name,
+          userType: profile.user_type,
+          city: profile.city || undefined
+        });
+        console.log('[Wallet] User set successfully from Supabase profile');
         
-        // Fetch real data from Supabase using the correct user ID
-        const userId = isCustomAuth ? parsedUser.id : (await getCurrentUser())?.id;
+        // Fetch real data from Supabase using the user ID
+        const userId = session.user.id;
         console.log('[Wallet] Fetching wallet data for userId:', userId);
         
         if (userId) {
