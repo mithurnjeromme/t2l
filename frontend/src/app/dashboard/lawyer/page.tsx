@@ -41,13 +41,12 @@ import {
 } from 'lucide-react';
 import Header from '@/components/layout/header';
 import { 
-  getCurrentUser, 
   getLawyerProfile, 
   getLawyerStats, 
   getRecentActivity,
-  getUserConsultations,
-  signOut
+  getUserConsultations
 } from '@/lib/supabase';
+import { signOut } from '@/lib/supabase-auth';
 import { useRouter } from 'next/navigation';
 
 interface User {
@@ -111,54 +110,64 @@ const LawyerDashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      // Check localStorage first
-      const userData = localStorage.getItem('user');
-      const token = localStorage.getItem('token');
-      const isCustomAuth = localStorage.getItem('isCustomAuth');
-
-      if (!userData || !token) {
+      console.log('[Lawyer Dashboard] Checking Supabase Auth session...');
+      
+      // Import Supabase auth functions
+      const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
+      
+      // Check Supabase session
+      const session = await getSession();
+      
+      if (!session || !session.user) {
+        console.log('[Lawyer Dashboard] No active session, redirecting to login');
         router.push('/login');
         return;
       }
-
-      const parsedUser = JSON.parse(userData);
       
-      // Only verify with Supabase if not using custom backend auth
-      if (!isCustomAuth) {
-        const currentUser = await getCurrentUser();
-        
-        if (!currentUser) {
-          router.push('/login');
-          return;
-        }
+      console.log('[Lawyer Dashboard] Session found, user ID:', session.user.id);
+      
+      // Fetch user profile from database
+      const profile = await getUserProfile(session.user.id);
+      
+      if (!profile) {
+        console.error('[Lawyer Dashboard] Profile not found');
+        router.push('/login');
+        return;
       }
       
-      if (parsedUser.userType !== 'lawyer') {
+      console.log('[Lawyer Dashboard] Profile fetched, user type:', profile.user_type);
+      
+      // Check user type
+      if (profile.user_type !== 'lawyer') {
+        console.log('[Lawyer Dashboard] User is not a lawyer, redirecting to client dashboard');
         router.push('/dashboard/client');
         return;
       }
       
-      setUser(parsedUser);
-
-      // Fetch real data from Supabase using the correct user ID
-      const userId = isCustomAuth ? parsedUser.id : (await getCurrentUser())?.id;
+      // Set user data (convert to the expected format)
+      setUser({
+        id: profile.id,
+        email: profile.email,
+        fullName: profile.full_name,
+        userType: profile.user_type
+      });
       
-      if (userId) {
-        const [profile, lawyerStats, activity, userConsultations] = await Promise.all([
-          getLawyerProfile(userId),
-          getLawyerStats(userId),
-          getRecentActivity(userId, 'lawyer', 5),
-          getUserConsultations(userId, 'lawyer')
-        ]);
-        
-        setLawyerProfile(profile);
-        setStats(lawyerStats);
-        setRecentActivity(activity);
-        setConsultations(userConsultations);
-      }
+      // Fetch real data from Supabase
+      const [lawyerProfileData, lawyerStats, activity, userConsultations] = await Promise.all([
+        getLawyerProfile(profile.id),
+        getLawyerStats(profile.id),
+        getRecentActivity(profile.id, 'lawyer', 5),
+        getUserConsultations(profile.id, 'lawyer')
+      ]);
+      
+      setLawyerProfile(lawyerProfileData);
+      setStats(lawyerStats);
+      setRecentActivity(activity);
+      setConsultations(userConsultations);
       
     } catch (error) {
-      console.error('Error loading dashboard:', error);
+      console.error('[Lawyer Dashboard] Error loading dashboard:', error);
+      router.push('/login');
     } finally {
       setLoading(false);
     }
