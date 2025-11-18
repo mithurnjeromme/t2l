@@ -37,16 +37,31 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
       .from('profiles')
       .select('full_name, email, phone, user_type')
       .eq('id', userId)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single() to avoid errors when no rows found
 
     if (userError) {
-      console.error('Error fetching user profile:', userError);
+      console.error('❌ Error fetching user profile:', userError);
       return res.status(400).json({
         success: false,
-        error: 'User not found. Please make sure you are logged in with a valid account.',
+        error: 'Database error while fetching user profile.',
         details: userError.message
       });
     }
+
+    if (!userProfile) {
+      console.error('❌ User profile not found for userId:', userId);
+      return res.status(404).json({
+        success: false,
+        error: 'User profile not found. Please make sure you have completed your profile setup.',
+        hint: 'Try logging out and logging back in, or contact support if the issue persists.'
+      });
+    }
+
+    console.log('✅ User profile found:', {
+      userId,
+      name: userProfile.full_name,
+      email: userProfile.email
+    });
 
     // Generate unique query_id
     const queryId = `Q${Date.now()}`;
