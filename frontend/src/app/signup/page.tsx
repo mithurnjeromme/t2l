@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Logo = () => (
   <>
@@ -165,9 +166,12 @@ const Turn2LawTextLogo = () => (
 );
 
 const SignupPage = () => {
+  const router = useRouter();
   const [signupType, setSignupType] = useState<'user' | 'lawyer'>('user');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -219,83 +223,81 @@ const SignupPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
     
     try {
+      console.log('[Signup] Starting Supabase Auth registration...');
+      
+      // Import Supabase auth functions
+      const { signUpWithEmail } = await import('@/lib/supabase-auth');
+      const { supabase } = await import('@/lib/supabase');
+      
+      // Prepare user data for Supabase Auth
+      const userType = signupType === 'lawyer' ? 'lawyer' : 'client';
+      const phone = formData.countryCode + formData.mobile;
+      
+      // Sign up with Supabase Auth
+      const { user, session } = await signUpWithEmail({
+        email: formData.email,
+        password: formData.password,
+        fullName: formData.name,
+        userType: userType,
+        phone: phone,
+        city: formData.city || undefined
+      });
+
+      if (!user) {
+        throw new Error('Registration failed - no user returned');
+      }
+
+      console.log('[Signup] Supabase Auth successful, user ID:', user.id);
+      
+      // If lawyer, update profile with additional lawyer-specific data
       if (signupType === 'lawyer') {
-        // Create FormData for lawyer registration with file upload
-        const formDataToSend = new FormData();
+        console.log('[Signup] Updating lawyer profile with additional data...');
         
-        // Add all form fields
-        Object.entries(formData).forEach(([key, value]) => {
-          formDataToSend.append(key, value);
-        });
-        
-        // Add userType
-        formDataToSend.append('userType', 'lawyer');
-        
-        // Add profile image if selected
-        if (profileImage) {
-          formDataToSend.append('profileImage', profileImage);
-        }
-        
-        console.log('Submitting lawyer registration with form data and image');
-        
-        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://turn2law-backend.onrender.com';
-        const response = await fetch(`${apiUrl}/api/auth/register/lawyer`, {
-          method: 'POST',
-          body: formDataToSend
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok && result.success) {
-          // Store token and redirect
-          localStorage.setItem('token', result.data.token);
-          localStorage.setItem('user', JSON.stringify(result.data.user));
-          
-          alert('Lawyer registration successful! Redirecting to dashboard...');
-          window.location.href = '/dashboard/lawyer';
-        } else {
-          alert(result.error || 'Registration failed');
-        }
-        
-      } else {
-        // For client registration (no file upload needed)
-        const dataToSend = {
-          ...formData,
-          userType: 'client'
+        const lawyerData = {
+          bar_number: formData.barNumber,
+          years_of_experience: parseInt(formData.experience) || 0,
+          specialization: formData.specialization,
+          education: formData.education,
+          court_practice: formData.courtPractice,
+          languages: formData.languages.split(',').map(l => l.trim()),
+          bio: formData.bio,
+          consultation_fee: parseFloat(formData.consultationFee) || 0,
+          // Profile image URL will be updated after upload
         };
         
-        console.log('Submitting client registration:', dataToSend);
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update(lawyerData)
+          .eq('id', user.id);
         
-        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://turn2law-backend.onrender.com';
-        const response = await fetch(`${apiUrl}/api/auth/register/client`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataToSend)
-        });
+        if (updateError) {
+          console.error('[Signup] Error updating lawyer profile:', updateError);
+          throw new Error('Failed to update lawyer profile: ' + updateError.message);
+        }
         
-        const result = await response.json();
-        console.log('Registration response:', result);
-        
-        if (response.ok && result.success) {
-          // Store token and redirect
-          localStorage.setItem('token', result.data.token);
-          localStorage.setItem('user', JSON.stringify(result.data.user));
-          
-          alert('Client registration successful! Redirecting to dashboard...');
-          window.location.href = '/dashboard/client';
-        } else {
-          // Show detailed error message
-          const errorMessage = result.error || result.message || 'Registration failed';
-          const errorDetails = result.details ? '\n\nDetails: ' + JSON.stringify(result.details, null, 2) : '';
-          alert(errorMessage + errorDetails);
+        // TODO: Handle profile image upload to Supabase Storage
+        // For now, we'll skip the image upload (can be added later)
+        if (profileImage) {
+          console.log('[Signup] Profile image upload to be implemented with Supabase Storage');
         }
       }
       
-    } catch (error) {
-      console.error('Registration error:', error);
-      alert('Registration failed. Please check your connection and try again.');
+      alert(`${userType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Please check your email to verify your account.`);
+      
+      // Redirect to login page
+      router.push('/login');
+      
+    } catch (error: any) {
+      console.error('[Signup] Registration error:', error);
+      const errorMessage = error.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -171,50 +171,57 @@ const LoginPage = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setError(''); // Clear error on input change
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
     try {
-      console.log('Attempting login with:', formData);
+      console.log('[Login] Attempting Supabase Auth login:', formData.email);
       
-      const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      console.log('Using API URL:', apiUrl);
+      // Import Supabase auth functions
+      const { signInWithEmail, getUserProfile } = await import('@/lib/supabase-auth');
       
-      const response = await fetch(`${apiUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+      // Sign in with Supabase Auth
+      const { user, session } = await signInWithEmail({
+        email: formData.email,
+        password: formData.password
       });
+
+      if (!user || !session) {
+        throw new Error('Login failed - no user or session returned');
+      }
+
+      console.log('[Login] Supabase Auth successful, fetching profile...');
       
-      const result = await response.json();
+      // Fetch user profile from database
+      const profile = await getUserProfile(user.id);
       
-      if (response.ok && result.success) {
-        // Store token and user data
-        localStorage.setItem('token', result.data.token);
-        localStorage.setItem('user', JSON.stringify(result.data.user));
-        localStorage.setItem('isCustomAuth', 'true'); // Flag for custom backend auth
-        
-        console.log('Login successful, user type:', result.data.user.userType);
-        
-        // Use Next.js router for client-side navigation
-        if (result.data.user.userType === 'lawyer') {
-          router.push('/dashboard/lawyer');
-        } else {
-          router.push('/dashboard/client');
-        }
+      if (!profile) {
+        throw new Error('User profile not found. Please contact support.');
+      }
+
+      console.log('[Login] Profile fetched, user type:', profile.user_type);
+      
+      // Redirect based on user type
+      if (profile.user_type === 'lawyer') {
+        router.push('/dashboard/lawyer');
       } else {
-        alert(result.error || 'Login failed');
+        router.push('/dashboard/client');
       }
       
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Login failed. Please check your connection and try again.');
+    } catch (error: any) {
+      console.error('[Login] Error:', error);
+      const errorMessage = error.message || 'Login failed. Please check your credentials and try again.';
+      setError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -278,6 +285,13 @@ const LoginPage = () => {
 
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 text-sm">
+                {error}
+              </div>
+            )}
+            
             {/* Email */}
             <Input
               id="email"
