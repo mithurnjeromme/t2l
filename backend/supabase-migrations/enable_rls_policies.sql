@@ -151,39 +151,44 @@ END $$;
 -- 5. CLIENT_QUERIES TABLE (if exists)
 -- ============================================
 
-DO $$ 
-BEGIN
-  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'client_queries') THEN
-    -- Enable RLS
-    ALTER TABLE public.client_queries ENABLE ROW LEVEL SECURITY;
-    
-    -- Drop existing policies
-    DROP POLICY IF EXISTS "Users can view own queries" ON public.client_queries;
-    DROP POLICY IF EXISTS "Users can insert own queries" ON public.client_queries;
-    DROP POLICY IF EXISTS "Lawyers can view queries assigned to them" ON public.client_queries;
-    
-    -- Clients can view their own queries
-    CREATE POLICY "Users can view own queries"
-    ON public.client_queries
-    FOR SELECT
-    TO authenticated
-    USING (auth.uid() = client_id);
-    
-    -- Clients can insert their own queries
-    CREATE POLICY "Users can insert own queries"
-    ON public.client_queries
-    FOR INSERT
-    TO authenticated
-    WITH CHECK (auth.uid() = client_id);
-    
-    -- Lawyers can view queries assigned to them
-    CREATE POLICY "Lawyers can view queries assigned to them"
-    ON public.client_queries
-    FOR SELECT
-    TO authenticated
-    USING (auth.uid() = lawyer_id);
-  END IF;
-END $$;
+-- NOTE: Commented out because column names may vary
+-- Run check_table_columns.sql first to see the actual column names
+-- Then uncomment and adjust the column names below
+
+-- DO $$ 
+-- BEGIN
+--   IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'client_queries') THEN
+--     -- Enable RLS
+--     ALTER TABLE public.client_queries ENABLE ROW LEVEL SECURITY;
+--     
+--     -- Drop existing policies
+--     DROP POLICY IF EXISTS "Users can view own queries" ON public.client_queries;
+--     DROP POLICY IF EXISTS "Users can insert own queries" ON public.client_queries;
+--     DROP POLICY IF EXISTS "Lawyers can view queries assigned to them" ON public.client_queries;
+--     
+--     -- Clients can view their own queries
+--     -- CHANGE 'client_id' to the actual column name from your table
+--     CREATE POLICY "Users can view own queries"
+--     ON public.client_queries
+--     FOR SELECT
+--     TO authenticated
+--     USING (auth.uid() = user_id); -- CHANGE client_id to actual column name
+--     
+--     -- Clients can insert their own queries
+--     CREATE POLICY "Users can insert own queries"
+--     ON public.client_queries
+--     FOR INSERT
+--     TO authenticated
+--     WITH CHECK (auth.uid() = user_id); -- CHANGE client_id to actual column name
+--     
+--     -- Lawyers can view queries assigned to them (if you have a lawyer_id column)
+--     -- CREATE POLICY "Lawyers can view queries assigned to them"
+--     -- ON public.client_queries
+--     -- FOR SELECT
+--     -- TO authenticated
+--     -- USING (auth.uid() = lawyer_id); -- CHANGE to actual column name
+--   END IF;
+-- END $$;
 
 -- ============================================
 -- VERIFY RLS IS ENABLED
