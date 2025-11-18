@@ -253,31 +253,33 @@ const SignupPage = () => {
 
       console.log('[Signup] Supabase Auth successful, user ID:', user.id);
       
-      // If lawyer, update profile with additional lawyer-specific data
+      // If lawyer, create lawyer_profiles entry with additional data
       if (signupType === 'lawyer') {
-        console.log('[Signup] Updating lawyer profile with additional data...');
+        console.log('[Signup] Creating lawyer_profiles entry with additional data...');
         
         const lawyerData = {
+          user_id: user.id,
           bar_number: formData.barNumber,
-          years_of_experience: parseInt(formData.experience) || 0,
+          experience_years: parseInt(formData.experience) || 0,
           specialization: formData.specialization,
           education: formData.education,
           court_practice: formData.courtPractice,
-          languages: formData.languages.split(',').map(l => l.trim()),
+          languages: formData.languages, // Store as comma-separated string
           bio: formData.bio,
           consultation_fee: parseFloat(formData.consultationFee) || 0,
-          // Profile image URL will be updated after upload
+          profile_image_url: null, // Will be updated after image upload
         };
         
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update(lawyerData)
-          .eq('id', user.id);
+        const { error: insertError } = await supabase
+          .from('lawyer_profiles')
+          .insert(lawyerData);
         
-        if (updateError) {
-          console.error('[Signup] Error updating lawyer profile:', updateError);
-          throw new Error('Failed to update lawyer profile: ' + updateError.message);
+        if (insertError) {
+          console.error('[Signup] Error creating lawyer profile:', insertError);
+          throw new Error('Failed to create lawyer profile: ' + insertError.message);
         }
+        
+        console.log('[Signup] Lawyer profile created successfully');
         
         // TODO: Handle profile image upload to Supabase Storage
         // For now, we'll skip the image upload (can be added later)
