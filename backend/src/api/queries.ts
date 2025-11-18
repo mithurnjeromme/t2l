@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { supabase } from '../config/supabase';
+import { supabase, supabaseAdmin } from '../config/supabase';
 
 const router = Router();
 
@@ -32,8 +32,8 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
       });
     }
 
-    // Get user details from profiles table
-    const { data: userProfile, error: userError } = await supabase
+    // Get user details from profiles table using admin client to bypass RLS
+    const { data: userProfile, error: userError } = await supabaseAdmin
       .from('profiles')
       .select('full_name, email, phone, user_type')
       .eq('id', userId)
@@ -66,8 +66,9 @@ router.post('/submit-query', async (req: Request, res: Response): Promise<any> =
     // Generate unique query_id
     const queryId = `Q${Date.now()}`;
     
-    // Insert query into client_queries table
-    const { data: insertedQuery, error: insertError } = await supabase
+    // Insert query into client_queries table using admin client to bypass RLS
+    // This is necessary because the backend doesn't have the user's auth context
+    const { data: insertedQuery, error: insertError } = await supabaseAdmin
       .from('client_queries')
       .insert([{
         query_id: queryId,

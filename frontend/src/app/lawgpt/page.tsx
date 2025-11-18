@@ -821,16 +821,8 @@ export default function LawGPTPage() {
       }
       
       if (!isAuthenticated || !userId) {
-        const shouldLogin = confirm(
-          "Please login or sign up to use LawGPT.\n\n" +
-          "Click OK to go to Login page, or Cancel to go to Signup page."
-        );
-        
-        if (shouldLogin) {
-          window.location.href = '/login';
-        } else {
-          window.location.href = '/signup';
-        }
+        alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
+        window.location.href = '/login';
         return;
       }
 
@@ -1038,6 +1030,14 @@ export default function LawGPTPage() {
                     className="w-full bg-transparent border-none outline-none text-gray-800 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/50 resize-none"
                     placeholder="Ask me anything about law"
                     value={message}
+                    onFocus={(e) => {
+                      // Check authentication when user tries to type
+                      if (!isAuthChecking && (!isAuthenticated || !userId)) {
+                        e.target.blur(); // Remove focus
+                        alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
+                        window.location.href = '/login';
+                      }
+                    }}
                     onChange={(e) => {
                       setMessage(e.target.value);
                       const textarea = e.target;
@@ -1210,6 +1210,14 @@ export default function LawGPTPage() {
                   className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-white font-medium resize-none placeholder:text-gray-500 dark:placeholder:text-white/50"
                   placeholder="Ask me anything about law"
                   value={message}
+                  onFocus={(e) => {
+                    // Check authentication when user tries to type
+                    if (!isAuthChecking && (!isAuthenticated || !userId)) {
+                      e.target.blur(); // Remove focus
+                      alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
+                      window.location.href = '/login';
+                    }
+                  }}
                   onChange={(e) => {
                     setMessage(e.target.value);
                   }}

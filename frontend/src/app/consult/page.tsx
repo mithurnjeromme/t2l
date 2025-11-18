@@ -27,6 +27,8 @@ const ConsultPage = () => {
   const handleSubmit = async () => {
     if (!userQuery.trim()) return;
 
+    setIsSubmitting(true);
+
     try {
       // Check if user is logged in using Supabase Auth
       const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
@@ -34,20 +36,14 @@ const ConsultPage = () => {
       
       if (!session || !session.user) {
         // User is not logged in - prompt them to login/signup
-        const shouldLogin = confirm(
-          "Please login or sign up first to submit your query.\n\n" +
-          "Click OK to go to Login page, or Cancel to go to Signup page."
+        alert(
+          "Please login or sign up to submit your query.\n\n" +
+          "You will be redirected to the login page."
         );
-        
-        if (shouldLogin) {
-          router.push('/login');
-        } else {
-          router.push('/signup');
-        }
+        router.push('/login');
+        setIsSubmitting(false);
         return;
       }
-
-      setIsSubmitting(true);
       
       // Get user profile for submission
       const profile = await getUserProfile(session.user.id);
