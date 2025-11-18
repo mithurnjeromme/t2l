@@ -373,17 +373,41 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
   }, []);
 
   useEffect(() => {
-    // Check for logged in user
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      try {
-        const parsedUser = JSON.parse(userData);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user data:", error);
-      }
-    }
+    // Check Supabase Auth session
+    checkAuthSession();
   }, []);
+
+  const checkAuthSession = async () => {
+    try {
+      const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
+      
+      // Check for active Supabase session
+      const session = await getSession();
+      
+      if (session && session.user) {
+        console.log('[Header] Session found, fetching profile...');
+        
+        // Fetch user profile
+        const profile = await getUserProfile(session.user.id);
+        
+        if (profile) {
+          setUser({
+            id: profile.id,
+            email: profile.email,
+            fullName: profile.full_name,
+            userType: profile.user_type
+          });
+          console.log('[Header] User authenticated:', profile.user_type);
+        }
+      } else {
+        console.log('[Header] No active session');
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('[Header] Error checking auth:', error);
+      setUser(null);
+    }
+  };
 
   // Close mobile menu on Escape
   useEffect(() => {
@@ -395,11 +419,18 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
     return () => window.removeEventListener("keydown", onKey);
   }, [mobileMenuOpen]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    setUser(null);
-    window.location.href = "/";
+  const handleLogout = async () => {
+    try {
+      const { signOut } = await import('@/lib/supabase-auth');
+      await signOut();
+      setUser(null);
+      window.location.href = "/";
+    } catch (error) {
+      console.error('[Header] Logout error:', error);
+      // Force redirect even if there's an error
+      setUser(null);
+      window.location.href = "/";
+    }
   };
 
   const pathname = useActivePath();
