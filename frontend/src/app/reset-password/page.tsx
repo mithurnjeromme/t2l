@@ -35,6 +35,26 @@ export default function ResetPasswordPage() {
 
     try {
       setIsLoading(true);
+      
+      // Check if user signed up with Google (OAuth)
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { users }, error: searchError } = await supabase.auth.admin.listUsers();
+      
+      if (!searchError && users) {
+        const user = users.find(u => u.email === email);
+        if (user) {
+          // Check if user signed up with Google
+          const isGoogleUser = user.app_metadata.provider === 'google' || 
+                               user.identities?.some(id => id.provider === 'google');
+          
+          if (isGoogleUser) {
+            alert('This account was created using Google Sign-in. Please use "Sign in with Google" button on the login page to access your account. No password is needed.');
+            setIsLoading(false);
+            return;
+          }
+        }
+      }
+      
       await resetPasswordRequest(email);
       setEmailSent(true);
     } catch (error: any) {
@@ -210,14 +230,14 @@ export default function ResetPasswordPage() {
           ) : (
             <>
               {/* Notice for Google users */}
-              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2">
+              <div className="bg-primary/10 dark:bg-primary/20 border border-primary/30 dark:border-primary/40 rounded-lg p-4 space-y-2">
                 <div className="flex items-start gap-3">
-                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <div className="text-sm text-blue-900 dark:text-blue-200">
+                  <div className="text-sm text-foreground">
                     <p className="font-medium mb-1">Signed up with Google?</p>
-                    <p className="text-blue-700 dark:text-blue-300">
+                    <p className="text-muted-foreground">
                       If you created your account using <strong>Sign in with Google</strong>, you don't need a password. 
                       Simply click "Sign in with Google" on the login page to access your account.
                     </p>

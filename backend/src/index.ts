@@ -95,6 +95,7 @@ import lawyersRoutes from './api/lawyers';
 import consultationsRoutes from './api/consultations';
 import paymentsRoutes from './api/payments';
 import queriesRoutes from './api/queries';
+import emailOTPRoutes from './api/email-otp';
 
 // Removed: app.use('/api/auth', authRoutes); 
 // Auth is now handled by Supabase Auth directly from frontend
@@ -102,6 +103,7 @@ app.use('/api', lawyersRoutes);
 app.use('/api', consultationsRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api', queriesRoutes);
+app.use('/api/auth', emailOTPRoutes); // Custom email OTP verification
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

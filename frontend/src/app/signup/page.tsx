@@ -173,6 +173,10 @@ const SignupPage = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showOTPVerification, setShowOTPVerification] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [resendTimer, setResendTimer] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -254,6 +258,9 @@ const SignupPage = () => {
 
       console.log('[Signup] Supabase Auth successful, user ID:', user.id);
       
+      // Store user type for redirect decision
+      const finalUserType = signupType === 'lawyer' ? 'lawyer' : 'client';
+      
       // If lawyer, create lawyer_profiles entry with additional data
       if (signupType === 'lawyer') {
         console.log('[Signup] Creating lawyer_profiles entry with additional data...');
@@ -289,10 +296,10 @@ const SignupPage = () => {
         }
       }
       
-      alert(`${userType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Please check your email to verify your account.`);
+      alert(`${finalUserType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Please verify your email with the code we sent.`);
       
-      // Redirect to login page
-      router.push('/login');
+      // Redirect to email OTP verification page
+      router.push('/verify-email-otp');
       
     } catch (error: any) {
       console.error('[Signup] Registration error:', error);
