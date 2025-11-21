@@ -38,6 +38,37 @@
   - RLS policies explained
   - Protected routes documentation
 
+### Email OTP (Passwordless Login)
+- **[EMAIL_OTP_COMPLETE_PACKAGE.md](./EMAIL_OTP_COMPLETE_PACKAGE.md)** 📦
+  - **START HERE** for Email OTP overview
+  - Complete package summary
+  - Quick start guide
+  - Links to all Email OTP resources
+
+- **[EMAIL_OTP_IMPLEMENTATION_CHECKLIST.md](./EMAIL_OTP_IMPLEMENTATION_CHECKLIST.md)** ✅
+  - **30-minute setup checklist**
+  - Step-by-step implementation
+  - Troubleshooting guide
+  - Testing procedures
+
+- **[EMAIL_OTP_GUIDE.md](./EMAIL_OTP_GUIDE.md)** 📖
+  - Complete Email OTP guide
+  - What is Email OTP and why use it
+  - Configuration instructions
+  - Security details
+  - User experience tips
+
+- **[EMAIL_OTP_VISUAL_FLOW.md](./EMAIL_OTP_VISUAL_FLOW.md)** 🎨
+  - Visual flow diagrams
+  - User journey illustrations
+  - Error flow diagrams
+  - Architecture overview
+
+- **[ENHANCED_AUTH_IMPLEMENTATION_COMPLETE.md](./ENHANCED_AUTH_IMPLEMENTATION_COMPLETE.md)** 🔐
+  - All authentication methods (Google, Email OTP, Phone OTP)
+  - Complete Supabase auth setup
+  - Environment configuration
+
 ### Testing
 - **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** 🧪
   - Comprehensive test suites (7 suites, 35+ tests)

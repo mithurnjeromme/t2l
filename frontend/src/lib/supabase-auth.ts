@@ -183,7 +183,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
  * Get user profile from database
  */
 export const getUserProfile = async (userId: string) => {
-  const { data, error } = await supabase
+  const { data, error} = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -200,4 +200,246 @@ export const getUserProfile = async (userId: string) => {
   }
 
   return data;
+};
+
+/**
+ * ==========================================
+ * ENHANCED AUTH METHODS - Google, OTP, Magic Link
+ * ==========================================
+ */
+
+/**
+ * Sign in with Google OAuth
+ * Redirects to Google authentication
+ */
+export const signInWithGoogle = async () => {
+  console.log('[Supabase Auth] Initiating Google Sign-in');
+  
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      }
+    }
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Google sign-in error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Redirecting to Google...');
+  return data;
+};
+
+/**
+ * Sign in with Phone OTP
+ * Sends OTP to phone number
+ */
+export const signInWithPhoneOTP = async (phone: string) => {
+  console.log('[Supabase Auth] Sending OTP to:', phone);
+  
+  const { data, error } = await supabase.auth.signInWithOtp({
+    phone,
+    options: {
+      channel: 'sms',
+    }
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Phone OTP error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] OTP sent successfully');
+  return data;
+};
+
+/**
+ * Verify Phone OTP
+ * Verifies the OTP code sent to phone
+ */
+export const verifyPhoneOTP = async (phone: string, token: string) => {
+  console.log('[Supabase Auth] Verifying OTP for:', phone);
+  
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone,
+    token,
+    type: 'sms'
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] OTP verification error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] OTP verified successfully');
+  return { user: data.user, session: data.session };
+};
+
+/**
+ * Sign in with Magic Link (Passwordless)
+ * Sends magic link to email
+ */
+export const signInWithMagicLink = async (email: string) => {
+  console.log('[Supabase Auth] Sending magic link to:', email);
+  
+  const { data, error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
+    }
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Magic link error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Magic link sent successfully');
+  return data;
+};
+
+/**
+ * Resend Email Verification
+ * Sends verification email to current user
+ */
+export const resendVerificationEmail = async () => {
+  console.log('[Supabase Auth] Resending verification email');
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user || !user.email) {
+    throw new Error('No user logged in or email not found');
+  }
+
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: user.email,
+    options: {
+      emailRedirectTo: `${window.location.origin}/auth/callback`,
+    }
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Resend verification error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Verification email resent successfully');
+};
+
+/**
+ * Check if email is verified
+ */
+export const isEmailVerified = async (): Promise<boolean> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.email_confirmed_at != null;
+};
+
+/**
+ * Check if phone is verified
+ */
+export const isPhoneVerified = async (): Promise<boolean> => {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.phone_confirmed_at != null;
+};
+
+/**
+ * Update user email
+ */
+export const updateEmail = async (newEmail: string) => {
+  console.log('[Supabase Auth] Updating email to:', newEmail);
+  
+  const { error } = await supabase.auth.updateUser({
+    email: newEmail
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Update email error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Email update initiated, check new email for verification');
+};
+
+/**
+ * Update user phone
+ */
+export const updatePhone = async (newPhone: string) => {
+  console.log('[Supabase Auth] Updating phone to:', newPhone);
+  
+  const { error } = await supabase.auth.updateUser({
+    phone: newPhone
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Update phone error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Phone update initiated, verify with OTP');
+};
+
+/**
+ * Get authentication providers used by user
+ */
+export const getAuthProviders = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) return [];
+  
+  // Get app metadata which includes providers
+  return user.app_metadata?.providers || [];
+};
+
+/**
+ * Link Google account to existing user
+ */
+export const linkGoogleAccount = async () => {
+  console.log('[Supabase Auth] Linking Google account');
+  
+  const { data, error } = await supabase.auth.linkIdentity({
+    provider: 'google',
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] Link Google error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Redirecting to link Google account...');
+  return data;
+};
+
+/**
+ * Unlink identity provider
+ */
+export const unlinkProvider = async (provider: 'google' | 'phone') => {
+  console.log('[Supabase Auth] Unlinking provider:', provider);
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (!user) {
+    throw new Error('No user logged in');
+  }
+
+  // Find the identity to unlink
+  const identity = user.identities?.find((id: any) => id.provider === provider);
+  
+  if (!identity) {
+    throw new Error(`No ${provider} identity found`);
+  }
+
+  const { error } = await supabase.auth.unlinkIdentity(identity);
+
+  if (error) {
+    console.error('[Supabase Auth] Unlink provider error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Provider unlinked successfully');
 };

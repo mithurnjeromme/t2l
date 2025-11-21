@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import { signInWithMagicLink } from '@/lib/supabase-auth';
 
 const Logo = () => (
   <>
@@ -314,16 +316,6 @@ const LoginPage = () => {
               required
             />
 
-            {/* Forgot Password Link */}
-            <div className="flex items-center justify-end">
-              <Link 
-                href="#" 
-                className="text-sm text-primary hover:text-primary/80 transition-colors"
-              >
-                Forgot your password?
-              </Link>
-            </div>
-
             {/* Submit Button */}
             <Button 
               type="submit" 
@@ -334,8 +326,57 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground mb-4">
+          {/* Additional Auth Options */}
+          <div className="mt-6 space-y-4">
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-background text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Sign-in */}
+            <GoogleSignInButton mode="signin" />
+
+            {/* Magic Link */}
+            <button
+              type="button"
+              onClick={async () => {
+                if (!formData.email) {
+                  alert('Please enter your email first');
+                  return;
+                }
+                try {
+                  setIsLoading(true);
+                  await signInWithMagicLink(formData.email);
+                  alert('Magic link sent! Check your email.');
+                } catch (error: any) {
+                  alert(error.message || 'Failed to send magic link');
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="w-full text-sm text-primary hover:underline text-center py-2 transition-colors"
+              disabled={isLoading}
+            >
+              Send me a magic link instead
+            </button>
+
+            {/* Forgot Password Link */}
+            <div className="text-center">
+              <Link 
+                href="/reset-password"
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                Forgot your password?
+              </Link>
+            </div>
+
+            {/* Sign Up Link */}
+            <p className="text-muted-foreground text-center">
               New to Turn2Law?{' '}
               <Link 
                 href="/signup" 
@@ -344,23 +385,6 @@ const LoginPage = () => {
                 Create an account
               </Link>
             </p>
-            
-            <div className="relative mb-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
-              </div>
-            </div>
-            
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full bg-muted border-border text-foreground hover:bg-muted/80"
-            >
-              Sign in with Google
-            </Button>
           </div>
         </div>
       </div>

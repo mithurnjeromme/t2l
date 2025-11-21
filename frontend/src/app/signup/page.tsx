@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 
 const Logo = () => (
   <>
@@ -573,35 +574,34 @@ const SignupPage = () => {
             <Button
               type="submit"
               className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold py-3 rounded-xl"
+              disabled={isLoading}
             >
-              Continue
+              {isLoading ? 'Creating Account...' : 'Continue'}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-muted-foreground mb-4">
-              Already have an account?{' '}
-              <Link href="/login" className="text-secondary hover:underline">
-                Login
-              </Link>
-            </p>
-            
-            <div className="relative mb-4">
+          {/* Additional Auth Options */}
+          <div className="mt-6 space-y-4">
+            {/* Divider */}
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-background px-2 text-muted-foreground">or</span>
+                <span className="px-4 bg-background text-muted-foreground">Or sign up with</span>
               </div>
             </div>
-            
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full bg-muted border-border text-foreground hover:bg-muted/80"
-            >
-              Sign in with Google
-            </Button>
+
+            {/* Google Sign-up */}
+            <GoogleSignInButton mode="signup" />
+
+            {/* Login Link */}
+            <p className="text-muted-foreground text-center">
+              Already have an account?{' '}
+              <Link href="/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
+                Login
+              </Link>
+            </p>
           </div>
         </div>
       </div>
