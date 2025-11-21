@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useDocumentsStore } from "@/hooks/use-documents-store";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import Header from "@/components/layout/header";
@@ -93,20 +93,22 @@ function DocumentsPageContent(): JSX.Element {
     setGenerating,
   } = useDocumentsStore();
   const formRef = useRef<HTMLDivElement | null>(null);
-  const params = useSearchParams();
   const router = useRouter();
 
-  // Preselect type via ?type=nda etc.
+  // Preselect type via ?type=nda etc. - client side only
   useEffect(() => {
-    const t = (params.get("type") || "").toUpperCase();
-    const values = Object.values(DocumentType);
-    if (t && values.includes(t as DocumentType)) {
-      if (!selectedType || selectedType !== (t as DocumentType)) {
-        setType(t as DocumentType);
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const t = (params.get("type") || "").toUpperCase();
+      const values = Object.values(DocumentType);
+      if (t && values.includes(t as DocumentType)) {
+        if (!selectedType || selectedType !== (t as DocumentType)) {
+          setType(t as DocumentType);
+        }
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params]);
+  }, []);
 
   async function selectTypeAndScroll(t: DocumentType): Promise<void> {
     // Check authentication before allowing document type selection
@@ -131,7 +133,7 @@ function DocumentsPageContent(): JSX.Element {
     
     setType(t);
     // Update URL for shareability
-    const qs = new URLSearchParams(Array.from(params.entries()));
+    const qs = new URLSearchParams(window.location.search);
     qs.set("type", t.toLowerCase());
     router.replace(`/documents?${qs.toString()}`);
     // Smooth scroll

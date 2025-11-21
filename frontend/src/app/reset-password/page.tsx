@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { updatePassword, resetPasswordRequest } from '@/lib/supabase-auth';
@@ -9,16 +9,21 @@ import Link from 'next/link';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [passwordChanged, setPasswordChanged] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
 
-  // Check if this is a password update (user clicked link in email)
-  const isUpdate = searchParams.get('type') === 'recovery' || searchParams.get('access_token');
+  // Check if this is a password update (user clicked link in email) - client side only
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      setIsUpdate(params.get('type') === 'recovery' || !!params.get('access_token'));
+    }
+  }, []);
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();

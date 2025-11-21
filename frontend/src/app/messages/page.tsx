@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   Search,
   MoreVertical,
@@ -21,7 +21,7 @@ import { useMessages } from "@/lib/messages-context";
 
 // Type definitions
 interface Message {
-  id: number;
+  id: string;
   sender: "client" | "lawyer";
   text: string;
   timestamp: string;
@@ -29,7 +29,8 @@ interface Message {
 }
 
 interface Chat {
-  id: number;
+  id: string;
+  consultationId: string;
   lawyerName: string;
   lawyerSpecialization: string;
   avatar: string;
@@ -53,22 +54,24 @@ const initialChats: Chat[] = [];
 
 function MessagesContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { chats, addChat, markAsRead, updateChat } = useMessages();
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
+  const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [messageInput, setMessageInput] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // handle pending lawyer redirect
+  // handle pending lawyer redirect - client side only
   useEffect(() => {
-    const pendingLawyerId = searchParams.get("lawyerId");
-    const caseDesc = searchParams.get("caseDescription");
-    const lawyerSpec = searchParams.get("specialization");
-    const hashedName = searchParams.get("lawyerName");
+    if (typeof window === 'undefined') return;
+    
+    const params = new URLSearchParams(window.location.search);
+    const pendingLawyerId = params.get("lawyerId");
+    const caseDesc = params.get("caseDescription");
+    const lawyerSpec = params.get("specialization");
+    const hashedName = params.get("lawyerName");
     if (pendingLawyerId && caseDesc && lawyerSpec) {
-      const chatId = parseInt(pendingLawyerId);
+      const chatId = pendingLawyerId; // Keep as string
       const existingChat = chats.find((c) => c.id === chatId);
       if (existingChat) {
         setSelectedChat(chatId);
@@ -77,6 +80,7 @@ function MessagesContent() {
       }
       const pendingChat: Chat = {
         id: chatId,
+        consultationId: chatId, // Add required field
         lawyerName: hashedName || "Lawyer (Pending Acceptance)",
         lawyerSpecialization: lawyerSpec,
         avatar: "⚖️",
@@ -88,7 +92,7 @@ function MessagesContent() {
         isPending: true,
         messages: [
           {
-            id: Date.now(),
+            id: Date.now().toString(),
             sender: "client",
             text: caseDesc,
             timestamp: new Date().toLocaleTimeString([], {
@@ -98,7 +102,7 @@ function MessagesContent() {
             status: "sent",
           },
           {
-            id: Date.now() + 1,
+            id: (Date.now() + 1).toString(),
             sender: "client",
             text: "✅ Your consultation request has been sent. Waiting for the lawyer to accept...",
             timestamp: new Date().toLocaleTimeString([], {
@@ -114,7 +118,7 @@ function MessagesContent() {
       setSelectedChat(pendingChat.id);
       window.history.replaceState({}, "", "/messages");
     }
-  }, [searchParams, chats, addChat]);
+  }, [chats, addChat]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -139,7 +143,7 @@ function MessagesContent() {
     const chat = chats.find((c) => c.id === selectedChat);
     if (chat?.isPending) return;
     const newMessage: Message = {
-      id: Date.now(),
+      id: Date.now().toString(),
       sender: "client",
       text: messageInput,
       timestamp: new Date().toLocaleTimeString([], {
