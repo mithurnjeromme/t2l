@@ -1,69 +1,45 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../config/supabase';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 const router = Router();
 
 // In-memory OTP storage (use Redis in production for scalability)
 const otpStore = new Map<string, { otp: string; expiresAt: number; attempts: number }>();
 
-// Email sending function - Configure with your SMTP, SendGrid, AWS SES, etc.
+// Configure Nodemailer with Gmail SMTP (using your existing Supabase SMTP credentials)
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // use STARTTLS
+  auth: {
+    user: 't2lhelpdesksup@gmail.com',
+    pass: process.env.GMAIL_APP_PASSWORD || '', // Set this in .env file
+  },
+});
+
+// Email sending function using Nodemailer
 const sendEmail = async (to: string, subject: string, html: string) => {
-  // For now, log the email details (replace with actual email service in production)
-  console.log('='.repeat(80));
-  console.log('[EMAIL] Sending to:', to);
-  console.log('[EMAIL] Subject:', subject);
-  console.log('[EMAIL] HTML Preview:', html.substring(0, 200) + '...');
-  console.log('='.repeat(80));
-  
-  // TODO: In production, replace with actual email service
-  // Example implementations:
-  
-  // Option 1: Nodemailer (SMTP)
-  /*
-  const nodemailer = require('nodemailer');
-  const transporter = nodemailer.createTransporter({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-  await transporter.sendMail({
-    from: `"Turn2Law" <${process.env.SMTP_USER}>`,
-    to,
-    subject,
-    html
-  });
-  */
-  
-  // Option 2: SendGrid
-  /*
-  const sgMail = require('@sendgrid/mail');
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-  await sgMail.send({
-    to,
-    from: process.env.SENDGRID_FROM_EMAIL,
-    subject,
-    html
-  });
-  */
-  
-  // Option 3: AWS SES
-  /*
-  const AWS = require('aws-sdk');
-  const ses = new AWS.SES({ region: process.env.AWS_REGION });
-  await ses.sendEmail({
-    Source: process.env.AWS_SES_FROM_EMAIL,
-    Destination: { ToAddresses: [to] },
-    Message: {
-      Subject: { Data: subject },
-      Body: { Html: { Data: html } }
-    }
-  }).promise();
-  */
+  try {
+    console.log('='.repeat(80));
+    console.log('[EMAIL] Sending to:', to);
+    console.log('[EMAIL] Subject:', subject);
+    console.log('='.repeat(80));
+
+    const info = await transporter.sendMail({
+      from: '"Turn2Law Support" <t2lhelpdesksup@gmail.com>',
+      to,
+      subject,
+      html
+    });
+
+    console.log('[EMAIL] Email sent successfully! Message ID:', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('[EMAIL] Failed to send email:', error);
+    throw error;
+  }
 };
 
 // Generate 6-digit OTP

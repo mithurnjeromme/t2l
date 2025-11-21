@@ -35,6 +35,22 @@ export default function EmailOTPVerificationPage() {
   const checkEmailVerification = async () => {
     try {
       setIsChecking(true);
+      
+      // Check if email is passed via URL (from signup)
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailParam = urlParams.get('email');
+      
+      if (emailParam) {
+        setEmail(emailParam);
+        setIsChecking(false);
+        // Auto-send OTP for new signups
+        setTimeout(() => {
+          sendOTP();
+        }, 500);
+        return;
+      }
+      
+      // Otherwise check authenticated user
       const user = await getCurrentAuthUser();
       
       if (!user) {
@@ -71,7 +87,7 @@ export default function EmailOTPVerificationPage() {
       setIsSendingOTP(true);
       setError('');
 
-      const response = await fetch(`${API_URL}/api/auth/send-otp`, {
+      const response = await fetch(`${API_URL}/api/email-otp/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -106,7 +122,7 @@ export default function EmailOTPVerificationPage() {
         return;
       }
 
-      const response = await fetch(`${API_URL}/api/auth/verify-otp`, {
+      const response = await fetch(`${API_URL}/api/email-otp/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, otp: otpString })

@@ -17,17 +17,19 @@ export interface SignInData {
 /**
  * Sign up with email and password
  * Creates both an auth user and a profile in the database
+ * Note: Email confirmation is handled by custom OTP system
  */
 export const signUpWithEmail = async (data: SignUpData) => {
   const { email, password, fullName, userType, phone, city } = data;
   
   console.log('[Supabase Auth] Signing up user:', email);
   
-  // Create auth user in Supabase
+  // Create auth user in Supabase WITHOUT email confirmation
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
+      emailRedirectTo: undefined, // Disable Supabase's email confirmation link
       data: {
         full_name: fullName,
         user_type: userType,
