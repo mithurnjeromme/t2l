@@ -208,32 +208,53 @@ export default function ResetPasswordPage() {
               </Button>
             </form>
           ) : (
-            <form onSubmit={handleRequestReset} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-foreground">
-                  Email Address
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your.email@example.com"
-                  required
-                />
+            <>
+              {/* Notice for Google users */}
+              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="text-sm text-blue-900 dark:text-blue-200">
+                    <p className="font-medium mb-1">Signed up with Google?</p>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      If you created your account using <strong>Sign in with Google</strong>, you don't need a password. 
+                      Simply click "Sign in with Google" on the login page to access your account.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Sending...
-                  </>
-                ) : (
-                  'Send Reset Link'
-                )}
-              </Button>
-            </form>
+              <form onSubmit={handleRequestReset} className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-foreground">
+                    Email Address
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.email@example.com"
+                    required
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Only for accounts created with email and password
+                  </p>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Reset Link'
+                  )}
+                </Button>
+              </form>
+            </>
           )}
 
           <div className="text-center">
