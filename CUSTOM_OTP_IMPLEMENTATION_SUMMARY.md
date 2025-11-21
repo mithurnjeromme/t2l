@@ -37,12 +37,18 @@ You now have a **fully functional custom OTP email verification system** integra
 ```
 
 #### 2. Disable Supabase Email Confirmation
+**📖 See detailed guide:** `SUPABASE_DISABLE_EMAIL_CONFIRMATION_GUIDE.md`
+
+Quick steps:
 ```bash
-1. Go to: https://app.supabase.com
+1. Go to: https://supabase.com/dashboard
 2. Select your Turn2Law project
-3. Authentication → Settings
-4. Find "Enable email confirmations" → Toggle OFF
-5. Click Save
+3. Left sidebar → Authentication → Settings
+4. Click "Email" tab
+5. Find "Confirm email" toggle → Turn OFF
+6. Click Save
+
+⚠️ Can't find it? Check the detailed guide above!
 ```
 
 ---
