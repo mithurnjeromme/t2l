@@ -227,4 +227,126 @@ Once disabled, your auth flow will be:
 
 ---
 
-**Questions?** Let me know what you see in your dashboard and I'll guide you to the exact location! 🚀
+## 🎯 BASED ON YOUR SCREENSHOTS - FOLLOW THESE EXACT STEPS:
+
+### ✅ You Are Currently Here:
+Looking at your screenshots, you are at:
+**Authentication → Email → Templates tab**
+
+### 📍 NEXT STEPS FROM YOUR CURRENT POSITION:
+
+#### Step 1: Click "Confirm sign up"
+In the screenshot, you can see several email template options:
+- ✅ **"Confirm sign up"** ← Click this one!
+- Invite user
+- Magic link
+- Change email address
+- Reset password
+- Reauthentication
+
+Click on **"Confirm sign up"** (the first option in the Authentication section)
+
+#### Step 2: You'll See a Toggle Switch
+After clicking "Confirm sign up", you should see a page with:
+- A toggle switch at the top that says **"Enable confirmations"** or **"Confirm email"**
+- This toggle should be **ON** (green/blue) currently
+- **Turn it OFF** (it will become gray)
+
+#### Step 3: Alternative Location
+If you don't see a toggle in "Confirm sign up", try this:
+1. Look at the top tabs: **"Templates"** and **"SMTP Settings"**
+2. You might need to check if there's a **3rd tab** or scroll down
+3. OR go back and click on **SMTP Settings** tab
+4. Look for a section called **"Email Confirmations"** or **"Auth Settings"**
+
+---
+
+## 🔍 EXACT LOCATION BASED ON YOUR SUPABASE VERSION:
+
+### For Newer Supabase Dashboards (like yours):
+The setting might be in **one of these 3 places**:
+
+#### Location 1: Inside "Confirm sign up" Template
+```
+Authentication → Email → Templates → Confirm sign up
+    ↓
+    Look for: [Toggle] "Enable confirmations"
+    Turn it: OFF
+```
+
+#### Location 2: Under a separate "Settings" section
+```
+Authentication → Email
+    ↓
+    Scroll down below the Templates list
+    Look for: Email Authentication Settings
+    Toggle: "Confirm email" OFF
+```
+
+#### Location 3: Under Providers
+```
+Authentication → Providers (in left sidebar)
+    ↓
+    Click: Email provider
+    Toggle: "Confirm email" OFF
+```
+
+---
+
+## 🎬 WHAT TO DO RIGHT NOW:
+
+### ACTION PLAN:
+1. ✅ You're currently at: **Authentication → Email → Templates** ✓
+2. ⏭️ **Click on "Confirm sign up"** (first option in Authentication section)
+3. 👀 Look for a toggle switch that says "Enable" or "Confirm email"
+4. 🔄 Turn it OFF
+5. 💾 Click Save
+
+---
+
+## 💡 IF YOU DON'T SEE A TOGGLE:
+
+### Alternative: Disable via Template Content
+If the "Confirm sign up" page doesn't have a toggle, try this workaround:
+
+1. Stay on the "Confirm sign up" template page
+2. Look for an **"Enable"** or **"Active"** checkbox
+3. OR check if there's a dropdown that says "Status: Active" → change to "Disabled"
+4. OR look at the **top-right corner** for a toggle switch
+
+---
+
+## 🚨 IMPORTANT WORKAROUND:
+
+### If You Cannot Find the Toggle Anywhere:
+
+Don't worry! We can work around this by using **autoConfirm** in our code. The custom OTP will still work, but users might see a "Please confirm your email" message until they verify via OTP.
+
+**Our custom OTP backend already handles this** by manually confirming the email when they enter the correct code!
+
+---
+
+## 📸 NEXT STEPS FOR YOU:
+
+Please do one of these:
+
+### Option A: Click "Confirm sign up" and take a screenshot
+1. Click on **"Confirm sign up"** (first item)
+2. Take a screenshot of what you see
+3. Send it to me so I can guide you to the exact toggle
+
+### Option B: Try "Providers" in Left Sidebar
+1. Look at the **left sidebar** under Authentication
+2. Find **"Sign In / Providers"** or just **"Providers"**
+3. Click on the **"Email"** provider
+4. Look for "Confirm email" toggle
+5. Take a screenshot
+
+### Option C: Check if it's already disabled
+Our system might work perfectly even if the toggle exists! Let's test it:
+1. I'll help you run a test signup
+2. We'll see if you receive 2 emails (bad) or just 1 OTP email (good)
+
+---
+
+**Which option would you like to try first?** Let me know what you see when you click "Confirm sign up"! 🚀
