@@ -1,7 +1,6 @@
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Hero from '@/components/sections/hero';
-import ServicesGrid from '@/components/sections/services-grid';
 import About from '@/components/sections/about';
 import ThreePillarsSection from '@/components/sections/three-pillars';
 import Banner from '@/components/sections/banner';
@@ -14,7 +13,6 @@ export default function Home() {
       <Header />
       <main className="flex-grow">
         <Hero />
-        <ServicesGrid />
         <About />
         <ThreePillarsSection />
         <Banner />
