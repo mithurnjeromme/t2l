@@ -582,18 +582,23 @@ const SignupPage = () => {
 
           {/* Additional Auth Options */}
           <div className="mt-6 space-y-4">
-            {/* Divider */}
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-border"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background text-muted-foreground">Or sign up with</span>
-              </div>
-            </div>
+            {/* Only show Google sign-up for clients, not lawyers */}
+            {signupType === 'user' && (
+              <>
+                {/* Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-border"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-4 bg-background text-muted-foreground">Or sign up with</span>
+                  </div>
+                </div>
 
-            {/* Google Sign-up */}
-            <GoogleSignInButton mode="signup" />
+                {/* Google Sign-up */}
+                <GoogleSignInButton mode="signup" />
+              </>
+            )}
 
             {/* Login Link */}
             <p className="text-muted-foreground text-center">
