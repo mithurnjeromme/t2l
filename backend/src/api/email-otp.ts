@@ -8,33 +8,35 @@ const router = Router();
 // In-memory OTP storage (use Redis in production for scalability)
 const otpStore = new Map<string, { otp: string; expiresAt: number; attempts: number }>();
 
-// Configure Nodemailer with Gmail SMTP (using your existing Supabase SMTP credentials)
+// Create Nodemailer transporter
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // use STARTTLS
+  service: 'gmail',
   auth: {
-    user: 't2lhelpdesksup@gmail.com',
-    pass: process.env.GMAIL_APP_PASSWORD || '', // Set this in .env file
-  },
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, '') // Remove any spaces
+  }
 });
 
 // Email sending function using Nodemailer
-const sendEmail = async (to: string, subject: string, html: string) => {
+const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   try {
     console.log('='.repeat(80));
-    console.log('[EMAIL] Sending to:', to);
+    console.log('[EMAIL] Sending email to:', to);
     console.log('[EMAIL] Subject:', subject);
+    console.log('[EMAIL] Using Gmail:', process.env.GMAIL_USER);
     console.log('='.repeat(80));
 
-    const info = await transporter.sendMail({
-      from: '"Turn2Law Support" <t2lhelpdesksup@gmail.com>',
+    const mailOptions = {
+      from: `"Turn2Law" <${process.env.GMAIL_USER}>`,
       to,
       subject,
-      html
-    });
+      html: htmlContent
+    };
 
-    console.log('[EMAIL] Email sent successfully! Message ID:', info.messageId);
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log('[EMAIL] Email sent successfully!');
+    console.log('[EMAIL] Message ID:', info.messageId);
     return info;
   } catch (error) {
     console.error('[EMAIL] Failed to send email:', error);
