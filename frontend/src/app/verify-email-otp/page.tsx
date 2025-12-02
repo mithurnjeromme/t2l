@@ -42,12 +42,9 @@ export default function EmailOTPVerificationPage() {
       
       if (emailParam) {
         setEmail(emailParam);
-        setOtpSent(true); // Show OTP input immediately
         setIsChecking(false);
-        // Auto-send OTP for new signups
-        setTimeout(async () => {
-          await sendOTP();
-        }, 500);
+        // Auto-send OTP for new signups - send immediately with the email from URL
+        sendOTPWithEmail(emailParam);
         return;
       }
       
@@ -83,7 +80,7 @@ export default function EmailOTPVerificationPage() {
     }
   };
 
-  const sendOTP = async () => {
+  const sendOTPWithEmail = async (emailToSend: string) => {
     try {
       setIsSendingOTP(true);
       setError('');
@@ -91,7 +88,7 @@ export default function EmailOTPVerificationPage() {
       const response = await fetch(`${API_URL}/api/email-otp/send-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email: emailToSend })
       });
 
       const data = await response.json();
@@ -106,9 +103,14 @@ export default function EmailOTPVerificationPage() {
     } catch (error: any) {
       console.error('Send OTP error:', error);
       setError(error.message || 'Failed to send OTP');
+      setOtpSent(true); // Still show OTP input to allow manual resend
     } finally {
       setIsSendingOTP(false);
     }
+  };
+
+  const sendOTP = async () => {
+    await sendOTPWithEmail(email);
   };
 
   const verifyOTP = async () => {
