@@ -24,6 +24,8 @@ const sendEmail = async (to: string, subject: string, htmlContent: string) => {
     console.log('[EMAIL] Sending email to:', to);
     console.log('[EMAIL] Subject:', subject);
     console.log('[EMAIL] Using Gmail:', process.env.GMAIL_USER);
+    console.log('[EMAIL] Password configured:', !!process.env.GMAIL_APP_PASSWORD);
+    console.log('[EMAIL] Password length:', process.env.GMAIL_APP_PASSWORD?.length);
     console.log('='.repeat(80));
 
     const mailOptions = {
