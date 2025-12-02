@@ -80,11 +80,6 @@ router.post('/send-otp', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found. Please sign up first.' });
     }
 
-    // Check if email is already verified
-    if (user.email_confirmed_at) {
-      return res.status(400).json({ error: 'Email is already verified' });
-    }
-
     // Check if user signed up with Google OAuth
     const isGoogleUser = user.app_metadata.provider === 'google' || 
                          user.identities?.some((id: any) => id.provider === 'google');
@@ -94,6 +89,9 @@ router.post('/send-otp', async (req: Request, res: Response) => {
         error: 'This account uses Google Sign-in and does not require email verification' 
       });
     }
+
+    // Allow resending OTP even if email was already confirmed (for re-verification scenarios)
+    // This also handles cases where Supabase auto-confirmed the email
 
     // Generate and store OTP
     const otp = generateOTP();

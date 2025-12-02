@@ -42,10 +42,11 @@ export default function EmailOTPVerificationPage() {
       
       if (emailParam) {
         setEmail(emailParam);
+        setOtpSent(true); // Show OTP input immediately
         setIsChecking(false);
         // Auto-send OTP for new signups
-        setTimeout(() => {
-          sendOTP();
+        setTimeout(async () => {
+          await sendOTP();
         }, 500);
         return;
       }
