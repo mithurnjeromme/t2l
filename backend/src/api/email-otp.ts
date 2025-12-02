@@ -377,9 +377,8 @@ router.post('/resend-otp', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.email_confirmed_at) {
-      return res.status(400).json({ error: 'Email is already verified' });
-    }
+    // Allow resending even if already verified (Supabase may auto-verify)
+    // Our OTP system will handle verification properly
 
     // Generate new OTP
     const otp = generateOTP();
