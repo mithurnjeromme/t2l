@@ -1,45 +1,40 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../config/supabase';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 const router = Router();
 
 // In-memory OTP storage (use Redis in production for scalability)
 const otpStore = new Map<string, { otp: string; expiresAt: number; attempts: number }>();
 
-// Create Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, '') // Remove any spaces
-  }
-});
+// Initialize Resend with API key
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Email sending function using Nodemailer
+// Email sending function using Resend (works on Render - no SMTP ports needed)
 const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   try {
     console.log('='.repeat(80));
     console.log('[EMAIL] Sending email to:', to);
     console.log('[EMAIL] Subject:', subject);
-    console.log('[EMAIL] Using Gmail:', process.env.GMAIL_USER);
-    console.log('[EMAIL] Password configured:', !!process.env.GMAIL_APP_PASSWORD);
-    console.log('[EMAIL] Password length:', process.env.GMAIL_APP_PASSWORD?.length);
+    console.log('[EMAIL] Resend API Key configured:', !!process.env.RESEND_API_KEY);
     console.log('='.repeat(80));
 
-    const mailOptions = {
-      from: `"Turn2Law" <${process.env.GMAIL_USER}>`,
-      to,
-      subject,
-      html: htmlContent
-    };
+    const { data, error } = await resend.emails.send({
+      from: 'Turn2Law <onboarding@resend.dev>', // Use Resend's test domain or your verified domain
+      to: [to],
+      subject: subject,
+      html: htmlContent,
+    });
 
-    const info = await transporter.sendMail(mailOptions);
+    if (error) {
+      console.error('[EMAIL] Resend API error:', error);
+      throw error;
+    }
     
-    console.log('[EMAIL] Email sent successfully!');
-    console.log('[EMAIL] Message ID:', info.messageId);
-    return info;
+    console.log('[EMAIL] Email sent successfully via Resend!');
+    console.log('[EMAIL] Email ID:', data?.id);
+    return data;
   } catch (error) {
     console.error('[EMAIL] Failed to send email:', error);
     throw error;
