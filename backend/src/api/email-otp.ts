@@ -21,7 +21,7 @@ const sendEmail = async (to: string, subject: string, htmlContent: string) => {
     console.log('='.repeat(80));
 
     const { data, error } = await resend.emails.send({
-      from: 'Turn2Law <noreply@send.turn2law.tech>', // Using verified domain
+      from: 'Turn2Law <noreply@send.turn2law.tech>',
       to: [to],
       subject: subject,
       html: htmlContent,
