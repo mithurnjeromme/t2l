@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import {
   CheckCircle,
   FileText,
@@ -36,7 +37,7 @@ export default function GSTRegistrationPage() {
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-sm font-medium mb-6">
                 <FileCheck className="w-4 h-4" />
                 Registrations & Licenses
               </div>
@@ -47,7 +48,7 @@ export default function GSTRegistrationPage() {
                 Get your GST registration done hassle-free! Mandatory for businesses with turnover above ₹40 lakhs (₹20 lakhs for services). Claim input tax credit and expand your business legally.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Button size="lg" className="rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   Apply Now
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
@@ -55,11 +56,11 @@ export default function GSTRegistrationPage() {
               
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
-                  <div className="text-3xl font-bold text-primary">₹2,999</div>
+                  <div className="text-3xl font-bold text-primary dark:text-accent">₹2,999</div>
                   <div className="text-sm text-muted-foreground">Starting From</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-primary">100%</div>
+                  <div className="text-3xl font-bold text-primary dark:text-accent">100%</div>
                   <div className="text-sm text-muted-foreground">Online Process</div>
                 </div>
               </div>
@@ -73,8 +74,8 @@ export default function GSTRegistrationPage() {
                   { icon: IndianRupee, title: "Business Growth", desc: "Work with registered businesses easily" },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-6 h-6 text-primary" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-6 h-6 text-primary dark:text-accent" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
@@ -110,14 +111,14 @@ export default function GSTRegistrationPage() {
                 features: ["Everything in Standard", "Annual Return Filing", "Tax Planning", "Dedicated CA", "Audit Support"]
               }
             ].map((plan, idx) => (
-              <div key={idx} className={`rounded-2xl p-8 ${plan.popular ? 'bg-primary text-primary-foreground' : 'bg-card border border-border'} hover:shadow-xl transition-shadow relative`}>
+              <div key={idx} className={`rounded-2xl p-8 ${plan.popular ? 'bg-primary dark:bg-accent text-primary-foreground dark:text-accent-foreground border-2 border-primary dark:border-accent' : 'bg-card border border-border'} hover:shadow-xl transition-shadow relative`}>
                 {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary px-4 py-1 rounded-full text-sm font-semibold">POPULAR</div>}
                 <div className="text-sm font-semibold mb-2">{plan.name}</div>
                 <div className="text-4xl font-bold mb-4">{plan.price}</div>
                 <ul className="space-y-3">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                      <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? '' : 'text-primary dark:text-accent'}`} />
                       <span className="text-sm">{f}</span>
                     </li>
                   ))}
@@ -140,12 +141,12 @@ export default function GSTRegistrationPage() {
             ].map((item, idx) => (
               <div key={idx} className="relative">
                 <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                  <div className="text-4xl font-bold text-primary/20 mb-2">{item.step}</div>
+                  <div className="text-4xl font-bold text-primary/20 dark:text-accent/20 mb-2">{item.step}</div>
                   <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </div>
                 {idx < 3 && (
-                  <ArrowRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-primary" />
+                  <ArrowRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-primary dark:text-accent" />
                 )}
               </div>
             ))}
@@ -168,7 +169,7 @@ export default function GSTRegistrationPage() {
               { title: "Digital Signature", desc: "For companies/LLP" },
             ].map((doc, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <FileText className="w-10 h-10 text-primary mb-4" />
+                <FileText className="w-10 h-10 text-primary dark:text-accent mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{doc.title}</h3>
                 <p className="text-sm text-muted-foreground">{doc.desc}</p>
               </div>
@@ -190,7 +191,7 @@ export default function GSTRegistrationPage() {
               { icon: FileCheck, title: "Easy Compliance", desc: "Simple online filing and management of tax returns" },
             ].map((benefit, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <benefit.icon className="w-12 h-12 text-primary mb-4" />
+                <benefit.icon className="w-12 h-12 text-primary dark:text-accent mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground">{benefit.desc}</p>
               </div>
@@ -213,7 +214,7 @@ export default function GSTRegistrationPage() {
               <details key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow group">
                 <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
                   {faq.q}
-                  <ArrowRight className="w-5 h-5 group-open:rotate-90 transition-transform" />
+                  <span className="text-primary dark:text-accent group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <p className="text-sm text-muted-foreground mt-4">{faq.a}</p>
               </details>
@@ -297,7 +298,7 @@ export default function GSTRegistrationPage() {
               </label>
             </div>
             
-            <Button type="submit" size="lg" className="w-full rounded-full">
+            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90">
               Submit Application
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
@@ -305,22 +306,8 @@ export default function GSTRegistrationPage() {
         </div>
       </section>
 
-      <section className="py-16 px-6 bg-primary text-primary-foreground">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Get GST Registered?</h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">Start your GST registration process today with expert guidance</p>
-          <Button size="lg" variant="secondary" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
-            Apply Now
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
-        </div>
-      </section>
-
-      <footer className="py-8 px-6 border-t border-border">
-        <div className="container mx-auto max-w-7xl text-center text-muted-foreground">
-          <p>© 2025 Turn2Law. All rights reserved.</p>
-        </div>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
