@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import {
   CheckCircle,
   Clock,
@@ -458,11 +459,7 @@ export default function PartnershipFirmPage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-6 border-t border-border">
-        <div className="container mx-auto max-w-7xl text-center text-muted-foreground">
-          <p>© 2025 Turn2Law. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
