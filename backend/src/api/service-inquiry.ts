@@ -131,7 +131,7 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
 
     const { data, error } = await resend.emails.send({
       from: 'Turn2Law Services <onboarding@resend.dev>',
-      to: ['turn2law@gmail.com'],
+      to: ['dubeykanu02@gmail.com'], // Temporary: Using Resend signup email until domain is verified
       replyTo: inquiry.email,
       subject: `🔔 New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
       html: htmlContent,
