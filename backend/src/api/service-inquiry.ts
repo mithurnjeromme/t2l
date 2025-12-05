@@ -1,10 +1,16 @@
 import { Router, Request, Response } from 'express';
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
 const router = Router();
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize Gmail transporter
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER, // Your Gmail address
+    pass: process.env.GMAIL_APP_PASSWORD, // Your Gmail App Password
+  },
+});
 
 interface ServiceInquiry {
   serviceName: string;
@@ -128,22 +134,17 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
       </html>
     `;
 
-    const { data, error } = await resend.emails.send({
-      from: 'Turn2Law Services <onboarding@resend.dev>',
-      to: ['turn2law@gmail.com'],
+    const info = await transporter.sendMail({
+      from: `"Turn2Law Services" <${process.env.GMAIL_USER}>`,
+      to: 'turn2law@gmail.com',
       replyTo: inquiry.email,
       subject: `🔔 New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
       html: htmlContent,
     });
 
-    if (error) {
-      console.error('[SERVICE INQUIRY] Resend API error:', error);
-      throw error;
-    }
-    
     console.log('[SERVICE INQUIRY] Email sent successfully!');
-    console.log('[SERVICE INQUIRY] Email ID:', data?.id);
-    return data;
+    console.log('[SERVICE INQUIRY] Message ID:', info.messageId);
+    return info;
   } catch (error) {
     console.error('[SERVICE INQUIRY] Failed to send email:', error);
     throw error;
