@@ -32,10 +32,46 @@ export default function PrivateLimitedPage() {
     businessActivity: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:3001/api/service-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceName: 'Private Limited Company Registration',
+          ...formData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          companyName: "",
+          numberOfDirectors: "",
+          businessActivity: "",
+          message: "",
+        });
+      } else {
+        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('❌ Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -472,8 +508,8 @@ export default function PrivateLimitedPage() {
               </label>
             </div>
             
-            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90">
-              Submit Application
+            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Application"}
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </form>

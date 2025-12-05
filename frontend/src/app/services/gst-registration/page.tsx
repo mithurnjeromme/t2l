@@ -28,6 +28,46 @@ export default function GSTRegistrationPage() {
     turnover: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:3001/api/service-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceName: 'GST Registration',
+          ...formData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          businessName: "",
+          turnover: "",
+          message: "",
+        });
+      } else {
+        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('❌ Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -230,7 +270,7 @@ export default function GSTRegistrationPage() {
             <p className="text-muted-foreground">Fill out the form and our GST experts will contact you within 24 hours</p>
           </div>
           
-          <form onSubmit={(e) => e.preventDefault()} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
@@ -298,8 +338,8 @@ export default function GSTRegistrationPage() {
               </label>
             </div>
             
-            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90">
-              Submit Application
+            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit Application"}
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </form>

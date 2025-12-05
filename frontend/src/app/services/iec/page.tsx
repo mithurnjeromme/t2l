@@ -42,23 +42,43 @@ export default function IECPage() {
       return;
     }
     setIsSubmitting(true);
-    // TODO: Implement form submission logic
-    console.log("Form submitted:", formData);
-    setTimeout(() => {
-      alert("Application submitted successfully! We'll contact you shortly.");
-      setIsSubmitting(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        businessName: "",
-        businessType: "",
-        pan: "",
-        selectedPlan: "",
-        message: "",
-        consent: false,
+    
+    try {
+      const response = await fetch('http://localhost:3001/api/service-inquiry', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          serviceName: 'Import Export Code (IEC) Registration',
+          ...formData,
+        }),
       });
-    }, 1000);
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          businessName: "",
+          businessType: "",
+          pan: "",
+          selectedPlan: "",
+          message: "",
+          consent: false,
+        });
+      } else {
+        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('❌ Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
