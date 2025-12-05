@@ -30,28 +30,26 @@
   }
 
   .dark {
-    /* Dark Mode Colors - Green Dominant */
+    /* Dark Mode Colors - ORIGINAL (NO CHANGES) */
     --background: 240 5% 6%; /* #0E0E0E */
     --foreground: 0 0% 98%;
     --card: 240 5% 9%; /* #171717 */
     --card-foreground: 0 0% 98%;
     --popover: 240 5% 6%;
     --popover-foreground: 0 0% 98%;
-    --primary: 178 100% 30%; /* #009E98 - Green as Primary (Dominant) */
-    --primary-foreground: 0 0% 98%;
-    --secondary: 45 100% 51%; /* #DBAD00 - Yellow as Secondary */
-    --secondary-foreground: 240 5% 6%;
-    --tertiary: 32 52% 59%; /* #AE7739 - Brown as Tertiary */
-    --tertiary-foreground: 0 0% 98%;
+    --primary: 45 100% 51%; /* #DBAD00 */
+    --primary-foreground: 240 5% 6%;
+    --secondary: 178 100% 30%; /* #009E98 */
+    --secondary-foreground: 0 0% 98%;
     --muted: 240 5% 15%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 178 100% 30%; /* #009E98 - Green Accent */
+    --accent: 178 100% 30%; /* #009E98 */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5% 15%;
     --input: 240 5% 15%;
-    --ring: 178 100% 30%; /* #009E98 - Green Focus Ring */
+    --ring: 45 100% 51%;
   }
 }
 
