@@ -20,17 +20,10 @@ const sendEmail = async (to: string, subject: string, htmlContent: string) => {
     console.log('[EMAIL] Resend API Key configured:', !!process.env.RESEND_API_KEY);
     console.log('='.repeat(80));
 
-    // IMPORTANT: Resend free tier only allows sending to verified email (dubeykanu02@gmail.com)
-    // For testing, we'll send to your email. In production, verify a domain at resend.com/domains
-    const testEmail = 'dubeykanu02@gmail.com';
-    const recipientEmail = process.env.NODE_ENV === 'production' ? testEmail : to;
-    
-    console.log('[EMAIL] Sending to:', recipientEmail, '(Original recipient:', to + ')');
-    
     const { data, error } = await resend.emails.send({
-      from: 'Turn2Law <onboarding@resend.dev>', // Use Resend's test domain or your verified domain
-      to: [recipientEmail],
-      subject: `${subject} [For: ${to}]`, // Include original recipient in subject for testing
+      from: 'Turn2Law <noreply@send.turn2law.tech>', // Using verified domain
+      to: [to],
+      subject: subject,
       html: htmlContent,
     });
 
