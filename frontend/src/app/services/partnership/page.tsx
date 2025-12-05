@@ -56,7 +56,7 @@ export default function PartnershipFirmPage() {
                 Start your business partnership with ease. Get your Partnership Firm registered with complete legal compliance and expert guidance.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Button size="lg" className="rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   Register Now
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
@@ -434,7 +434,7 @@ export default function PartnershipFirmPage() {
               </label>
             </div>
             
-            <Button type="submit" size="lg" className="w-full rounded-full">
+            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90">
               Submit Application
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
