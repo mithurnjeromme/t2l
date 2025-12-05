@@ -4,21 +4,21 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import {
   CheckCircle,
-  Clock,
   FileText,
-  ArrowRight,
   Shield,
   TrendingUp,
-  Users,
-  AlertCircle,
+  ArrowRight,
+  Phone,
+  Mail,
   Calendar,
+  Receipt,
   IndianRupee,
-  Download,
-  CheckSquare,
+  FileCheck,
 } from "lucide-react";
-import Header from "@/components/layout/header";
 
 export default function GSTReturnFilingPage() {
   const [formData, setFormData] = useState({
@@ -31,603 +31,287 @@ export default function GSTReturnFilingPage() {
     message: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <section className="pt-32 pb-16 px-6 bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-block mb-4 px-4 py-2 bg-primary/10 rounded-full">
-                <span className="text-primary font-semibold text-sm">Tax Compliance Made Easy</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-sm font-medium mb-6">
+                <FileCheck className="w-4 h-4" />
+                Registrations & Licenses
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
                 Annual GST Return Filing
               </h1>
-              <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                Stay compliant with timely GST return filing. Expert assistance for GSTR-1, GSTR-3B, and annual returns. Avoid penalties with our professional services.
+              <p className="text-lg text-muted-foreground mb-8">
+                Stay compliant with timely GST return filing. Expert assistance for GSTR-1, GSTR-3B, and annual returns. Avoid penalties with professional support.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="group" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Button size="lg" className="rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   File Your Returns
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
-              <div className="mt-8 flex flex-wrap gap-6">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-sm font-medium">100% Compliance</span>
+              
+              <div className="grid grid-cols-2 gap-6 mt-12">
+                <div>
+                  <div className="text-3xl font-bold text-primary dark:text-accent">₹999</div>
+                  <div className="text-sm text-muted-foreground">Starting From/month</div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-sm font-medium">Expert Support</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-sm font-medium">On-Time Filing</span>
+                <div>
+                  <div className="text-3xl font-bold text-primary dark:text-accent">100%</div>
+                  <div className="text-sm text-muted-foreground">Compliance</div>
                 </div>
               </div>
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-3xl"></div>
-              <div className="relative bg-card border border-border/50 rounded-2xl p-8 shadow-2xl">
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between p-4 bg-green-500/10 rounded-xl border border-green-500/20">
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-8 w-8 text-green-500" />
-                      <div>
-                        <p className="font-semibold text-foreground">Monthly Returns</p>
-                        <p className="text-sm text-muted-foreground">GSTR-1 & GSTR-3B</p>
-                      </div>
+            
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+              <div className="space-y-4">
+                {[
+                  { icon: Calendar, title: "Timely Filing", desc: "Never miss GST return deadlines" },
+                  { icon: Receipt, title: "All Return Types", desc: "GSTR-1, GSTR-3B, GSTR-9 supported" },
+                  { icon: IndianRupee, title: "Tax Optimization", desc: "Maximize ITC claims legally" },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-6 h-6 text-primary dark:text-accent" />
                     </div>
-                    <CheckSquare className="h-6 w-6 text-green-500" />
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                    <div className="flex items-center gap-3">
-                      <FileText className="h-8 w-8 text-blue-500" />
-                      <div>
-                        <p className="font-semibold text-foreground">Quarterly Returns</p>
-                        <p className="text-sm text-muted-foreground">QRMP Scheme</p>
-                      </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground">{item.desc}</p>
                     </div>
-                    <CheckSquare className="h-6 w-6 text-blue-500" />
                   </div>
-                  <div className="flex items-center justify-between p-4 bg-primary/10 rounded-xl border border-primary/20">
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="h-8 w-8 text-primary" />
-                      <div>
-                        <p className="font-semibold text-foreground">Annual Returns</p>
-                        <p className="text-sm text-muted-foreground">GSTR-9 & GSTR-9C</p>
-                      </div>
-                    </div>
-                    <CheckSquare className="h-6 w-6 text-primary" />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="py-20 px-6 bg-muted/30">
+      {/* Pricing Plans */}
+      <section className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Transparent <span className="text-primary">Pricing Plans</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Choose the plan that fits your business needs
-            </p>
-          </div>
-          
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">Pricing Plans</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Monthly Filing Plan */}
-            <div className="bg-card border border-border/50 rounded-2xl p-8 hover:shadow-xl transition-all hover:-translate-y-1">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Monthly Filing</h3>
-                <p className="text-muted-foreground">For regular businesses</p>
-              </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <IndianRupee className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-5xl font-bold">999</span>
-                  <span className="text-muted-foreground">/month</span>
+            {[
+              {
+                name: "MONTHLY",
+                price: "₹999",
+                period: "/month",
+                features: ["GSTR-1 Filing", "GSTR-3B Filing", "Basic Support", "Email Updates", "Document Preparation"]
+              },
+              {
+                name: "QUARTERLY",
+                price: "₹2,499",
+                period: "/quarter",
+                popular: true,
+                features: ["QRMP Scheme", "Quarterly GSTR-1", "Monthly GSTR-3B", "ITC Reconciliation", "Priority Support"]
+              },
+              {
+                name: "ANNUAL",
+                price: "₹4,999",
+                period: "/year",
+                features: ["GSTR-9 Filing", "GSTR-9C Reconciliation", "CA Certification", "Audit Support", "Dedicated CA"]
+              }
+            ].map((plan, idx) => (
+              <div key={idx} className={`rounded-2xl p-8 ${plan.popular ? 'bg-primary dark:bg-accent text-primary-foreground dark:text-accent-foreground border-2 border-primary dark:border-accent' : 'bg-card border border-border'} hover:shadow-xl transition-shadow relative`}>
+                {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary px-4 py-1 rounded-full text-sm font-semibold">RECOMMENDED</div>}
+                <div className="text-sm font-semibold mb-2">{plan.name}</div>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <div className="text-4xl font-bold">{plan.price}</div>
+                  <div className="text-sm opacity-80">{plan.period}</div>
                 </div>
+                <ul className="space-y-3">
+                  {plan.features.map((f, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? '' : 'text-primary dark:text-accent'}`} />
+                      <span className="text-sm">{f}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">GSTR-1 Filing</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">GSTR-3B Filing</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">ITC Reconciliation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Expert Consultation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Email Support</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Quarterly Filing Plan */}
-            <div className="bg-gradient-to-br from-primary to-secondary border-2 border-primary rounded-2xl p-8 hover:shadow-2xl transition-all hover:-translate-y-1 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                RECOMMENDED
-              </div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2 text-white">Quarterly Filing</h3>
-                <p className="text-primary-foreground/80">QRMP Scheme</p>
-              </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2 text-white">
-                  <IndianRupee className="h-6 w-6" />
-                  <span className="text-5xl font-bold">2,499</span>
-                  <span className="text-primary-foreground/80">/quarter</span>
-                </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-white">Quarterly GSTR-1</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-white">Monthly GSTR-3B</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-white">ITC Reconciliation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-white">Priority Support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-white mt-0.5 flex-shrink-0" />
-                  <span className="text-sm text-white">Notice Handling</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Annual Return Plan */}
-            <div className="bg-card border border-border/50 rounded-2xl p-8 hover:shadow-xl transition-all hover:-translate-y-1">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Annual Return</h3>
-                <p className="text-muted-foreground">GSTR-9 & GSTR-9C</p>
-              </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <IndianRupee className="h-6 w-6 text-muted-foreground" />
-                  <span className="text-5xl font-bold">4,999</span>
-                  <span className="text-muted-foreground">/year</span>
-                </div>
-              </div>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">GSTR-9 Filing</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">GSTR-9C Reconciliation</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">CA Certification</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Audit Support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Dedicated CA</span>
-                </li>
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* GST Return Types */}
-      <section className="py-20 px-6">
+      <section className="py-16 px-6">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Types of <span className="text-primary">GST Returns</span>
-            </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Understanding different GST return forms and their due dates
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                form: "GSTR-1",
-                title: "Outward Supplies",
-                desc: "Details of outward supplies of goods and services",
-                frequency: "Monthly/Quarterly",
-                dueDate: "11th of next month",
-                icon: FileText,
-                color: "blue"
-              },
-              {
-                form: "GSTR-3B",
-                title: "Summary Return",
-                desc: "Summary of outward supplies, ITC claimed & tax payment",
-                frequency: "Monthly",
-                dueDate: "20th of next month",
-                icon: TrendingUp,
-                color: "green"
-              },
-              {
-                form: "GSTR-9",
-                title: "Annual Return",
-                desc: "Consolidation of all monthly/quarterly returns",
-                frequency: "Annual",
-                dueDate: "31st December",
-                icon: Calendar,
-                color: "primary"
-              },
-              {
-                form: "GSTR-9C",
-                title: "Reconciliation Statement",
-                desc: "For taxpayers with turnover > ₹5 Crore",
-                frequency: "Annual",
-                dueDate: "31st December",
-                icon: CheckSquare,
-                color: "purple"
-              },
-              {
-                form: "GSTR-2A",
-                title: "Purchase Register",
-                desc: "Auto-populated inward supplies details",
-                frequency: "Monthly",
-                dueDate: "Auto-generated",
-                icon: Download,
-                color: "orange"
-              },
-              {
-                form: "GSTR-2B",
-                title: "ITC Statement",
-                desc: "Static statement of ITC available",
-                frequency: "Monthly",
-                dueDate: "14th of next month",
-                icon: Shield,
-                color: "red"
-              }
-            ].map((returnType, index) => (
-              <div
-                key={index}
-                className="bg-card border border-border/50 rounded-xl p-6 hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg bg-${returnType.color}-500/10 mb-4`}>
-                  <returnType.icon className={`h-6 w-6 text-${returnType.color}-500`} />
-                </div>
-                <div className="mb-3">
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded">
-                    {returnType.form}
-                  </span>
-                </div>
-                <h3 className="text-xl font-bold mb-2">{returnType.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{returnType.desc}</p>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Frequency:</span>
-                    <span className="font-semibold">{returnType.frequency}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Due Date:</span>
-                    <span className="font-semibold">{returnType.dueDate}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Required Documents */}
-      <section className="py-20 px-6 bg-muted/30">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Required <span className="text-primary">Documents</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Documents you need to keep ready for GST return filing
-            </p>
-          </div>
-
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">GST Return Types</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              "Sales Invoices",
-              "Purchase Invoices",
-              "Credit/Debit Notes",
-              "Bank Statements",
-              "GSTR-2A/2B",
-              "Previous Return Copies",
-              "Payment Challans",
-              "TDS/TCS Certificates"
-            ].map((doc, index) => (
-              <div
-                key={index}
-                className="bg-card border border-border/50 rounded-xl p-6 hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                <FileText className="h-8 w-8 text-primary mb-3" />
-                <h3 className="font-semibold text-foreground">{doc}</h3>
+              { title: "GSTR-1", desc: "Outward supplies details" },
+              { title: "GSTR-3B", desc: "Monthly summary return" },
+              { title: "GSTR-9", desc: "Annual return" },
+              { title: "GSTR-9C", desc: "Reconciliation statement" },
+            ].map((type, idx) => (
+              <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <FileText className="w-10 h-10 text-primary dark:text-accent mb-4" />
+                <h3 className="font-semibold text-foreground mb-2">{type.title}</h3>
+                <p className="text-sm text-muted-foreground">{type.desc}</p>
               </div>
             ))}
-          </div>
-
-          <div className="mt-12 bg-amber-500/10 border border-amber-500/20 rounded-xl p-6">
-            <div className="flex gap-4">
-              <AlertCircle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-foreground mb-2">Important Note</h3>
-                <p className="text-sm text-muted-foreground">
-                  Late filing of GST returns attracts penalties and interest. GSTR-3B delay: ₹50/day (₹20/day if tax liability is nil). Ensure timely filing to avoid penalties.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Process Timeline */}
-      <section className="py-20 px-6">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Our <span className="text-primary">Filing Process</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Simple and hassle-free GST return filing in 4 easy steps
-            </p>
-          </div>
-
-          <div className="space-y-8">
+      {/* Filing Process */}
+      <section className="py-16 px-6 bg-muted/30">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">Filing Process</h2>
+          <div className="grid md:grid-cols-4 gap-6">
             {[
-              {
-                step: "01",
-                title: "Document Collection",
-                desc: "Share your sales, purchase invoices, and other required documents",
-                time: "Day 1"
-              },
-              {
-                step: "02",
-                title: "Data Entry & Reconciliation",
-                desc: "Our experts will prepare and reconcile your returns with GSTR-2A/2B",
-                time: "Day 2-3"
-              },
-              {
-                step: "03",
-                title: "Review & Approval",
-                desc: "Review the prepared returns and provide your approval",
-                time: "Day 4"
-              },
-              {
-                step: "04",
-                title: "Filing & Confirmation",
-                desc: "Returns filed on portal with acknowledgment shared to you",
-                time: "Day 5"
-              }
-            ].map((process, index) => (
-              <div key={index} className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-primary">{process.step}</span>
+              { step: "01", title: "Data Collection", desc: "Provide sales/purchase records" },
+              { step: "02", title: "Verification", desc: "We verify all entries" },
+              { step: "03", title: "Return Filing", desc: "File returns on GST portal" },
+              { step: "04", title: "Confirmation", desc: "Receive filing confirmation" },
+            ].map((item, idx) => (
+              <div key={idx} className="relative">
+                <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+                  <div className="text-4xl font-bold text-primary/20 dark:text-accent/20 mb-2">{item.step}</div>
+                  <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </div>
-                <div className="flex-1 bg-card border border-border/50 rounded-xl p-6">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-bold">{process.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      {process.time}
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground">{process.desc}</p>
-                </div>
+                {idx < 3 && (
+                  <ArrowRight className="hidden md:block absolute top-1/2 -right-3 -translate-y-1/2 w-6 h-6 text-primary dark:text-accent" />
+                )}
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">Why Choose Our GST Filing Service?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { icon: Shield, title: "100% Compliance", desc: "Stay fully compliant with GST laws and regulations" },
+              { icon: Calendar, title: "Timely Filing", desc: "Never miss deadlines and avoid late fees" },
+              { icon: TrendingUp, title: "ITC Optimization", desc: "Maximize your input tax credit claims" },
+              { icon: FileCheck, title: "Expert Support", desc: "Professional CA assistance throughout" },
+              { icon: Receipt, title: "Accurate Returns", desc: "Error-free filing with thorough verification" },
+              { icon: IndianRupee, title: "Cost Effective", desc: "Affordable pricing for all business sizes" },
+            ].map((benefit, idx) => (
+              <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <benefit.icon className="w-12 h-12 text-primary dark:text-accent mb-4" />
+                <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
+                <p className="text-sm text-muted-foreground">{benefit.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-16 px-6 bg-muted/30">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            {[
+              { q: "What is the due date for GST return filing?", a: "GSTR-1 is due by 11th, GSTR-3B by 20th of next month. Quarterly filers have different due dates. Annual returns (GSTR-9) are due by 31st December." },
+              { q: "What happens if I miss the GST filing deadline?", a: "Late filing attracts penalty of ₹50 per day (₹20 for nil returns) under CGST and SGST each, subject to maximum of ₹5,000. Interest is also applicable on delayed tax payment." },
+              { q: "What is QRMP scheme?", a: "Quarterly Return Monthly Payment (QRMP) allows small taxpayers (turnover up to ₹5 crore) to file GSTR-1 quarterly while paying tax monthly through PMT-06." },
+              { q: "Do I need to file GST return if there's no business?", a: "Yes, you must file nil returns even if there's no business activity during the month/quarter. Failure to file may result in penalty." },
+              { q: "What is GSTR-9C?", a: "GSTR-9C is a reconciliation statement between annual return (GSTR-9) and audited financial statements. It's mandatory for taxpayers with turnover above ₹5 crore." },
+            ].map((faq, idx) => (
+              <details key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow group">
+                <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
+                  {faq.q}
+                  <span className="text-primary dark:text-accent group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p className="text-sm text-muted-foreground mt-4">{faq.a}</p>
+              </details>
             ))}
           </div>
         </div>
       </section>
 
       {/* Contact Form */}
-      <section id="contact-form" className="py-20 px-6 bg-muted/30">
-        <div className="container mx-auto max-w-4xl">
+      <section id="contact-form" className="py-16 px-6">
+        <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Get Started with <span className="text-primary">GST Return Filing</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Fill out the form below and our expert will contact you within 24 hours
-            </p>
+            <h2 className="text-3xl font-bold text-foreground mb-4">Start Filing Your GST Returns</h2>
+            <p className="text-muted-foreground">Fill out the form and our GST experts will contact you within 24 hours</p>
           </div>
-
-          <div className="bg-card border border-border/50 rounded-2xl p-8 md:p-12 shadow-xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Full Name *</label>
-                  <Input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Email Address *</label>
-                  <Input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="your.email@example.com"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone Number *</label>
-                  <Input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    placeholder="+91 98765 43210"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Business Name</label>
-                  <Input
-                    name="businessName"
-                    value={formData.businessName}
-                    onChange={handleChange}
-                    placeholder="Your business name"
-                  />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium mb-2">GSTIN (if available)</label>
-                  <Input
-                    name="gstin"
-                    value={formData.gstin}
-                    onChange={handleChange}
-                    placeholder="22AAAAA0000A1Z5"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Return Type *</label>
-                  <select
-                    name="returnType"
-                    value={formData.returnType}
-                    onChange={handleChange}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                    required
-                  >
-                    <option value="">Select return type</option>
-                    <option value="monthly">Monthly Filing</option>
-                    <option value="quarterly">Quarterly Filing (QRMP)</option>
-                    <option value="annual">Annual Return (GSTR-9)</option>
-                    <option value="gstr9c">GSTR-9C (Reconciliation)</option>
-                  </select>
-                </div>
-              </div>
-
+          
+          <form onSubmit={(e) => e.preventDefault()} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Select Plan *</label>
-                <select
-                  className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                  required
-                >
-                  <option value="">Choose a plan</option>
-                  <option value="monthly">Monthly - ₹999/month</option>
-                  <option value="quarterly">Quarterly - ₹2,499/quarter (Recommended)</option>
-                  <option value="annual">Annual Return - ₹4,999/year</option>
+                <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
+                <Input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
+                <Input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
+                <Input required type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 98765 43210" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Business Name *</label>
+                <Input required value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} placeholder="ABC Enterprises" />
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">GSTIN</label>
+                <Input value={formData.gstin} onChange={(e) => setFormData({ ...formData, gstin: e.target.value })} placeholder="22AAAAA0000A1Z5" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-2">Return Type *</label>
+                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+                  <option value="">Select return type</option>
+                  <option value="monthly">Monthly Filing</option>
+                  <option value="quarterly">Quarterly Filing (QRMP)</option>
+                  <option value="annual">Annual Return (GSTR-9)</option>
                 </select>
               </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Additional Information</label>
-                <Textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  placeholder="Tell us about your business turnover, any specific requirements..."
-                  rows={3}
-                />
-              </div>
-
-              <div className="flex items-start gap-2">
-                <input type="checkbox" required className="mt-1" />
-                <label className="text-sm text-muted-foreground">
-                  I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
-                </label>
-              </div>
-
-              <Button type="submit" size="lg" className="w-full">
-                Submit Application
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </form>
-          </div>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
+              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+                <option value="">Choose a plan</option>
+                <option value="monthly">Monthly - ₹999/month</option>
+                <option value="quarterly">Quarterly - ₹2,499/quarter (Recommended)</option>
+                <option value="annual">Annual Return - ₹4,999/year</option>
+              </select>
+            </div>
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">Additional Information</label>
+              <Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Tell us about your business turnover, any specific requirements..." rows={3} />
+            </div>
+            
+            <div className="flex items-start gap-2 mb-6">
+              <input type="checkbox" required className="mt-1" />
+              <label className="text-sm text-muted-foreground">
+                I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
+              </label>
+            </div>
+            
+            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90">
+              Submit Application
+              <ArrowRight className="ml-2 w-4 h-4" />
+            </Button>
+          </form>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 px-6">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Frequently Asked <span className="text-primary">Questions</span>
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            {[
-              {
-                q: "What is the due date for GST return filing?",
-                a: "GSTR-1 is due by 11th, GSTR-3B by 20th of next month. Quarterly filers have different due dates. Annual returns (GSTR-9) are due by 31st December."
-              },
-              {
-                q: "What is the penalty for late filing?",
-                a: "Late filing of GSTR-3B attracts ₹50 per day (₹20 per day if no tax liability). Maximum penalty is ₹5,000. Interest is also charged @18% p.a. on outstanding tax."
-              },
-              {
-                q: "Can I file nil returns?",
-                a: "Yes, nil returns must be filed even if there are no transactions during the period. Failure to file attracts penalty."
-              },
-              {
-                q: "What is QRMP scheme?",
-                a: "Quarterly Return Monthly Payment scheme allows eligible taxpayers to file GSTR-1 quarterly while paying tax monthly through PMT-06."
-              }
-            ].map((faq, index) => (
-              <div key={index} className="bg-card border border-border/50 rounded-xl p-6">
-                <h3 className="font-semibold text-lg mb-2">{faq.q}</h3>
-                <p className="text-muted-foreground">{faq.a}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
