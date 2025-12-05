@@ -80,23 +80,56 @@ export default function IECPage() {
                 Start your import/export business with an IEC registration. Mandatory for international trade, valid for a lifetime. Quick processing and expert support.
               </p>
               <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 text-foreground">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span>Lifetime Validity</span>
+                <Button size="lg" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                  Register Now
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+              </div>
+              
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-6 mt-12">
+                <div>
+                  <div className="text-3xl font-bold text-primary">₹2,999</div>
+                  <div className="text-sm text-muted-foreground">Starting From</div>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span>No Renewal Required</span>
-                </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <span>Expert Guidance</span>
+                <div>
+                  <div className="text-3xl font-bold text-primary">Lifetime</div>
+                  <div className="text-sm text-muted-foreground">Validity</div>
                 </div>
               </div>
             </div>
+            
             <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <Ship className="w-32 h-32 text-primary" />
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Globe className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Global Trade Ready</h3>
+                      <p className="text-sm text-muted-foreground">Import & export from 180+ countries</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Lifetime Validity</h3>
+                      <p className="text-sm text-muted-foreground">One-time registration, no renewals</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Ship className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">Fast Processing</h3>
+                      <p className="text-sm text-muted-foreground">Get your IEC in 7-10 business days</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -106,95 +139,98 @@ export default function IECPage() {
       {/* Pricing Section */}
       <section className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Simple & Transparent Pricing
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              One-time fee with lifetime validity. No hidden charges.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Transparent Pricing Plans
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
             {/* Basic Plan */}
-            <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-lg transition-shadow">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-foreground mb-2">Basic IEC</h3>
-                <p className="text-muted-foreground">Essential IEC registration for startups</p>
+            <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-shadow">
+              <div className="text-sm font-semibold text-primary mb-2">BASIC</div>
+              <div className="text-4xl font-bold text-foreground mb-4">
+                ₹2,999
               </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <IndianRupee className="w-6 h-6 text-muted-foreground" />
-                  <span className="text-4xl font-bold text-foreground">2,999</span>
-                  <span className="text-muted-foreground">(one-time)</span>
-                </div>
-              </div>
+              <p className="text-muted-foreground mb-6">Essential IEC registration</p>
               <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">IEC Number Registration</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">IEC Number Registration</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Document Preparation</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Document Preparation</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Application Filing</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Application Filing</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Certificate Delivery</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Certificate Delivery</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-foreground">Email Support</span>
+              </ul>
+            </div>
+
+            {/* Standard Plan */}
+            <div className="bg-primary text-primary-foreground border-2 border-primary rounded-2xl p-8 hover:shadow-xl transition-shadow relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-sm font-semibold">
+                POPULAR
+              </div>
+              <div className="text-sm font-semibold mb-2">STANDARD</div>
+              <div className="text-4xl font-bold mb-4">
+                ₹4,999
+              </div>
+              <p className="text-primary-foreground/80 mb-6">Recommended package</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Everything in Basic</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Priority Processing</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">PAN-IEC Linking</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Compliance Checklist</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Dedicated Support</span>
                 </li>
               </ul>
             </div>
 
             {/* Premium Plan */}
-            <div className="bg-primary text-primary-foreground rounded-2xl p-8 relative overflow-hidden hover:shadow-xl transition-shadow">
-              <div className="absolute top-4 right-4">
-                <span className="bg-primary-foreground text-primary px-3 py-1 rounded-full text-sm font-medium">
-                  Recommended
-                </span>
+            <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-shadow">
+              <div className="text-sm font-semibold text-primary mb-2">PREMIUM</div>
+              <div className="text-4xl font-bold text-foreground mb-4">
+                ₹7,999
               </div>
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-2">Premium IEC</h3>
-                <p className="text-primary-foreground/80">Complete IEC package with compliance</p>
-              </div>
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
-                  <IndianRupee className="w-6 h-6" />
-                  <span className="text-4xl font-bold">4,999</span>
-                  <span className="text-primary-foreground/80">(one-time)</span>
-                </div>
-              </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>All Basic Plan features</span>
+              <p className="text-muted-foreground mb-6">Complete business setup</p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Everything in Standard</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>Priority Processing</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Post-Registration Guidance</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>PAN-IEC Linking</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Export Compliance Training</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>Compliance Checklist</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Legal Consultation (2 Sessions)</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>Dedicated Support</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 shrink-0 mt-0.5" />
-                  <span>Post-Registration Guidance</span>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-sm">Dedicated Account Manager</span>
                 </li>
               </ul>
             </div>
@@ -202,443 +238,214 @@ export default function IECPage() {
         </div>
       </section>
 
-      {/* Required Documents Section */}
+      {/* Documents Required */}
       <section className="py-16 px-6">
         <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Documents Required
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Keep these documents ready for a smooth registration process
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">PAN Card</h3>
-              <p className="text-muted-foreground">PAN card of the applicant (proprietor/directors)</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">ID & Address Proof</h3>
-              <p className="text-muted-foreground">Aadhaar card/passport and current address proof</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Bank Certificate</h3>
-              <p className="text-muted-foreground">Cancelled cheque or bank account certificate</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Business PAN</h3>
-              <p className="text-muted-foreground">PAN card of your business entity (if applicable)</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Passport Photo</h3>
-              <p className="text-muted-foreground">Recent passport-sized photograph</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
-              <FileText className="w-10 h-10 text-primary mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Digital Signature</h3>
-              <p className="text-muted-foreground">DSC (Digital Signature Certificate) of applicant</p>
-            </div>
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Documents Required
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: FileText, title: "PAN Card", desc: "Of applicant/business" },
+              { icon: FileText, title: "Aadhaar Card", desc: "Valid ID proof" },
+              { icon: FileText, title: "Bank Certificate", desc: "Cancelled cheque" },
+              { icon: FileText, title: "Passport Photo", desc: "Recent photograph" },
+            ].map((doc, idx) => (
+              <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <doc.icon className="w-10 h-10 text-primary mb-4" />
+                <h3 className="font-semibold text-foreground mb-2">{doc.title}</h3>
+                <p className="text-sm text-muted-foreground">{doc.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Process Timeline Section */}
-      <section className="py-16 px-6 bg-muted/30">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Registration Process
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Simple 4-step process to get your IEC certificate
-            </p>
-          </div>
-
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2 hidden md:block" />
-            
-            <div className="space-y-12">
-              {/* Step 1 */}
-              <div className="relative grid md:grid-cols-2 gap-8 items-center">
-                <div className="md:text-right">
-                  <div className="inline-block md:block">
-                    <h3 className="text-xl font-bold text-foreground mb-2">1. Submit Application</h3>
-                    <p className="text-muted-foreground">Fill out the form and provide required documents</p>
-                  </div>
-                </div>
-                <div className="relative flex items-center justify-center md:justify-start">
-                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg z-10 md:absolute md:left-1/2 md:-translate-x-1/2">
-                    1
-                  </div>
-                </div>
-                <div className="hidden md:block" />
-              </div>
-
-              {/* Step 2 */}
-              <div className="relative grid md:grid-cols-2 gap-8 items-center">
-                <div className="hidden md:block" />
-                <div className="relative flex items-center justify-center md:justify-start">
-                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg z-10 md:absolute md:right-1/2 md:translate-x-1/2">
-                    2
-                  </div>
-                </div>
-                <div className="md:order-first">
-                  <h3 className="text-xl font-bold text-foreground mb-2">2. Document Verification</h3>
-                  <p className="text-muted-foreground">We verify all documents and prepare your application</p>
-                </div>
-              </div>
-
-              {/* Step 3 */}
-              <div className="relative grid md:grid-cols-2 gap-8 items-center">
-                <div className="md:text-right">
-                  <div className="inline-block md:block">
-                    <h3 className="text-xl font-bold text-foreground mb-2">3. Application Filing</h3>
-                    <p className="text-muted-foreground">We file your IEC application with DGFT portal</p>
-                  </div>
-                </div>
-                <div className="relative flex items-center justify-center md:justify-start">
-                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg z-10 md:absolute md:left-1/2 md:-translate-x-1/2">
-                    3
-                  </div>
-                </div>
-                <div className="hidden md:block" />
-              </div>
-
-              {/* Step 4 */}
-              <div className="relative grid md:grid-cols-2 gap-8 items-center">
-                <div className="hidden md:block" />
-                <div className="relative flex items-center justify-center md:justify-start">
-                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg z-10 md:absolute md:right-1/2 md:translate-x-1/2">
-                    4
-                  </div>
-                </div>
-                <div className="md:order-first">
-                  <h3 className="text-xl font-bold text-foreground mb-2">4. Receive IEC Certificate</h3>
-                  <p className="text-muted-foreground">Get your IEC certificate in 7-10 business days</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-16 px-6">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Get an IEC?
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              Essential benefits for your import/export business
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Globe className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Mandatory for Trade</h3>
-              <p className="text-muted-foreground">
-                IEC is mandatory for importing/exporting goods or services from India
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Lifetime Validity</h3>
-              <p className="text-muted-foreground">
-                Once issued, IEC is valid for a lifetime with no renewal requirements
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <TrendingUp className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Business Expansion</h3>
-              <p className="text-muted-foreground">
-                Open doors to global markets and expand your business internationally
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <Package className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Custom Clearance</h3>
-              <p className="text-muted-foreground">
-                Required for customs clearance of imported and exported goods
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <FileText className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">No Compliance Burden</h3>
-              <p className="text-muted-foreground">
-                No annual returns or periodic filings required after registration
-              </p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-6">
-              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                <CheckCircle className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-3">Quick Processing</h3>
-              <p className="text-muted-foreground">
-                Fast online application process with minimal paperwork
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
+      {/* Process Timeline */}
       <section className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="space-y-4">
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                What is an Import Export Code (IEC)?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                IEC is a 10-digit unique code issued by the Directorate General of Foreign Trade (DGFT) to Indian companies for importing or exporting goods and services. It is mandatory for international trade.
-              </p>
-            </details>
-
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                Who needs an IEC registration?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                Any individual, proprietorship, partnership, company, or LLP that wants to import or export goods or services from India needs an IEC. It is mandatory for customs clearance.
-              </p>
-            </details>
-
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                How long does it take to get an IEC?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                Once all documents are submitted and verified, the IEC is typically issued within 7-10 business days. With our premium plan, we expedite the process.
-              </p>
-            </details>
-
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                Is IEC valid for a lifetime?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                Yes, IEC has lifetime validity and does not require any renewal. However, you need to update your IEC if there are changes in your business details (like address, bank account, etc.).
-              </p>
-            </details>
-
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                Can I use one IEC for multiple businesses?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                One IEC is issued per PAN. If you have multiple businesses with the same PAN, you can use the same IEC. However, if different entities have different PANs, each needs a separate IEC.
-              </p>
-            </details>
-
-            <details className="group bg-card border border-border rounded-lg p-6 cursor-pointer">
-              <summary className="flex justify-between items-center font-semibold text-foreground">
-                Are there any annual compliance requirements for IEC?
-                <span className="ml-4 shrink-0">+</span>
-              </summary>
-              <p className="mt-4 text-muted-foreground">
-                No, there are no annual returns or periodic filings required for IEC. You only need to update it if your business details change.
-              </p>
-            </details>
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Registration Process
+          </h2>
+          <div className="space-y-6">
+            {[
+              { step: 1, title: "Submit Application", desc: "Fill out the form and provide required documents" },
+              { step: 2, title: "Document Verification", desc: "We verify all documents and prepare your application" },
+              { step: 3, title: "Application Filing", desc: "We file your IEC application with DGFT portal" },
+              { step: 4, title: "Receive IEC Certificate", desc: "Get your IEC certificate in 7-10 business days" },
+            ].map((item, idx) => (
+              <div key={idx} className="flex gap-6 items-start">
+                <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                  {item.step}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section id="contact-form" className="py-16 px-6">
+      {/* Benefits */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-7xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Why Get an IEC?
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { icon: Globe, title: "Mandatory for Trade", desc: "Required for importing/exporting goods from India" },
+              { icon: Shield, title: "Lifetime Validity", desc: "One-time registration with no renewal needed" },
+              { icon: TrendingUp, title: "Business Expansion", desc: "Open doors to global markets and opportunities" },
+              { icon: Package, title: "Customs Clearance", desc: "Essential for customs clearance of goods" },
+              { icon: FileText, title: "No Compliance Burden", desc: "No annual returns or periodic filings required" },
+              { icon: CheckCircle, title: "Quick Processing", desc: "Fast online application with minimal paperwork" },
+            ].map((benefit, idx) => (
+              <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
+                <benefit.icon className="w-10 h-10 text-primary mb-4" />
+                <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
+                <p className="text-sm text-muted-foreground">{benefit.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form */}
+      <section id="contact-form" className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Apply for IEC Registration
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Get Started Today
             </h2>
-            <p className="text-lg text-muted-foreground">
-              Fill out the form below and our team will reach out to you shortly
+            <p className="text-muted-foreground">
+              Fill out the form below and our experts will get in touch with you
             </p>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6 bg-card border border-border rounded-2xl p-8">
-            <div className="grid md:grid-cols-2 gap-6">
+          
+          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Full Name *
                 </label>
                 <Input
-                  id="name"
-                  type="text"
-                  placeholder="Your full name"
+                  required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
-                  className="rounded-lg"
+                  placeholder="John Doe"
                 />
               </div>
-              
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Email Address *
                 </label>
                 <Input
-                  id="email"
+                  required
                   type="email"
-                  placeholder="your@email.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                  className="rounded-lg"
+                  placeholder="john@example.com"
                 />
               </div>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Phone Number *
                 </label>
                 <Input
-                  id="phone"
+                  required
                   type="tel"
-                  placeholder="+91 XXXXX XXXXX"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  required
-                  className="rounded-lg"
+                  placeholder="+91 98765 43210"
                 />
               </div>
-
               <div>
-                <label htmlFor="businessName" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Business Name *
                 </label>
                 <Input
-                  id="businessName"
-                  type="text"
-                  placeholder="Your business name"
+                  required
                   value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                  required
-                  className="rounded-lg"
+                  placeholder="ABC Exports"
                 />
               </div>
             </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
-                <label htmlFor="businessType" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Business Type *
                 </label>
-                <select
-                  id="businessType"
+                <select 
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                  required
                   value={formData.businessType}
                   onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
-                  required
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground"
                 >
                   <option value="">Select business type</option>
                   <option value="proprietorship">Proprietorship</option>
                   <option value="partnership">Partnership</option>
                   <option value="llp">LLP</option>
                   <option value="private-limited">Private Limited</option>
-                  <option value="public-limited">Public Limited</option>
                 </select>
               </div>
-
               <div>
-                <label htmlFor="pan" className="block text-sm font-medium text-foreground mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   PAN Number *
                 </label>
                 <Input
-                  id="pan"
-                  type="text"
-                  placeholder="ABCDE1234F"
+                  required
                   value={formData.pan}
                   onChange={(e) => setFormData({ ...formData, pan: e.target.value.toUpperCase() })}
-                  required
-                  className="rounded-lg"
+                  placeholder="ABCDE1234F"
                   maxLength={10}
                 />
               </div>
             </div>
-
-            <div>
-              <label htmlFor="selectedPlan" className="block text-sm font-medium text-foreground mb-2">
-                Select Plan *
-              </label>
-              <select
-                id="selectedPlan"
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
+              <select 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                required
                 value={formData.selectedPlan}
                 onChange={(e) => setFormData({ ...formData, selectedPlan: e.target.value })}
-                required
-                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground"
               >
                 <option value="">Choose a plan</option>
-                <option value="basic">Basic IEC - ₹2,999</option>
-                <option value="premium">Premium IEC - ₹4,999</option>
+                <option value="basic">Basic - ₹2,999</option>
+                <option value="standard">Standard - ₹4,999 (Recommended)</option>
+                <option value="premium">Premium - ₹7,999</option>
               </select>
             </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
-                Additional Information (Optional)
+            
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Additional Message
               </label>
               <Textarea
-                id="message"
-                placeholder="Any specific requirements or questions..."
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                rows={4}
-                className="rounded-lg"
+                placeholder="Tell us about your requirements..."
+                rows={3}
               />
             </div>
-
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                id="consent"
+            
+            <div className="flex items-start gap-2 mb-6">
+              <input 
+                type="checkbox" 
+                required 
+                className="mt-1"
                 checked={formData.consent}
                 onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
-                required
-                className="mt-1"
               />
-              <label htmlFor="consent" className="text-sm text-muted-foreground">
+              <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
@@ -651,13 +458,54 @@ export default function IECPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* FAQ Section */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "What is an Import Export Code (IEC)?",
+                a: "IEC is a 10-digit unique code issued by DGFT to Indian companies for importing or exporting goods and services. It is mandatory for international trade."
+              },
+              {
+                q: "Who needs an IEC registration?",
+                a: "Any individual, proprietorship, partnership, company, or LLP that wants to import or export goods or services from India needs an IEC."
+              },
+              {
+                q: "How long does it take to get an IEC?",
+                a: "Once all documents are submitted and verified, the IEC is typically issued within 7-10 business days."
+              },
+              {
+                q: "Is IEC valid for a lifetime?",
+                a: "Yes, IEC has lifetime validity and does not require any renewal. However, you need to update it if your business details change."
+              },
+            ].map((faq, idx) => (
+              <details key={idx} className="bg-card border border-border rounded-xl p-6 group">
+                <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
+                  {faq.q}
+                  <span className="text-primary group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p className="text-muted-foreground mt-4">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <section className="py-16 px-6 bg-primary text-primary-foreground">
         <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Start Your International Trade Journey?</h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">Get your IEC registration today and unlock global opportunities</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Start Your International Trade Journey?
+          </h2>
+          <p className="text-xl mb-8 text-primary-foreground/90">
+            Get your IEC registration today and unlock global opportunities
+          </p>
           <Button size="lg" variant="secondary" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
-            Get Started
+            Start Your Application
             <ArrowRight className="ml-2 w-4 h-4" />
           </Button>
         </div>
