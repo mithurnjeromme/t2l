@@ -290,6 +290,43 @@ export default function PartnershipFirmPage() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-16 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
+            Frequently Asked Questions
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                q: "What is the minimum number of partners required?",
+                a: "A partnership firm requires a minimum of 2 partners and can have a maximum of 50 partners (20 for banking business)."
+              },
+              {
+                q: "Is registration mandatory for partnership firms?",
+                a: "Registration is not mandatory but highly recommended as it provides legal protection and benefits like filing suits against partners or third parties."
+              },
+              {
+                q: "What is the liability of partners?",
+                a: "Partners have unlimited liability, meaning their personal assets can be used to settle business debts."
+              },
+              {
+                q: "Can a partnership firm be converted to a company?",
+                a: "Yes, a partnership firm can be converted into a Private Limited Company or LLP as the business grows."
+              },
+            ].map((faq, idx) => (
+              <details key={idx} className="bg-card border border-border rounded-xl p-6 group">
+                <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
+                  {faq.q}
+                  <span className="text-primary group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p className="text-muted-foreground mt-4">{faq.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Contact Form */}
       <section id="contact-form" className="py-16 px-6 bg-muted/30">
         <div className="container mx-auto max-w-3xl">
@@ -402,59 +439,6 @@ export default function PartnershipFirmPage() {
               <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
           </form>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 px-6">
-        <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-4">
-            {[
-              {
-                q: "What is the minimum number of partners required?",
-                a: "A partnership firm requires a minimum of 2 partners and can have a maximum of 50 partners (20 for banking business)."
-              },
-              {
-                q: "Is registration mandatory for partnership firms?",
-                a: "Registration is not mandatory but highly recommended as it provides legal protection and benefits like filing suits against partners or third parties."
-              },
-              {
-                q: "What is the liability of partners?",
-                a: "Partners have unlimited liability, meaning their personal assets can be used to settle business debts."
-              },
-              {
-                q: "Can a partnership firm be converted to a company?",
-                a: "Yes, a partnership firm can be converted into a Private Limited Company or LLP as the business grows."
-              },
-            ].map((faq, idx) => (
-              <details key={idx} className="bg-card border border-border rounded-xl p-6 group">
-                <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
-                  {faq.q}
-                  <span className="text-primary group-open:rotate-180 transition-transform">▼</span>
-                </summary>
-                <p className="text-muted-foreground mt-4">{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 px-6 bg-primary text-primary-foreground">
-        <div className="container mx-auto max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Ready to Start Your Partnership Firm?
-          </h2>
-          <p className="text-xl mb-8 text-primary-foreground/90">
-            Begin your partnership registration with expert legal guidance
-          </p>
-          <Button size="lg" variant="secondary" className="rounded-full" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
-            Start Your Application
-            <ArrowRight className="ml-2 w-4 h-4" />
-          </Button>
         </div>
       </section>
 
