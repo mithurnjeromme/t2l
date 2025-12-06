@@ -296,35 +296,11 @@ const SignupPage = () => {
         }
       }
       
-      // Send custom OTP for email verification
-      console.log('[Signup] Sending OTP to:', formData.email);
-      
-      try {
-        const otpResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/email-otp/send-otp`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email: formData.email }),
-        });
-
-        const otpData = await otpResponse.json();
-
-        if (!otpResponse.ok) {
-          throw new Error(otpData.error || 'Failed to send verification code');
-        }
-
-        console.log('[Signup] OTP sent successfully');
-        alert(`${finalUserType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Please check your email for the verification code.`);
-        
-        // Redirect to email OTP verification page with email as query param
-        router.push(`/verify-email-otp?email=${encodeURIComponent(formData.email)}`);
-        
-      } catch (otpError: any) {
-        console.error('[Signup] OTP sending error:', otpError);
-        alert('Account created but failed to send verification code. You can request a new code from the verification page.');
-        router.push(`/verify-email-otp?email=${encodeURIComponent(formData.email)}`);
-      }
+      // Redirect to email OTP verification page 
+      // The verify-email-otp page will automatically send OTP when it loads
+      console.log('[Signup] Registration successful, redirecting to email verification');
+      alert(`${finalUserType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Check your email for the verification code.`);
+      router.push(`/verify-email-otp?email=${encodeURIComponent(formData.email)}`);
       
     } catch (error: any) {
       console.error('[Signup] Registration error:', error);
