@@ -139,7 +139,7 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
       body: JSON.stringify({
         sender: {
           name: 'Turn2Law Services',
-          email: 'dubeykanu02@gmail.com', // Your verified sender email
+          email: 'turntwolaw@gmail.com', // Your verified sender email in Brevo
         },
         to: [
           {
