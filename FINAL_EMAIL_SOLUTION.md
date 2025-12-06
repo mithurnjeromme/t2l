@@ -2,7 +2,28 @@
 
 ## � THE PROBLEM
 - Render blocks SMTP (Gmail, SendGrid won't work)
-- Your domain `turn2law.tech` is NOT verified in Resend
+- You## 🎉 WHY BREVO IS PERFECT
+
+- ✅ **300 emails/day FREE** (way more than you need)
+- ✅ **Send to ANY email** (turn2law@gmail.com works!)
+- ✅ **No domain verification** needed
+- ✅ **Works on Render** (HTTP API)
+- ✅ **OTP emails included**
+- ✅ **Better deliverability** than free SMTP
+- ✅ **Professional dashboard** to track emails
+
+## 📊 What Happens After Setup
+
+All 7 service pages send emails to **turn2law@gmail.com**:
+1. Partnership Firm Registration ✅
+2. Private Limited Company ✅
+3. One Person Company (OPC) ✅
+4. Limited Liability Partnership (LLP) ✅
+5. GST Registration ✅
+6. GST Return Filing ✅
+7. Import Export Code (IEC) ✅
+
+PLUS: You can use the same Brevo API for OTP emails later!`turn2law.tech` is NOT verified in Resend
 - Resend free tier can ONLY send emails to the email address you signed up with
 
 ## ✅ THE WORKING SOLUTION (Use This NOW)
@@ -71,12 +92,33 @@ But Resend with domain verification is actually the best long-term solution
 
 ---
 
-## 🎯 EXACTLY WHAT TO DO RIGHT NOW
+## ✅ BREVO IS READY! DO THIS NOW (2 MINUTES)
 
-**STEP 1:** Tell me what email you used to sign up for Resend  
-**STEP 2:** I'll update the code to send to that email  
-**STEP 3:** Add API key to Render (shown above)  
-**STEP 4:** Test - you'll receive inquiry emails in YOUR inbox!  
+### Step 1: Add API Key to Render
+1. Go to: https://dashboard.render.com
+2. Click your backend service  
+3. Go to **Environment** tab
+4. Add this variable:
+```
+BREVO_API_KEY=your_brevo_api_key_here
+```
+5. Click **Save Changes**
+
+### Step 2: Wait for Deployment (2 minutes)
+Render will auto-deploy. Check logs or wait 2-3 minutes.
+
+### Step 3: Verify Sender Email in Brevo
+1. Go to: https://app.brevo.com/senders
+2. Add sender: `dubeykanu02@gmail.com`
+3. Check your email and verify it
+
+### Step 4: Test It!
+1. Go to: https://turn2law.vercel.app/services/partnership
+2. Fill out the form
+3. Submit it
+4. **Check turn2law@gmail.com inbox** ✅
+
+IT WILL WORK! 🎉  
 
 ---
 
