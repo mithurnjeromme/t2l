@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { Resend } from 'resend';
 
 const router = Router();
 
-// Initialize Resend with API key
-// Using Resend (HTTP API) instead of SMTP because many cloud platforms block SMTP ports
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Brevo API configuration
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 interface ServiceInquiry {
   serviceName: string;
@@ -129,21 +128,43 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
       </html>
     `;
 
-    const { data, error } = await resend.emails.send({
-      from: 'Turn2Law Services <onboarding@resend.dev>',
-      to: ['dubeykanu02@gmail.com'], // Temporary: Using Resend signup email until domain is verified
-      replyTo: inquiry.email,
-      subject: `🔔 New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
-      html: htmlContent,
+    // Send email using Brevo API
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': BREVO_API_KEY || '',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Turn2Law Services',
+          email: 'dubeykanu02@gmail.com', // Your verified sender email
+        },
+        to: [
+          {
+            email: 'turn2law@gmail.com', // Can send to ANY email with Brevo!
+            name: 'Turn2Law Team',
+          },
+        ],
+        replyTo: {
+          email: inquiry.email,
+          name: inquiry.name,
+        },
+        subject: `🔔 New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
+        htmlContent: htmlContent,
+      }),
     });
 
-    if (error) {
-      console.error('[SERVICE INQUIRY] Resend API error:', error);
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[SERVICE INQUIRY] Brevo API error:', errorData);
+      throw new Error(`Brevo API error: ${JSON.stringify(errorData)}`);
     }
 
-    console.log('[SERVICE INQUIRY] Email sent successfully!');
-    console.log('[SERVICE INQUIRY] Email ID:', data?.id);
+    const data = await response.json();
+    console.log('[SERVICE INQUIRY] Email sent successfully via Brevo!');
+    console.log('[SERVICE INQUIRY] Message ID:', data.messageId);
     return data;
   } catch (error) {
     console.error('[SERVICE INQUIRY] Failed to send email:', error);
