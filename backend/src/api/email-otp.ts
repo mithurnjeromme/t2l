@@ -1,39 +1,57 @@
 import { Router, Request, Response } from 'express';
 import { supabaseAdmin } from '../config/supabase';
 import crypto from 'crypto';
-import { Resend } from 'resend';
 
 const router = Router();
 
 // In-memory OTP storage (use Redis in production for scalability)
 const otpStore = new Map<string, { otp: string; expiresAt: number; attempts: number }>();
 
-// Initialize Resend with API key
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Brevo API configuration
+const BREVO_API_KEY = process.env.BREVO_API_KEY;
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
-// Email sending function using Resend (works on Render - no SMTP ports needed)
+// Email sending function using Brevo (works on Render - no SMTP ports needed)
 const sendEmail = async (to: string, subject: string, htmlContent: string) => {
   try {
     console.log('='.repeat(80));
     console.log('[EMAIL] Sending email to:', to);
     console.log('[EMAIL] Subject:', subject);
-    console.log('[EMAIL] Resend API Key configured:', !!process.env.RESEND_API_KEY);
+    console.log('[EMAIL] Brevo API Key configured:', !!BREVO_API_KEY);
     console.log('='.repeat(80));
 
-    const { data, error } = await resend.emails.send({
-      from: 'Turn2Law <noreply@send.turn2law.tech>',
-      to: [to],
-      subject: subject,
-      html: htmlContent,
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': BREVO_API_KEY || '',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Turn2Law',
+          email: 'dubeykanu02@gmail.com',
+        },
+        to: [
+          {
+            email: to,
+            name: to.split('@')[0],
+          },
+        ],
+        subject: subject,
+        htmlContent: htmlContent,
+      }),
     });
 
-    if (error) {
-      console.error('[EMAIL] Resend API error:', error);
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('[EMAIL] Brevo API error:', errorData);
+      throw new Error(`Brevo API error: ${JSON.stringify(errorData)}`);
     }
-    
-    console.log('[EMAIL] Email sent successfully via Resend!');
-    console.log('[EMAIL] Email ID:', data?.id);
+
+    const data = await response.json();
+    console.log('[EMAIL] Email sent successfully via Brevo!');
+    console.log('[EMAIL] Message ID:', data.messageId);
     return data;
   } catch (error) {
     console.error('[EMAIL] Failed to send email:', error);
