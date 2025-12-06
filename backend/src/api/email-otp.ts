@@ -18,6 +18,7 @@ const sendEmail = async (to: string, subject: string, htmlContent: string) => {
     console.log('[EMAIL] Sending email to:', to);
     console.log('[EMAIL] Subject:', subject);
     console.log('[EMAIL] Brevo API Key configured:', !!BREVO_API_KEY);
+    console.log('[EMAIL] Sender email: dubeykanu02@gmail.com');
     console.log('='.repeat(80));
 
     const response = await fetch(BREVO_API_URL, {

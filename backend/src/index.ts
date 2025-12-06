@@ -108,7 +108,7 @@ app.use('/api', lawyersRoutes);
 app.use('/api', consultationsRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api', queriesRoutes);
-app.use('/api/email-otp', emailOTPRoutes); // Custom email OTP verification
+app.use('/api/auth', emailOTPRoutes); // Custom email OTP verification (routes: /send-otp, /verify-otp)
 app.use('/api', serviceInquiryRoutes); // Service inquiry forms (no auth required)
 
 // Error handling middleware
