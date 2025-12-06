@@ -143,7 +143,7 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
         },
         to: [
           {
-            email: 'turn2law@gmail.com', // Can send to ANY email with Brevo!
+            email: 'turntwolaw@gmail.com', // Your main business email
             name: 'Turn2Law Team',
           },
         ],
