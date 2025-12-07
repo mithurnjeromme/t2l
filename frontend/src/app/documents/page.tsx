@@ -228,35 +228,35 @@ function DocumentsPageContent(): JSX.Element {
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow">
-        <section className="relative bg-background pt-16 pb-20 overflow-hidden">
+        <section className="relative bg-background pt-16 sm:pt-20 pb-16 sm:pb-20 overflow-hidden">
           {/* Ambient glow effects matching landing page */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,193,7,0.08),transparent_60%)] pointer-events-none"></div>
           <div className="absolute top-1/5 left-0 w-full h-1/3 bg-gradient-to-r from-transparent via-primary/3 to-transparent pointer-events-none"></div>
 
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -top-20 -right-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl"
+            className="pointer-events-none absolute -top-20 -right-24 h-48 w-48 sm:h-64 sm:w-64 rounded-full bg-primary/10 blur-3xl"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
           <motion.div
             aria-hidden
-            className="pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-secondary/10 blur-3xl"
+            className="pointer-events-none absolute -bottom-24 -left-24 h-64 w-64 sm:h-80 sm:w-80 rounded-full bg-secondary/10 blur-3xl"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.9, ease: "easeOut", delay: 0.1 }}
           />
 
-          <div className="container mx-auto px-6 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
             <motion.div
-              className="text-center mb-10"
+              className="text-center mb-8 sm:mb-10 px-4"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <motion.h1
-                className="text-5xl md:text-6xl font-headline font-semibold mb-3 leading-tight text-foreground"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-semibold mb-3 sm:mb-4 leading-tight text-foreground"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05, duration: 0.5 }}
@@ -265,7 +265,7 @@ function DocumentsPageContent(): JSX.Element {
                 <span className="text-primary">Drafting</span>
               </motion.h1>
               <motion.p
-                className="text-lg text-muted-foreground max-w-2xl mx-auto font-body"
+                className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto font-body"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.15, duration: 0.5 }}
@@ -275,7 +275,7 @@ function DocumentsPageContent(): JSX.Element {
               </motion.p>
             </motion.div>
             <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-fr gap-6"
+              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 auto-rows-fr gap-4 sm:gap-6"
               initial="hidden"
               animate="show"
               variants={{
@@ -288,32 +288,32 @@ function DocumentsPageContent(): JSX.Element {
                   key={card.type}
                   className="transition-all"
                   whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.995 }}
+                  whileTap={{ scale: 0.98 }}
                   variants={{
                     hidden: { opacity: 0, y: 10 },
                     show: { opacity: 1, y: 0 },
                   }}
                 >
-                  <SpotlightCard className="group text-left h-full rounded-2xl shadow-lg hover:shadow-xl">
+                  <SpotlightCard className="group text-left h-full rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl active:shadow-md transition-shadow">
                     <Link
                       href={`/documents/${documentTypeToSlug(card.type)}`}
                       className="block"
                     >
                       <div
-                        className={`inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-b ${card.accentClass} text-primary shadow-inner`}
+                        className={`inline-flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-b ${card.accentClass} text-primary shadow-inner`}
                       >
                         {card.icon}
                       </div>
-                      <div className="mt-3">
-                        <div className="text-base font-semibold">
+                      <div className="mt-2.5 sm:mt-3">
+                        <div className="text-sm sm:text-base font-semibold leading-snug">
                           {card.title}
                         </div>
-                        <div className="text-sm text-muted-foreground mt-1">
+                        <div className="text-xs sm:text-sm text-muted-foreground mt-1 leading-relaxed">
                           {card.subtitle}
                         </div>
                       </div>
-                      <div className="mt-4">
-                        <span className="inline-flex items-center rounded-full bg-primary text-primary-foreground text-xs px-3 py-1 transition-colors group-hover:bg-primary/90">
+                      <div className="mt-3 sm:mt-4">
+                        <span className="inline-flex items-center rounded-full bg-primary text-primary-foreground text-xs sm:text-xs px-2.5 sm:px-3 py-1 transition-all group-hover:bg-primary/90 active:scale-95">
                           Create Document
                         </span>
                       </div>

@@ -246,15 +246,15 @@ export default function DocumentCreatePage() {
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: idx * 0.04 }}
-          className="grid gap-2"
+          className="grid gap-1.5 sm:gap-2"
         >
-          <Label>{field.label}</Label>
+          <Label className="text-sm sm:text-base">{field.label}</Label>
           <Textarea
             value={value}
             onChange={(e) =>
               setFormData({ ...formData, [key]: e.target.value })
             }
-            className="rounded-xl"
+            className="rounded-xl min-h-[80px] sm:min-h-[100px] text-sm sm:text-base"
           />
         </motion.div>
       );
@@ -262,10 +262,10 @@ export default function DocumentCreatePage() {
 
     if (field.type === "select") {
       return (
-        <div key={key} className="grid gap-2">
-          <Label>{field.label}</Label>
+        <div key={key} className="grid gap-1.5 sm:gap-2">
+          <Label className="text-sm sm:text-base">{field.label}</Label>
           <select
-            className="h-11 rounded-xl border bg-background px-3"
+            className="h-10 sm:h-11 rounded-xl border bg-background px-3 text-sm sm:text-base active:scale-[0.98] transition-transform"
             value={value}
             onChange={(e) =>
               setFormData({ ...formData, [key]: e.target.value })
@@ -287,13 +287,13 @@ export default function DocumentCreatePage() {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: idx * 0.04 }}
-        className="grid gap-2"
+        className="grid gap-1.5 sm:gap-2"
       >
-        <Label>{field.label}</Label>
+        <Label className="text-sm sm:text-base">{field.label}</Label>
         <Input
           value={value}
           onChange={(e) => setFormData({ ...formData, [key]: e.target.value })}
-          className="h-11 rounded-xl"
+          className="h-10 sm:h-11 rounded-xl text-sm sm:text-base"
         />
       </motion.div>
     );
@@ -303,26 +303,30 @@ export default function DocumentCreatePage() {
   return (
     <section className="relative min-h-screen">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/5 via-background to-background" />
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-6">
-          <Button variant="ghost" asChild>
-            <a href="/documents">
-              <ArrowLeft className="h-4 w-4" /> Back to Document Types
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="mb-4 sm:mb-6">
+          <Button variant="ghost" asChild className="active:scale-95 transition-transform">
+            <a href="/documents" className="flex items-center gap-2">
+              <ArrowLeft className="h-4 w-4" /> 
+              <span className="hidden sm:inline">Back to Document Types</span>
+              <span className="sm:hidden">Back</span>
             </a>
           </Button>
         </div>
 
-        <h1 className="text-3xl font-semibold">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-4 sm:mb-6">
           {docType.replace("_", " ")} Generator
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mt-4 sm:mt-6">
           {/* LEFT FORM */}
-          <SpotlightCard className="p-5 rounded-2xl">
-            {fieldsForDoc.map((field, idx) => renderField(field, idx))}
+          <SpotlightCard className="p-4 sm:p-5 rounded-xl sm:rounded-2xl">
+            <div className="space-y-3 sm:space-y-4">
+              {fieldsForDoc.map((field, idx) => renderField(field, idx))}
+            </div>
 
             <Button
-              className="w-full h-11 mt-4 rounded-xl"
+              className="w-full h-11 sm:h-12 mt-4 sm:mt-6 rounded-xl active:scale-95 transition-transform text-sm sm:text-base"
               onClick={handleGenerate}
               disabled={generating}
             >
@@ -333,21 +337,21 @@ export default function DocumentCreatePage() {
           </SpotlightCard>
 
           {/* RIGHT PREVIEW */}
-          <SpotlightCard className="p-5 rounded-2xl col-span-1 lg:col-span-2">
+          <SpotlightCard className="p-4 sm:p-5 rounded-xl sm:rounded-2xl col-span-1 lg:col-span-2">
            
              
 
               
 
             {draft ? (
-              <pre className="min-h-[320px] whitespace-pre-wrap text-sm bg-muted/30 p-5 rounded-md leading-6">
+              <pre className="min-h-[240px] sm:min-h-[320px] whitespace-pre-wrap text-xs sm:text-sm bg-muted/30 p-3 sm:p-5 rounded-md leading-relaxed overflow-x-auto">
                 {draft}
               </pre>
             ) : (
-              <div className="min-h-[320px] grid place-items-center text-muted-foreground border border-dashed rounded-md">
-                <div className="text-center">
-                  <FileText className="h-8 w-8 mx-auto mb-2" />
-                  <p>Your generated document will appear here.</p>
+              <div className="min-h-[240px] sm:min-h-[320px] grid place-items-center text-muted-foreground border border-dashed rounded-md">
+                <div className="text-center px-4">
+                  <FileText className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2" />
+                  <p className="text-sm sm:text-base">Your generated document will appear here.</p>
                 </div>
               </div>
             )}
