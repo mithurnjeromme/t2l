@@ -61,12 +61,12 @@ function LawGPTSidebar({
 }: LawGPTSidebarProps) {
   return (
     <div
-      className="fixed top-0 left-0 h-screen w-[340px] z-[100] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col shadow-2xl"
-      style={{ minWidth: 340 }}
+      className="fixed top-0 left-0 h-screen w-[85vw] sm:w-[340px] max-w-[340px] z-[100] bg-white dark:bg-card border-r border-gray-200 dark:border-border flex flex-col shadow-2xl"
+      style={{ minWidth: "min(85vw, 340px)" }}
     >
       {/* Header with LawGPT icon and close button */}
       <div
-        className="flex items-center justify-between px-7 pt-3 pb-2 border-b border-gray-200 dark:border-border/50"
+        className="flex items-center justify-between px-4 sm:px-7 pt-3 pb-2 border-b border-gray-200 dark:border-border/50"
         style={{ minHeight: 56 }}
       >
         <div className="flex items-center gap-3">
@@ -140,10 +140,10 @@ function LawGPTSidebar({
       </div>
 
       {/* New Chat Button */}
-      <div className="px-7 pt-4 pb-2">
+      <div className="px-4 sm:px-7 pt-4 pb-2">
         <button
           onClick={onNewChat}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#3C9B97]/20 to-[#3C9B97]/10 hover:from-[#3C9B97]/30 hover:to-[#3C9B97]/20 text-gray-800 dark:text-foreground font-bold transition-all border border-[#3C9B97]/20"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#3C9B97]/20 to-[#3C9B97]/10 hover:from-[#3C9B97]/30 hover:to-[#3C9B97]/20 text-gray-800 dark:text-foreground font-bold transition-all border border-[#3C9B97]/20 active:scale-95"
           style={{
             height: 42,
             borderRadius: 13,
@@ -170,7 +170,7 @@ function LawGPTSidebar({
       </div>
 
       {/* Chat history */}
-      <div className="flex-1 overflow-y-auto px-7 pt-4">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-7 pt-4">
         <div className="flex flex-col gap-4">
           {chatSessions.length === 0 ? (
             <p
@@ -185,16 +185,17 @@ function LawGPTSidebar({
                 key={session.id}
                 onClick={() => onSelectSession(session.id)}
                 className={
-                  `font-bold text-[1.18rem] flex items-center transition-all cursor-pointer select-none rounded-[13px] ` +
+                  `font-bold text-base sm:text-[1.18rem] flex items-center transition-all cursor-pointer select-none rounded-[13px] active:scale-95 ` +
                   (session.id === currentSessionId
                     ? "bg-gradient-to-r from-[#3C9B97]/20 to-[#3C9B97]/10 text-gray-800 dark:text-white border border-[#3C9B97]/30"
                     : "hover:bg-gray-100 dark:hover:bg-white/5 text-gray-600 dark:text-gray-400")
                 }
                 style={{
-                  width: 239,
+                  width: "100%",
+                  maxWidth: 239,
                   height: 42,
-                  paddingLeft: 22,
-                  paddingRight: 22,
+                  paddingLeft: 16,
+                  paddingRight: 16,
                   fontFamily: "Instrument Sans, sans-serif",
                   overflow: "hidden",
                   whiteSpace: "nowrap",
@@ -949,16 +950,17 @@ export default function LawGPTPage() {
 
       {chatHistory.length === 0 ? (
         <div
-          className="relative w-full h-full bg-background dark:bg-black font-body flex flex-col items-center justify-start overflow-hidden"
-          style={{ paddingTop: "240px" }}
+          className="relative w-full h-full bg-background dark:bg-black font-body flex flex-col items-center justify-start overflow-hidden px-4"
+          style={{ paddingTop: "clamp(100px, 20vh, 240px)" }}
         >
-          <div className="flex flex-row items-center justify-center gap-3 mb-4">
+          <div className="flex flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
             <svg
-              width="31"
-              height="31"
+              width="24"
+              height="24"
               viewBox="0 0 31 31"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-6 sm:w-[31px] sm:h-[31px]"
             >
               <path
                 d="M3.35028 11.6585C5.38323 9.62556 8.67069 9.61698 10.693 11.6393L14.0619 15.0082L10.7122 18.3579C8.67927 20.3908 5.39181 20.3994 3.36946 18.377L0.000606868 15.0082L3.35028 11.6585Z"
@@ -982,7 +984,7 @@ export default function LawGPTPage() {
               />
             </svg>
             <span
-              className="font-semibold text-[20px] leading-6 text-gray-600 dark:text-white/60"
+              className="font-semibold text-base sm:text-[20px] leading-6 text-gray-600 dark:text-white/60"
               style={{ fontFamily: "Instrument Sans, sans-serif" }}
             >
               LawGPT
@@ -990,16 +992,17 @@ export default function LawGPTPage() {
           </div>
 
           <h1
-            className="font-bold text-[40px] leading-[48px] text-gray-900 dark:text-white mb-8 text-center"
+            className="font-bold text-2xl sm:text-3xl lg:text-[40px] leading-tight sm:leading-[48px] text-gray-900 dark:text-white mb-6 sm:mb-8 text-center px-4"
             style={{ fontFamily: "Instrument Sans, sans-serif" }}
           >
             What can I help with
           </h1>
 
           <div
-            className="relative mx-auto"
+            className="relative mx-auto w-full"
             style={{
-              width: "537px",
+              maxWidth: "min(537px, calc(100vw - 2rem))",
+              width: "100%",
               height: Math.max(
                 132,
                 textareaRef.current
@@ -1012,7 +1015,7 @@ export default function LawGPTPage() {
             <div
               className="absolute inset-0 bg-gray-100 dark:bg-[#232323] border-2 border-gray-200 dark:border-transparent shadow-lg dark:shadow-none"
               style={{
-                borderRadius: 28,
+                borderRadius: "clamp(20px, 5vw, 28px)",
                 height: Math.max(
                   132,
                   textareaRef.current
@@ -1022,12 +1025,12 @@ export default function LawGPTPage() {
               }}
             />
 
-            <div className="absolute inset-0 flex flex-col justify-start px-8 pt-6">
+            <div className="absolute inset-0 flex flex-col justify-start px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
               <div className="flex items-start">
                 <div className="flex-1">
                   <textarea
                     ref={textareaRef}
-                    className="w-full bg-transparent border-none outline-none text-gray-800 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/50 resize-none"
+                    className="w-full bg-transparent border-none outline-none text-gray-800 dark:text-white/80 placeholder:text-gray-500 dark:placeholder:text-white/50 resize-none text-base sm:text-lg"
                     placeholder="Ask me anything about law"
                     value={message}
                     onFocus={(e) => {
@@ -1047,7 +1050,7 @@ export default function LawGPTPage() {
                     }}
                     onKeyDown={handleKeyDown}
                     style={{
-                      fontSize: "18px",
+                      fontSize: "clamp(16px, 4vw, 18px)",
                       lineHeight: "1.44",
                       fontFamily: "Instrument Sans, sans-serif",
                       fontWeight: "400",
@@ -1065,9 +1068,9 @@ export default function LawGPTPage() {
                 </div>
               </div>
 
-              <div className="absolute bottom-4 right-4">
+              <div className="absolute bottom-3 sm:bottom-4 right-3 sm:right-4">
                 <button
-                  className="w-10 h-10 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] rounded-full flex items-center justify-center cursor-pointer transition-all shadow-md hover:shadow-lg"
+                  className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] active:scale-95 rounded-full flex items-center justify-center cursor-pointer transition-all shadow-md hover:shadow-lg"
                   onClick={handleSend}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -1087,22 +1090,22 @@ export default function LawGPTPage() {
         <div className="relative w-full h-full bg-background dark:bg-black font-body flex flex-col overflow-hidden">
           <div
             className="flex-1 flex flex-col"
-            style={{ paddingTop: "100px", paddingBottom: "140px" }}
+            style={{ paddingTop: "clamp(80px, 15vh, 100px)", paddingBottom: "clamp(120px, 20vh, 140px)" }}
           >
             <div
               ref={chatContainerRef}
-              className="w-full max-w-4xl mx-auto px-8 flex-1 overflow-y-auto scrollbar-hide"
+              className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 overflow-y-auto scrollbar-hide"
               style={{
                 paddingBottom: "60px",
                 maxHeight: "calc(100vh - 240px)",
               }}
             >
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {chatHistory.map((chat, index) => (
                   <div key={chat.id} className="w-full">
                       {chat.type === "user" ? (
                         <div className="flex justify-end w-full">
-                          <div className="max-w-lg">
+                          <div className="max-w-[90%] sm:max-w-lg">
                             <AutoBubble
                               message={chat.content}
                               messageId={chat.id}
@@ -1110,9 +1113,9 @@ export default function LawGPTPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="flex flex-col gap-4 w-full">
+                        <div className="flex flex-col gap-3 sm:gap-4 w-full">
                           <div
-                            className="text-gray-700 dark:text-white/90 text-lg leading-7 prose prose-lg dark:prose-invert max-w-none"
+                            className="text-gray-700 dark:text-white/90 text-base sm:text-lg leading-relaxed sm:leading-7 prose prose-sm sm:prose-lg dark:prose-invert max-w-none"
                             style={{ fontFamily: "Instrument Sans, sans-serif" }}
                           >
                             <ReactMarkdown
@@ -1120,25 +1123,25 @@ export default function LawGPTPage() {
                               rehypePlugins={[rehypeRaw]}
                               components={{
                                 h1: ({ node, ...props }) => (
-                                  <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white" {...props} />
+                                  <h1 className="text-xl sm:text-2xl font-bold mt-4 sm:mt-6 mb-3 sm:mb-4 text-gray-900 dark:text-white" {...props} />
                                 ),
                                 h2: ({ node, ...props }) => (
-                                  <h2 className="text-xl font-bold mt-5 mb-3 text-gray-900 dark:text-white" {...props} />
+                                  <h2 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5 mb-2 sm:mb-3 text-gray-900 dark:text-white" {...props} />
                                 ),
                                 h3: ({ node, ...props }) => (
-                                  <h3 className="text-lg font-bold mt-4 mb-2 text-gray-900 dark:text-white" {...props} />
+                                  <h3 className="text-base sm:text-lg font-bold mt-3 sm:mt-4 mb-2 text-gray-900 dark:text-white" {...props} />
                                 ),
                                 p: ({ node, ...props }) => (
-                                  <p className="mb-3 text-gray-700 dark:text-white/90" {...props} />
+                                  <p className="mb-2 sm:mb-3 text-gray-700 dark:text-white/90" {...props} />
                                 ),
                                 ul: ({ node, ...props }) => (
-                                  <ul className="list-disc pl-6 mb-3 space-y-1" {...props} />
+                                  <ul className="list-disc pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
                                 ),
                                 ol: ({ node, ...props }) => (
-                                  <ol className="list-decimal pl-6 mb-3 space-y-1" {...props} />
+                                  <ol className="list-decimal pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
                                 ),
                                 li: ({ node, ...props }) => (
-                                  <li className="text-gray-700 dark:text-white/90" {...props} />
+                                  <li className="text-gray-700 dark:text-white/90 text-sm sm:text-base" {...props} />
                                 ),
                                 strong: ({ node, ...props }) => (
                                   <strong className="font-bold text-gray-900 dark:text-white" {...props} />
@@ -1161,16 +1164,16 @@ export default function LawGPTPage() {
                                   <tr className="border-b border-gray-300 dark:border-gray-600" {...props} />
                                 ),
                                 th: ({ node, ...props }) => (
-                                  <th className="px-4 py-2 text-left font-bold text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" {...props} />
+                                  <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-left font-bold text-xs sm:text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" {...props} />
                                 ),
                                 td: ({ node, ...props }) => (
-                                  <td className="px-4 py-2 text-gray-700 dark:text-white/90 border border-gray-300 dark:border-gray-600" {...props} />
+                                  <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-base text-gray-700 dark:text-white/90 border border-gray-300 dark:border-gray-600" {...props} />
                                 ),
                                 code: ({ node, inline, ...props }: any) => (
                                   inline ? (
-                                    <code className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />
+                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 sm:px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono" {...props} />
                                   ) : (
-                                    <code className="block bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm font-mono overflow-x-auto" {...props} />
+                                    <code className="block bg-gray-100 dark:bg-gray-800 p-2 sm:p-3 rounded text-xs sm:text-sm font-mono overflow-x-auto" {...props} />
                                   )
                                 ),
                                 blockquote: ({ node, ...props }) => (
@@ -1199,15 +1202,15 @@ export default function LawGPTPage() {
             </div>
           </div>
 
-          <div className="fixed bottom-0 left-0 right-0 p-6 flex justify-center z-50 backdrop-blur-sm">
+          <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 lg:p-6 flex justify-center z-50 backdrop-blur-sm">
             <div
-              className="relative bg-gray-100 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 shadow-lg"
-              style={{ width: "537px", height: "62px", borderRadius: 31 }}
+              className="relative bg-gray-100 dark:bg-white/5 border-2 border-gray-200 dark:border-white/10 shadow-lg w-full"
+              style={{ maxWidth: "min(537px, calc(100vw - 1.5rem))", height: "clamp(54px, 10vw, 62px)", borderRadius: "clamp(24px, 5vw, 31px)" }}
             >
-              <div className="absolute inset-0 flex items-center px-6">
+              <div className="absolute inset-0 flex items-center px-4 sm:px-5 lg:px-6">
                 <textarea
                   ref={bottomTextareaRef}
-                  className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-white font-medium resize-none placeholder:text-gray-500 dark:placeholder:text-white/50"
+                  className="flex-1 bg-transparent border-none outline-none text-gray-800 dark:text-white font-medium resize-none placeholder:text-gray-500 dark:placeholder:text-white/50 text-sm sm:text-base lg:text-lg"
                   placeholder="Ask me anything about law"
                   value={message}
                   onFocus={(e) => {
@@ -1223,7 +1226,7 @@ export default function LawGPTPage() {
                   }}
                   onKeyDown={handleKeyDown}
                   style={{
-                    fontSize: "18px",
+                    fontSize: "clamp(14px, 3.5vw, 18px)",
                     lineHeight: "1.5",
                     fontFamily: "Instrument Sans, sans-serif",
                     padding: "0",
@@ -1237,9 +1240,8 @@ export default function LawGPTPage() {
                 />
 
                 <button
-                  className="ml-4 w-9 h-9 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] rounded-full flex items-center justify-center cursor-pointer flex-shrink-0 transition-all shadow-md hover:shadow-lg"
+                  className="ml-3 sm:ml-4 w-8 h-8 sm:w-9 sm:h-9 bg-gradient-to-br from-[#3C9B97] to-[#2d7773] hover:from-[#2d7773] hover:to-[#3C9B97] active:scale-95 rounded-full flex items-center justify-center cursor-pointer flex-shrink-0 transition-all shadow-md hover:shadow-lg"
                   onClick={handleSend}
-                  style={{ marginLeft: "16px" }}
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path
@@ -1256,38 +1258,38 @@ export default function LawGPTPage() {
         </div>
       )}
 
-      {/* Daily Limit Modal */}
+      {/* Daily Limit Modal - Mobile Optimized */}
       {showLimitModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]" onClick={() => setShowLimitModal(false)}>
-          <div className="bg-white dark:bg-card rounded-2xl p-8 max-w-md mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[200] p-4" onClick={() => setShowLimitModal(false)}>
+          <div className="bg-white dark:bg-card rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7 sm:w-8 sm:h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-foreground mb-2">Daily Limit Reached</h3>
-              <p className="text-muted-foreground mb-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Daily Limit Reached</h3>
+              <p className="text-sm sm:text-base text-muted-foreground mb-2">
                 You've used all <strong>5 free messages</strong> for today.
               </p>
-              <p className="text-sm text-muted-foreground mb-6">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
                 Come back tomorrow to continue your conversation with LawGPT!
               </p>
-              <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-muted-foreground">
+              <div className="bg-muted/50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   💡 <strong>Tip:</strong> For unlimited legal assistance, book a consultation with one of our qualified lawyers.
                 </p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={() => setShowLimitModal(false)}
-                  className="flex-1 px-4 py-2 bg-muted hover:bg-muted/80 rounded-lg font-medium transition-colors"
+                  className="flex-1 px-4 py-2.5 sm:py-2 bg-muted hover:bg-muted/80 active:scale-95 rounded-lg font-medium transition-all text-sm sm:text-base"
                 >
                   Close
                 </button>
                 <button
                   onClick={() => window.location.href = '/consult'}
-                  className="flex-1 px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
+                  className="flex-1 px-4 py-2.5 sm:py-2 bg-primary hover:bg-primary/90 active:scale-95 text-white rounded-lg font-medium transition-all text-sm sm:text-base"
                 >
                   Book Consultation
                 </button>

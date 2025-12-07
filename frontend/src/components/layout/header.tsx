@@ -772,11 +772,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           {/* Panel */}
           <div className="absolute top-16 inset-x-0 bg-card border-t border-border/50 shadow-lg p-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <nav className="flex flex-col gap-2">
-              {/* Services Menu */}
-              <div className="mb-2">
-                <MobileServicesMenu onClose={() => setMobileMenuOpen(false)} />
-              </div>
-
+              {/* Main Navigation Links */}
               <Link
                 href="/consult"
                 className={cn(
@@ -833,6 +829,15 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
               </Link>
             </nav>
 
+            {/* Services Menu Section */}
+            <div className="mt-4 border-t border-border/40 pt-4">
+              <h4 className="text-sm font-semibold text-foreground mb-3 px-1">
+                Services
+              </h4>
+              <MobileServicesMenu onClose={() => setMobileMenuOpen(false)} />
+            </div>
+
+            {/* Theme & Auth Section */}
             <div className="mt-4 border-t border-border/40 pt-4 flex flex-col gap-3">
               {/* Theme Toggle for Mobile */}
               <div className="flex items-center justify-between py-3 px-4 rounded-md bg-muted/50">
@@ -842,10 +847,10 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
 
               {!user ? (
                 <>
-                  <Button asChild className="w-full">
+                  <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Link href="/login">Login</Link>
                   </Button>
-                  <Button asChild className="w-full bg-secondary text-white">
+                  <Button asChild variant="outline" className="w-full">
                     <Link href="/signup">Signup</Link>
                   </Button>
                 </>
@@ -857,30 +862,25 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                         ? "/dashboard/lawyer"
                         : "/dashboard/client"
                     }
-                    className="py-3 px-4 rounded-md text-foreground hover:bg-muted"
+                    className="py-3 px-4 rounded-md text-foreground hover:bg-muted font-medium"
                     onClick={() => setMobileMenuOpen(false)}
                   >
+                    <User className="w-4 h-4 inline-block mr-2" />
                     Dashboard
                   </Link>
                   <Button
+                    variant="destructive"
                     className="w-full"
                     onClick={() => {
                       handleLogout();
                       setMobileMenuOpen(false);
                     }}
                   >
+                    <LogOut className="w-4 h-4 mr-2" />
                     Logout
                   </Button>
                 </>
               )}
-            </div>
-
-            {/* Mobile Services Menu */}
-            <div className="mt-4 border-t border-border/40 pt-4">
-              <h4 className="text-sm font-medium text-foreground mb-2">
-                Services
-              </h4>
-              <MobileServicesMenu onClose={() => setMobileMenuOpen(false)} />
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ import Header from "@/components/layout/header";
 import { FlipWords } from "@/components/ui/flip-words";
 
 const TypingEffect = () => (
-  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight text-center">
+  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-tight text-center px-2">
     Find the best{" "}
     <span className="text-primary">
       <FlipWords
@@ -142,24 +142,24 @@ const ConsultPage = () => {
       <Header />
 
       {/* Main Content */}
-      <div className="relative z-10 pt-16 px-6">
+      <div className="relative z-10 pt-20 sm:pt-24 pb-8 px-4 sm:px-6">
         <div className="w-full max-w-4xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-center mb-8 sm:mb-12 lg:mb-16 space-y-3 sm:space-y-4">
             {/* Title with FlipWords */}
             <TypingEffect />
 
             {/* Subtitle */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
               Describe your case and we'll connect you with the right lawyer
             </p>
           </div>
 
-          {/* Query Input - Premium Design */}
+          {/* Query Input - Mobile-Optimized */}
           <div className="relative">
             {!showSuccess ? (
-              <div className="space-y-6">
-                {/* Clean Textarea - Black Only */}
+              <div className="space-y-4 sm:space-y-6">
+                {/* Mobile-Friendly Textarea */}
                 <div className="relative">
                   <textarea
                     id="query"
@@ -168,16 +168,17 @@ const ConsultPage = () => {
                     onKeyDown={handleKeyDown}
                     placeholder="Describe your legal case here..."
                     disabled={isSubmitting}
-                    className="w-full h-80 px-8 py-8 text-lg text-foreground placeholder-muted-foreground bg-muted/50 backdrop-blur-sm border border-border hover:border-primary/40 rounded-2xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all duration-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full min-h-[250px] sm:h-64 md:h-80 px-4 sm:px-6 md:px-8 py-4 sm:py-6 md:py-8 text-base sm:text-lg text-foreground placeholder-muted-foreground bg-muted/50 backdrop-blur-sm border border-border hover:border-primary/40 rounded-xl sm:rounded-2xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all duration-300 resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontSize: '16px' }}
                   />
                 </div>
 
-                {/* Premium Capsule Submit Button */}
-                <div className="flex justify-center pt-4">
+                {/* Mobile-Optimized Submit Button */}
+                <div className="flex justify-center pt-2 sm:pt-4">
                   <button
                     onClick={handleSubmit}
                     disabled={!userQuery.trim() || isSubmitting}
-                    className="group bg-gradient-to-r from-[#E8B931] to-[#F4D03F] hover:from-[#F4D03F] hover:to-[#E8B931] text-foreground font-medium text-sm py-3 px-8 rounded-full shadow-md shadow-[#E8B931]/20 hover:shadow-lg hover:shadow-[#E8B931]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center gap-2"
+                    className="group w-full sm:w-auto bg-gradient-to-r from-[#E8B931] to-[#F4D03F] hover:from-[#F4D03F] hover:to-[#E8B931] text-foreground font-medium text-base sm:text-sm py-3.5 sm:py-3 px-8 rounded-full shadow-md shadow-[#E8B931]/20 hover:shadow-lg hover:shadow-[#E8B931]/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
@@ -196,28 +197,27 @@ const ConsultPage = () => {
                 </div>
               </div>
             ) : (
-              /* Clean Success Message */
-              <div className="text-center space-y-8 py-12">
+              <div className="text-center space-y-6 sm:space-y-8 py-8 sm:py-12 px-4">
                 {/* Simple Checkmark Animation */}
                 <div className="flex justify-center">
-                  <div className="w-20 h-20 flex items-center justify-center rounded-full bg-[#10B981]/10 border-2 border-[#10B981] animate-scale-in">
-                    <CheckCircle2 className="w-12 h-12 text-[#10B981] animate-check" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full bg-[#10B981]/10 border-2 border-[#10B981] animate-scale-in">
+                    <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-[#10B981] animate-check" />
                   </div>
                 </div>
 
                 {/* Success Message */}
-                <div className="space-y-4 max-w-xl mx-auto">
-                  <h2 className="text-3xl font-bold text-foreground">
+                <div className="space-y-3 sm:space-y-4 max-w-xl mx-auto">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
                     Request Received!
                   </h2>
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
                     Thank you for your query. We've received your case details and will contact you back soon with the right lawyer for your needs.
                   </p>
                 </div>
 
                 {/* Redirect Info */}
                 <div className="pt-4">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Redirecting to homepage in a moment...
                   </p>
                 </div>
