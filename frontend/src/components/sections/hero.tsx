@@ -30,40 +30,40 @@ const Hero = () => {
   return (
     <section
       id="hero"
-      className="bg-background pt-32 pb-8 relative overflow-hidden"
+      className="bg-background pt-24 sm:pt-32 pb-8 relative overflow-hidden"
     >
-      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
+      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
         <div className="text-foreground z-10 relative">
-          <h1 className="text-5xl md:text-6xl font-headline font-semibold mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-semibold mb-4 sm:mb-6 leading-tight">
             We Simplify Legal Access for{" "}
             <span className="text-primary">Everyone.</span>
           </h1>
-          <p className="text-lg text-muted-foreground mb-8 max-w-lg font-body">
+          <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8 max-w-lg font-body">
             Find high-quality lawyers which suits you, with help of AI tools
             that get the justice right on time.
           </p>
           <Button
             size="lg"
-            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 py-6 text-lg font-body"
+            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
             onClick={handleConsultClick}
           >
             Consult a Lawyer
           </Button>
         </div>
 
-        <div className="relative h-[450px] w-full">
+        <div className="relative h-[280px] sm:h-[350px] md:h-[450px] w-full">
           {/* Integrated Image Container */}
           <div className="relative w-full h-full group">
             {/* Clean background - no yellow around image edges */}
             <div className="absolute -inset-8 bg-gradient-to-br from-foreground/3 via-transparent to-foreground/1 rounded-3xl blur-3xl opacity-40 dark:from-white/3 dark:to-white/1"></div>
 
             {/* Main image container - clean edges, no yellow borders */}
-            <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl border border-border/30 backdrop-blur-sm">
+            <div className="relative w-full h-full rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-border/30 backdrop-blur-sm">
               <Image
                 src="/images/landingpagephoto.png"
                 alt="Professional Legal Services"
                 fill
-                className="object-cover object-center transition-all duration-700 group-hover:scale-[1.02] group-hover:brightness-110"
+                className="object-contain sm:object-cover object-center transition-all duration-700 group-hover:scale-[1.02] group-hover:brightness-110"
                 priority
               />
 

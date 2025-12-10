@@ -272,7 +272,8 @@ const Logo = () => (
       viewBox="0 0 23 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="dark:hidden transition-all duration-300"
+      className="dark:hidden"
+      style={{ transition: 'opacity 0.15s ease-in-out' }}
     >
       <path
         d="M17.2048 0L11.4096 6.19541L13.4028 8.16545L15.8223 5.57886V20.2762L2.51237 6.72721C1.58129 5.77941 0 6.45738 0 7.80434V30H2.76506V10.9846L16.075 24.5337C17.006 25.4814 18.5874 24.8036 18.5874 23.4565V5.57886L21.0069 8.16545L23 6.19541L17.2048 0Z"
@@ -286,7 +287,8 @@ const Logo = () => (
       viewBox="0 0 62 79"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="hidden dark:block transition-all duration-300"
+      className="hidden dark:block"
+      style={{ transition: 'opacity 0.15s ease-in-out' }}
     >
       <path
         d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z"
@@ -636,14 +638,25 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
     }
   };
 
-  // Close mobile menu on Escape
+  // Close mobile menu on Escape and prevent body scroll when open
   useEffect(() => {
-    if (!mobileMenuOpen) return;
+    if (!mobileMenuOpen) {
+      // Re-enable body scroll when menu closes
+      document.body.style.overflow = 'unset';
+      return;
+    }
+    
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = 'hidden';
+    
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileMenuOpen(false);
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = 'unset';
+    };
   }, [mobileMenuOpen]);
 
   const handleLogout = async () => {
@@ -762,15 +775,15 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
       </div>
       {/* Mobile menu panel */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0  z-40 md:hidden">
+        <div className="fixed inset-0 z-40 md:hidden">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/60"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Panel */}
-          <div className="absolute top-16 inset-x-0 bg-card border-t border-border/50 shadow-lg p-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          {/* Panel - positioned from top with proper overlay */}
+          <div className="absolute top-[72px] inset-x-0 bg-card/95 backdrop-blur-md border-t border-border/50 shadow-2xl p-4 max-h-[calc(100vh-72px)] overflow-y-auto animate-in slide-in-from-top-2 duration-300">
             <nav className="flex flex-col gap-2">
               {/* Main Navigation Links */}
               <Link

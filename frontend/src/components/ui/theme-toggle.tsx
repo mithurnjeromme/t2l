@@ -36,20 +36,22 @@ export function ThemeToggle() {
       {/* Sun icon for light mode (visible in dark mode) */}
       <Sun
         className={cn(
-          "h-5 w-5 absolute transition-all duration-500 ease-in-out text-primary",
+          "h-5 w-5 absolute transition-all duration-500 ease-in-out",
           theme === "dark"
-            ? "rotate-0 scale-100 opacity-100"
-            : "rotate-90 scale-0 opacity-0",
+            ? "rotate-0 scale-100 opacity-100 text-[#FFC107]"
+            : "rotate-90 scale-0 opacity-0 text-[#FFC107]",
         )}
+        style={{ transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out, color 0s' }}
       />
       {/* Moon icon for dark mode (visible in light mode) */}
       <Moon
         className={cn(
-          "h-5 w-5 absolute transition-all duration-500 ease-in-out text-tertiary",
+          "h-5 w-5 absolute transition-all duration-500 ease-in-out",
           theme === "light"
-            ? "rotate-0 scale-100 opacity-100"
-            : "-rotate-90 scale-0 opacity-0",
+            ? "rotate-0 scale-100 opacity-100 text-[#6366F1]"
+            : "-rotate-90 scale-0 opacity-0 text-[#6366F1]",
         )}
+        style={{ transition: 'transform 0.5s ease-in-out, opacity 0.5s ease-in-out, color 0s' }}
       />
     </Button>
   );
