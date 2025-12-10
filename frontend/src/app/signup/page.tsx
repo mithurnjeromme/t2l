@@ -354,6 +354,14 @@ const SignupPage = () => {
       {/* Right side - Signup form */}
       <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 lg:p-12">
         <div className="max-w-md mx-auto w-full">
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
+            <Link href="/" className="flex items-center gap-3">
+              <Logo />
+              <Turn2LawTextLogo />
+            </Link>
+          </div>
+
           <h2 className="text-3xl font-bold text-foreground mb-8">Sign up</h2>
           
           {/* Signup type selector */}
