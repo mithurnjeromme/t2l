@@ -1,5 +1,4 @@
 import { Clock, Handshake, Banknote, Video } from "lucide-react";
-import Image from "next/image";
 
 const features = [
   {
@@ -35,51 +34,61 @@ const features = [
 const About = () => {
   return (
     <section id="about" className="pt-16 md:pt-20 pb-12 md:pb-16 bg-background">
-      <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-start">
-        <div className="flex flex-col h-full">
-          <div className="flex-shrink-0">
-            <h2 className="text-4xl font-body font-semibold mb-6">
-              What's <span className="text-primary">Turn2Law</span> ?
-            </h2>
-            <p className="text-foreground/80 leading-relaxed font-body text-base mb-8">
-              Turn2Law is a next-generation legal platform designed to simplify
-              access to legal services for everyone. Whether you're facing an
-              emergency, drafting critical documents, or seeking legal advice,
-              Turn2Law connects you to trusted professionals and resources
-              instantly. With features like on-demand lawyer matching, and a
-              comprehensive resource library, Turn2Law bridges the gap between
-              legal expertise and accessibility. Our mission is to make justice
-              accessible, affordable, and efficient for individuals and
-              businesses alike.
-            </p>
-          </div>
-          <div className="relative h-64 bg-muted rounded-2xl overflow-hidden border border-border/30 flex-shrink-0">
-            <Image
-              src="/images/what's turn2law.png"
-              alt="Turn2Law Legal Services Illustration"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              style={{ objectPosition: 'center 35%' }}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col justify-between h-full" style={{ minHeight: 'fit-content' }}>
-          {features.map((feature, index) => (
-            <div key={index} className="flex items-start gap-4 mb-6 last:mb-0">
-              <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-xl mt-1 flex-shrink-0">
-                <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
+      <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
+          {/* Left side - Heading and Description with decorative elements */}
+          <div className="flex flex-col space-y-6 md:space-y-8">
+            <div className="space-y-4 md:space-y-6">
+              <h2 className="text-4xl md:text-5xl font-body font-bold leading-tight">
+                What's <span className="text-primary">Turn2Law</span>?
+              </h2>
+              <p className="text-foreground/80 leading-relaxed font-body text-base md:text-lg">
+                A next-generation legal platform connecting you to trusted professionals and resources instantly, making justice accessible and affordable for all.
+              </p>
+            </div>
+
+            {/* Decorative stats or highlight cards */}
+            <div className="grid grid-cols-2 gap-4 pt-4">
+              <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">24/7</div>
+                <div className="text-sm md:text-base text-foreground/70 font-medium">Legal Support</div>
               </div>
-              <div>
-                <h3 className="text-lg font-body font-semibold text-foreground mb-1.5">
-                  {feature.title}
-                </h3>
-                <p className="text-muted-foreground font-body text-sm leading-relaxed">
-                  {feature.description}
+              <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">1000+</div>
+                <div className="text-sm md:text-base text-foreground/70 font-medium">Expert Lawyers</div>
+              </div>
+            </div>
+
+            {/* Additional decorative element */}
+            <div className="hidden md:block relative">
+              <div className="absolute -left-4 top-0 w-1 h-24 bg-gradient-to-b from-primary to-primary/0 rounded-full"></div>
+              <div className="pl-8 space-y-2">
+                <p className="text-sm font-semibold text-primary uppercase tracking-wider">Our Mission</p>
+                <p className="text-foreground/70 text-sm leading-relaxed">
+                  Bridging the gap between legal expertise and accessibility through innovative technology.
                 </p>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Right side - Features (unchanged) */}
+          <div className="flex flex-col justify-between h-full" style={{ minHeight: 'fit-content' }}>
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-start gap-4 mb-6 last:mb-0">
+                <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-xl mt-1 flex-shrink-0">
+                  <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-body font-semibold text-foreground mb-1.5">
+                    {feature.title}
+                  </h3>
+                  <p className="text-muted-foreground font-body text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
