@@ -5,7 +5,7 @@ const features = [
     icon: Clock,
     title: "Instant legal services",
     description:
-      "Get agreements, contracts, NDAs, and other legal documents quickly with transparent, fixed pricing.",
+      "Get agreements, contracts, NDAs and other legal documents quickly with transparency.",
     iconColor: "text-[#DF9C49]", // Golden color for icon
   },
   {
@@ -17,14 +17,14 @@ const features = [
   },
   {
     icon: Banknote,
-    title: "Affordable subscriptions.",
+    title: "Best-in-Class Pricing",
     description:
-      "Choose cost-effective plans for lawyers and clients with exclusive benefits and no hidden fees.",
+      "Access premium legal services at the most affordable rates with no hidden charges.",
     iconColor: "text-[#DF9C49]", // Golden color for icon
   },
   {
     icon: Video,
-    title: "Virtual consulting.",
+    title: "Virtual consulting",
     description:
       "Access expert legal advice and consultations anytime, anywhere, from the comfort of your home.",
     iconColor: "text-[#DF9C49]", // Golden color for icon
@@ -54,8 +54,8 @@ const About = () => {
                 <div className="text-sm md:text-base text-foreground/70 font-medium">Legal Support</div>
               </div>
               <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-6 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">1000+</div>
-                <div className="text-sm md:text-base text-foreground/70 font-medium">Expert Lawyers</div>
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">100%</div>
+                <div className="text-sm md:text-base text-foreground/70 font-medium">Trusted Platform</div>
               </div>
             </div>
 

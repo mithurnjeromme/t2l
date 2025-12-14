@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { WobbleCard } from "@/components/ui/wobble-card";
-import { Users, FileText, MessageSquare } from "lucide-react";
 
 export default function ThreePillarsSection() {
   return (
@@ -19,54 +19,51 @@ export default function ThreePillarsSection() {
         </div>
 
         {/* Wobble Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-7xl mx-auto w-full">
-          {/* Pillar 1: Client-Lawyer Matchmaking - Large Card */}
-          <WobbleCard
-            containerClassName="col-span-1 lg:col-span-2 h-full bg-gradient-to-br from-[#6DBDB7] to-[#5DA9A4] dark:from-secondary dark:to-secondary/80 min-h-[500px] lg:min-h-[300px]"
-            className=""
-          >
-            <div className="max-w-xs">
-              <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
-                <Users className="w-6 h-6 text-[#DF9C49]" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 max-w-7xl mx-auto w-full">
+          {/* Pillar 1: Client-Lawyer Matchmaking */}
+          <Link href="/consult" className="block h-full transition-transform hover:scale-[1.02]">
+            <WobbleCard
+              containerClassName="col-span-1 h-full bg-gradient-to-br from-[#6DBDB7] to-[#5DA9A4] dark:from-[#6DBDB7] dark:to-[#5DA9A4] cursor-pointer"
+              className=""
+            >
+              <div className="flex flex-col py-6 h-full">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                  Online Client-Lawyer Matchmaking
+                </h2>
+                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
+                  Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.
+                </p>
               </div>
-              <h2 className="text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
-                Online Client-Lawyer Matchmaking
-              </h2>
-              <p className="mt-4 text-left text-base/6 text-foreground/80 font-body">
-                Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.
-              </p>
-            </div>
-            
-          </WobbleCard>
+            </WobbleCard>
+          </Link>
 
-          {/* Pillar 2: Document Drafting - Small Card */}
-          <WobbleCard containerClassName="col-span-1 min-h-[300px] bg-gradient-to-br from-[#F5C563] to-[#E8B54D] dark:from-primary dark:to-primary/80">
-            <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
-              <FileText className="w-6 h-6 text-[#DF9C49]" />
-            </div>
-            <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
-              Automated Document Drafting
-            </h2>
-            <p className="mt-4 max-w-[26rem] text-left text-base/6 text-foreground/80 font-body">
-              Generate professional legal documents in minutes. Our AI-powered system creates accurate, customized legal documents tailored to your needs.
-            </p>
-          </WobbleCard>
-
-          {/* Pillar 3: Legal Services & Chatbot - Full Width Card */}
-          <WobbleCard containerClassName="col-span-1 lg:col-span-3 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-50 dark:from-card dark:via-card/90 dark:to-card/70 min-h-[500px] lg:min-h-[600px] xl:min-h-[300px] border border-gray-300 dark:border-border/50">
-            <div className="max-w-sm">
-              <div className="w-12 h-12 bg-[#DF9C49]/20 rounded-2xl flex items-center justify-center mb-4">
-                <MessageSquare className="w-6 h-6 text-[#DF9C49]" />
+          {/* Pillar 2: Legal Services & Chatbot */}
+          <Link href="/lawgpt" className="block h-full transition-transform hover:scale-[1.02]">
+            <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#DF9C49] to-[#C88539] dark:from-[#DF9C49] dark:to-[#C88539] cursor-pointer">
+              <div className="flex flex-col py-6 h-full">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                  Legal Services with AI Chatbot Access
+                </h2>
+                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
+                  Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.
+                </p>
               </div>
-              <h2 className="max-w-sm md:max-w-lg text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-foreground font-headline">
-                Legal Services with AI Chatbot Access
-              </h2>
-              <p className="mt-4 max-w-[26rem] text-left text-base/6 text-foreground/80 font-body">
-                Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.
-              </p>
-            </div>
-           
-          </WobbleCard>
+            </WobbleCard>
+          </Link>
+
+          {/* Pillar 3: Document Drafting */}
+          <Link href="/documents" className="block h-full transition-transform hover:scale-[1.02]">
+            <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#F5C563] to-[#E8B54D] dark:from-[#F5C563] dark:to-[#E8B54D] cursor-pointer">
+              <div className="flex flex-col py-6 h-full">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                  Automated Document Drafting
+                </h2>
+                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
+                  Generate professional legal documents in minutes. Our AI-powered system creates accurate, customized legal documents tailored to your needs.
+                </p>
+              </div>
+            </WobbleCard>
+          </Link>
         </div>
       </div>
     </section>
