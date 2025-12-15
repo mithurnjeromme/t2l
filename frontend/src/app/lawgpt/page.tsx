@@ -700,27 +700,8 @@ export default function LawGPTPage() {
     document.body.scrollTop = 0;
   }, []);
 
-  useEffect(() => {
-    if (chatHistory.length > 0 && chatContainerRef.current) {
-      const scrollToBottom = () => {
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop =
-            chatContainerRef.current.scrollHeight;
-        }
-      };
-
-      scrollToBottom();
-      const timeoutId1 = setTimeout(scrollToBottom, 50);
-      const timeoutId2 = setTimeout(scrollToBottom, 200);
-      const timeoutId3 = setTimeout(scrollToBottom, 500);
-
-      return () => {
-        clearTimeout(timeoutId1);
-        clearTimeout(timeoutId2);
-        clearTimeout(timeoutId3);
-      };
-    }
-  }, [chatHistory.length]);
+  // Removed auto-scroll to bottom effect to allow users to read at their own pace
+  // Users can manually scroll down to see new messages
 
   useEffect(() => {
     if (chatHistory.length > 0) return;
@@ -891,17 +872,7 @@ export default function LawGPTPage() {
         setAiLoading(false);
       }
 
-      // Scroll to bottom after messages are added
-      const scrollToBottom = () => {
-        if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop =
-            chatContainerRef.current.scrollHeight;
-        }
-      };
-
-      setTimeout(scrollToBottom, 10);
-      setTimeout(scrollToBottom, 100);
-      setTimeout(scrollToBottom, 300);
+      // Removed auto-scroll to bottom - users can scroll manually to read at their own pace
     }
   };
 
