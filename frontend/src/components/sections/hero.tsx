@@ -53,7 +53,7 @@ const Hero = () => {
             <Link href="/lawgpt">
               <Button
                 size="lg"
-                className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
+                className="rounded-full bg-[#17726E] hover:bg-[#17726E]/90 text-white dark:text-black font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
               >
                 Try LawGPT
               </Button>
