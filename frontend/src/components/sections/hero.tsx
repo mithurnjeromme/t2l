@@ -45,7 +45,7 @@ const Hero = () => {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button
               size="lg"
-              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
+              className="rounded-full bg-primary hover:bg-primary/90 text-black dark:text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
               onClick={handleConsultClick}
             >
               Consult a Lawyer
@@ -53,7 +53,7 @@ const Hero = () => {
             <Link href="/lawgpt">
               <Button
                 size="lg"
-                className="rounded-full bg-[#17726E] hover:bg-[#17726E]/90 text-white dark:text-black font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
+                className="rounded-full bg-[#17726E] hover:bg-[#17726E]/90 text-black dark:text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
               >
                 Try LawGPT
               </Button>
