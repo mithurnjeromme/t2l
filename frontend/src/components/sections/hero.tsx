@@ -42,13 +42,23 @@ const Hero = () => {
             Find high-quality lawyers which suits you, with help of AI tools
             that get the justice right on time.
           </p>
-          <Button
-            size="lg"
-            className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
-            onClick={handleConsultClick}
-          >
-            Consult a Lawyer
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <Button
+              size="lg"
+              className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
+              onClick={handleConsultClick}
+            >
+              Consult a Lawyer
+            </Button>
+            <Link href="/lawgpt">
+              <Button
+                size="lg"
+                className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-body w-full sm:w-auto"
+              >
+                Try LawGPT
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <div className="relative h-[280px] sm:h-[350px] md:h-[450px] w-full">
