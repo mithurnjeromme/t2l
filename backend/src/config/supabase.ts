@@ -1,15 +1,24 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration
-const supabaseUrl = process.env.SUPABASE_URL || 'https://vjfpqtyinumanvpgqlbj.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTEyOTIsImV4cCI6MjA3MTA2NzI5Mn0.IL4G5wXabjKdpUZGBAdAq5bvm1W6Xvb-zg9ux9uq5LY';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTQ5MTI5MiwiZXhwIjoyMDcxMDY3MjkyfQ.5lvDGZcMrE6J6rJtLpjBdZv1V0V2d0OKAkXNzlR7V8E';
+// Supabase configuration - MUST use environment variables for security
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-// Debug logging
+// Validate required environment variables
+if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceKey) {
+  console.error('❌ CRITICAL: Missing Supabase environment variables!');
+  console.error('   SUPABASE_URL:', supabaseUrl ? '✓' : '✗ MISSING');
+  console.error('   SUPABASE_ANON_KEY:', supabaseAnonKey ? '✓' : '✗ MISSING');
+  console.error('   SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceKey ? '✓' : '✗ MISSING');
+  throw new Error('Missing required Supabase environment variables. Check your .env file.');
+}
+
+// Debug logging (safe - only shows if keys exist, not the actual keys)
 console.log('🔑 Supabase Config:');
 console.log('   URL:', supabaseUrl);
-console.log('   Anon Key:', supabaseAnonKey ? supabaseAnonKey.substring(0, 20) + '...' : 'NOT SET');
-console.log('   Service Key:', supabaseServiceKey ? supabaseServiceKey.substring(0, 20) + '...' : 'NOT SET');
+console.log('   Anon Key:', supabaseAnonKey.substring(0, 20) + '...');
+console.log('   Service Key:', supabaseServiceKey.substring(0, 20) + '...');
 
 // Create Supabase client for public operations
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

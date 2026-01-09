@@ -1,16 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration - should be moved to environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://vjfpqtyinumanvpgqlbj.supabase.co';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZnBxdHlpbnVtYW52cGdxbGJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU0OTEyOTIsImV4cCI6MjA3MTA2NzI5Mn0.IL4G5wXabjKdpUZGBAdAq5bvm1W6Xvb-zg9ux9uq5LY';
+// Supabase configuration - MUST use environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Create Supabase client for browser
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. Please check your .env.local file.');
+}
+
+// Create Supabase client for browser with RLS enabled
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined
+  },
+  db: {
+    schema: 'public'
+  },
+  global: {
+    headers: {
+      'x-application-name': 'turn2law-web'
+    }
   }
 });
 
@@ -151,7 +163,7 @@ export const updateUserProfile = async (userId: string, updates: Partial<User>) 
 // Lawyer profile functions
 export const getLawyerProfile = async (userId: string): Promise<LawyerProfile | null> => {
   const { data, error } = await supabase
-    .from('lawyers')
+    .from('lawyer_profiles')
     .select('*')
     .eq('user_id', userId)
     .single();
@@ -165,7 +177,7 @@ export const getLawyerProfile = async (userId: string): Promise<LawyerProfile | 
 
 export const updateLawyerProfile = async (userId: string, updates: Partial<LawyerProfile>) => {
   const { data, error } = await supabase
-    .from('lawyers')
+    .from('lawyer_profiles')
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq('user_id', userId)
     .select()
@@ -491,14 +503,28 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
     .limit(limit);
   
   if (consultations) {
-    activities.push(...consultations.map(c => ({
-      id: c.id,
-      type: 'consultation',
-      title: c.title,
-      status: c.status,
-      date: c.created_at,
-      participant: userType === 'client' ? c.lawyer?.full_name : c.client?.full_name
-    })));
+    activities.push(...consultations.map(c => {
+      let participantName: string | undefined;
+      
+      if (userType === 'client') {
+        // For clients, get lawyer name
+        const lawyer = (c as any).lawyer;
+        participantName = Array.isArray(lawyer) ? lawyer[0]?.full_name : lawyer?.full_name;
+      } else {
+        // For lawyers, get client name
+        const client = (c as any).client;
+        participantName = Array.isArray(client) ? client[0]?.full_name : client?.full_name;
+      }
+      
+      return {
+        id: c.id,
+        type: 'consultation',
+        title: c.title,
+        status: c.status,
+        date: c.created_at,
+        participant: participantName
+      };
+    }));
   }
   
   // Get recent transactions
