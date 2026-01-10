@@ -8,15 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Calendar, 
-  FileText, 
-  Users, 
-  DollarSign, 
-  Clock, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  Calendar,
+  FileText,
+  Users,
+  DollarSign,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
   Search,
   MessageCircle,
   Scale,
@@ -31,8 +31,8 @@ import {
   ChevronDown
 } from 'lucide-react';
 import Header from '@/components/layout/header';
-import { 
-  getClientStats, 
+import {
+  getClientStats,
   getRecentActivity,
   getUserConsultations
 } from '@/lib/supabase';
@@ -68,7 +68,7 @@ interface Activity {
 
 const Logo = () => (
   <svg width="30" height="30" viewBox="0 0 62 79" fill="none" xmlns="http://www.w3.org/2000/svg" className="transition-all duration-300">
-    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white"/>
+    <path d="M46.3782 0L30.7564 16.3146L36.1293 21.5024L42.6514 14.691V53.3941L6.77247 17.715C4.26262 15.2191 0 17.0044 0 20.5514V79H7.45364V28.9262L43.3326 64.6053C45.8423 67.1011 50.105 65.316 50.105 61.7689V14.691L56.6272 21.5024L62 16.3146L46.3782 0Z" fill="white" />
   </svg>
 );
 
@@ -93,39 +93,39 @@ const ClientDashboard = () => {
   const loadDashboardData = async () => {
     try {
       console.log('[Dashboard] Checking Supabase Auth session...');
-      
+
       // Import Supabase auth functions
       const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
-      
+
       // Check Supabase session
       const session = await getSession();
-      
+
       if (!session || !session.user) {
         console.log('[Dashboard] No active session, redirecting to login');
         router.push('/login');
         return;
       }
-      
+
       console.log('[Dashboard] Session found, user ID:', session.user.id);
-      
+
       // Fetch user profile from database
       const profile = await getUserProfile(session.user.id);
-      
+
       if (!profile) {
         console.error('[Dashboard] Profile not found');
         router.push('/login');
         return;
       }
-      
+
       console.log('[Dashboard] Profile fetched, user type:', profile.user_type);
-      
+
       // Check user type
       if (profile.user_type !== 'client') {
         console.log('[Dashboard] User is not a client, redirecting to lawyer dashboard');
         router.push('/dashboard/lawyer');
         return;
       }
-      
+
       // Set user data (convert to the expected format)
       setUser({
         id: profile.id,
@@ -134,18 +134,18 @@ const ClientDashboard = () => {
         userType: profile.user_type,
         city: profile.city
       });
-      
+
       // Fetch real data from Supabase
       const [clientStats, activity, userConsultations] = await Promise.all([
         getClientStats(profile.id),
         getRecentActivity(profile.id, 'client', 5),
         getUserConsultations(profile.id, 'client')
       ]);
-      
+
       setStats(clientStats);
       setRecentActivity(activity);
       setConsultations(userConsultations);
-      
+
     } catch (error) {
       console.error('[Dashboard] Error loading dashboard:', error);
       router.push('/login');
@@ -358,7 +358,7 @@ const ClientDashboard = () => {
                         <span className="text-xs opacity-80">Browse experts</span>
                       </Link>
                     </Button>
-                    
+
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-secondary/50 text-secondary hover:bg-secondary/10 font-body" asChild>
                       <Link href="/lawgpt">
                         <MessageCircle className="w-6 h-6" />
@@ -374,13 +374,13 @@ const ClientDashboard = () => {
                         <span className="text-xs opacity-70">Manage funds</span>
                       </Link>
                     </Button>
-                    
+
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('consultations')}>
                       <Calendar className="w-6 h-6" />
                       <span>Book Meeting</span>
                       <span className="text-xs opacity-70">Schedule consultation</span>
                     </Button>
-                    
+
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('cases')}>
                       <FileText className="w-6 h-6" />
                       <span>My Cases</span>
@@ -412,9 +412,8 @@ const ClientDashboard = () => {
                     <div className="space-y-4">
                       {recentActivity.map((activity) => (
                         <div key={activity.id} className="flex items-start gap-4 p-4 rounded-lg border border-border/50 hover:bg-card/50 transition-colors">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            activity.type === 'consultation' ? 'bg-primary/20' : 'bg-secondary/20'
-                          }`}>
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activity.type === 'consultation' ? 'bg-primary/20' : 'bg-secondary/20'
+                            }`}>
                             {activity.type === 'consultation' ? (
                               <Calendar className="w-5 h-5 text-primary" />
                             ) : (
@@ -434,8 +433,8 @@ const ClientDashboard = () => {
                               </p>
                             )}
                             <p className="text-xs text-muted-foreground mt-1">
-                              {new Date(activity.date).toLocaleDateString('en-IN', { 
-                                month: 'short', 
+                              {new Date(activity.date).toLocaleDateString('en-IN', {
+                                month: 'short',
                                 day: 'numeric',
                                 hour: '2-digit',
                                 minute: '2-digit'
@@ -468,7 +467,7 @@ const ClientDashboard = () => {
                     <h3 className="font-headline font-semibold mb-2">Civil Law</h3>
                     <p className="text-sm text-muted-foreground">Property disputes, contracts, and civil matters</p>
                   </div>
-                  
+
                   <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                       <Shield className="w-6 h-6 text-secondary" />
@@ -476,7 +475,7 @@ const ClientDashboard = () => {
                     <h3 className="font-headline font-semibold mb-2">Criminal Law</h3>
                     <p className="text-sm text-muted-foreground">Criminal defense and legal protection</p>
                   </div>
-                  
+
                   <div className="group p-6 rounded-xl border border-border/50 bg-background/50 hover:bg-background/80 transition-all duration-300 cursor-pointer">
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <Users className="w-6 h-6 text-primary" />
@@ -503,7 +502,7 @@ const ClientDashboard = () => {
                 </Link>
               </Button>
             </div>
-            
+
             {consultations.length === 0 ? (
               <div className="text-center py-12 sm:py-16">
                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
@@ -534,8 +533,8 @@ const ClientDashboard = () => {
                         </div>
                         <Badge variant={
                           consultation.status === 'completed' ? 'default' :
-                          consultation.status === 'in_progress' ? 'secondary' :
-                          'outline'
+                            consultation.status === 'in_progress' ? 'secondary' :
+                              'outline'
                         }>
                           {consultation.status}
                         </Badge>
@@ -580,7 +579,7 @@ const ClientDashboard = () => {
                 Add New Case
               </Button>
             </div>
-            
+
             <div className="text-center py-12 sm:py-16">
               <div className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-12 h-12 text-secondary" />
@@ -656,7 +655,7 @@ const ClientDashboard = () => {
                   </CardContent>
                 </Card>
               </div>
-              
+
               <div className="space-y-6">
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                   <CardHeader>
@@ -677,7 +676,7 @@ const ClientDashboard = () => {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="text-lg font-headline">Account Security</CardTitle>
@@ -696,6 +695,105 @@ const ClientDashboard = () => {
               </div>
             </div>
           </TabsContent>
+          <TabsContent value="Track" className="space-y-6">
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-xl font-headline">
+                  Service Tracking
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Track the progress of your legal service or consultation
+                </p>
+              </CardHeader>
+
+              <CardContent className="space-y-6">
+                {/* Estimated Delivery */}
+                <div className="p-4 rounded-lg bg-muted/40 border">
+                  <p className="text-sm text-muted-foreground">
+                    Estimated Completion Date
+                  </p>
+                  <p className="text-2xl font-semibold">13 Jan</p>
+
+                  <div className="flex items-center gap-2 mt-2 text-sm">
+                    <span className="text-muted-foreground">Service ID:</span>
+                    <span className="font-medium">SRV-1947326195396</span>
+                  </div>
+                </div>
+
+                {/* Tracking Timeline */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Tracking Status</h3>
+
+                  <div className="relative pl-6 space-y-6">
+                    {/* vertical line */}
+                    <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
+
+                    {/* Step 1 */}
+                    <div className="flex items-start gap-4">
+                      <div className="w-3 h-3 rounded-full bg-primary mt-1" />
+                      <div>
+                        <p className="font-medium">Request Submitted</p>
+                        <p className="text-sm text-muted-foreground">
+                          Your service request was successfully submitted
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="flex items-start gap-4">
+                      <div className="w-3 h-3 rounded-full bg-primary mt-1" />
+                      <div>
+                        <p className="font-medium">Lawyer Assigned</p>
+                        <p className="text-sm text-muted-foreground">
+                          A verified lawyer has been assigned to your case
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="flex items-start gap-4">
+                      <div className="w-3 h-3 rounded-full bg-secondary mt-1" />
+                      <div>
+                        <p className="font-medium">In Progress</p>
+                        <p className="text-sm text-muted-foreground">
+                          Work on your legal service is currently in progress
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 4 */}
+                    <div className="flex items-start gap-4 opacity-50">
+                      <div className="w-3 h-3 rounded-full bg-border mt-1" />
+                      <div>
+                        <p className="font-medium">Completed</p>
+                        <p className="text-sm text-muted-foreground">
+                          Final documents & resolution
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Help Section */}
+                <div className="border-t pt-4 space-y-3">
+                  <p className="text-sm font-medium">Need help with this service?</p>
+
+                  <div className="flex flex-wrap gap-3">
+                    <Button variant="outline">
+                      <Phone className="mr-2 h-4 w-4" />
+                      Call Support
+                    </Button>
+
+                    <Button variant="outline">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Chat Support
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </main>
     </div>
