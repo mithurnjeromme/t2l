@@ -231,6 +231,7 @@ const ClientDashboard = () => {
               <TabsTrigger value="cases">My Cases</TabsTrigger>
               <TabsTrigger value="lawyers">Find Lawyers</TabsTrigger>
               <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="Track">Track Service</TabsTrigger>
             </TabsList>
           </div>
 
