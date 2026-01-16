@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { createServiceTracking } from '../store/service-tracking.store';
 
 const router = Router();
 
@@ -20,210 +21,126 @@ interface ServiceInquiry {
   message?: string;
 }
 
-// Email sending function using Resend
+/**
+ * Send service inquiry email via Brevo (PRODUCTION ONLY)
+ */
 const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
-  try {
-    console.log('='.repeat(80));
-    console.log('[SERVICE INQUIRY] Sending inquiry to Turn2Law');
-    console.log('[SERVICE INQUIRY] Service:', inquiry.serviceName);
-    console.log('[SERVICE INQUIRY] Customer:', inquiry.name, inquiry.email);
-    console.log('='.repeat(80));
+  console.log('='.repeat(80));
+  console.log('[SERVICE INQUIRY] Sending inquiry to Turn2Law');
+  console.log('[SERVICE INQUIRY] Service:', inquiry.serviceName);
+  console.log('[SERVICE INQUIRY] Customer:', inquiry.name, inquiry.email);
+  console.log('='.repeat(80));
 
-    // Format the inquiry details as HTML
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: linear-gradient(135deg, #EAB308 0%, #CA8A04 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .field { margin-bottom: 15px; padding: 10px; background: white; border-radius: 5px; }
-          .label { font-weight: bold; color: #EAB308; }
-          .value { color: #333; margin-top: 5px; }
-          .footer { margin-top: 20px; text-align: center; color: #666; font-size: 12px; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>🔔 New Service Inquiry</h1>
-            <p style="margin: 0;">Turn2Law Service Request</p>
-          </div>
-          <div class="content">
-            <h2 style="color: #EAB308; margin-top: 0;">Service Requested: ${inquiry.serviceName}</h2>
-            
-            <div class="field">
-              <div class="label">👤 Full Name:</div>
-              <div class="value">${inquiry.name}</div>
-            </div>
-            
-            <div class="field">
-              <div class="label">📧 Email Address:</div>
-              <div class="value">${inquiry.email}</div>
-            </div>
-            
-            <div class="field">
-              <div class="label">📱 Phone Number:</div>
-              <div class="value">${inquiry.phone}</div>
-            </div>
-            
-            ${inquiry.businessName ? `
-            <div class="field">
-              <div class="label">🏢 Business Name:</div>
-              <div class="value">${inquiry.businessName}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.businessType ? `
-            <div class="field">
-              <div class="label">🏛️ Business Type:</div>
-              <div class="value">${inquiry.businessType}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.pan ? `
-            <div class="field">
-              <div class="label">🆔 PAN Number:</div>
-              <div class="value">${inquiry.pan}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.gstin ? `
-            <div class="field">
-              <div class="label">📋 GSTIN:</div>
-              <div class="value">${inquiry.gstin}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.returnType ? `
-            <div class="field">
-              <div class="label">📄 Return Type:</div>
-              <div class="value">${inquiry.returnType}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.selectedPlan ? `
-            <div class="field">
-              <div class="label">💼 Selected Plan:</div>
-              <div class="value">${inquiry.selectedPlan}</div>
-            </div>
-            ` : ''}
-            
-            ${inquiry.message ? `
-            <div class="field">
-              <div class="label">💬 Additional Message:</div>
-              <div class="value">${inquiry.message}</div>
-            </div>
-            ` : ''}
-            
-            <div class="footer">
-              <p>This inquiry was submitted via Turn2Law website on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</p>
-              <p>Please respond to the customer within 24 hours for best service experience.</p>
-            </div>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <body>
+      <h2>New Service Inquiry</h2>
+      <p><b>Service:</b> ${inquiry.serviceName}</p>
+      <p><b>Name:</b> ${inquiry.name}</p>
+      <p><b>Email:</b> ${inquiry.email}</p>
+      <p><b>Phone:</b> ${inquiry.phone}</p>
+      ${inquiry.businessName ? `<p><b>Business:</b> ${inquiry.businessName}</p>` : ''}
+      ${inquiry.selectedPlan ? `<p><b>Plan:</b> ${inquiry.selectedPlan}</p>` : ''}
+      ${inquiry.message ? `<p><b>Message:</b> ${inquiry.message}</p>` : ''}
+      <p>Submitted on ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST</p>
+    </body>
+    </html>
+  `;
 
-    // Send email using Brevo API
-    const response = await fetch(BREVO_API_URL, {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'api-key': BREVO_API_KEY || '',
-        'content-type': 'application/json',
+  const response = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'api-key': BREVO_API_KEY as string,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: {
+        name: 'Turn2Law Services',
+        email: 'turntwolaw@gmail.com',
       },
-      body: JSON.stringify({
-        sender: {
-          name: 'Turn2Law Services',
-          email: 'turntwolaw@gmail.com', // Your verified sender email in Brevo
+      to: [
+        {
+          email: 'turntwolaw@gmail.com',
+          name: 'Turn2Law Team',
         },
-        to: [
-          {
-            email: 'turntwolaw@gmail.com', // Your main business email
-            name: 'Turn2Law Team',
-          },
-        ],
-        replyTo: {
-          email: inquiry.email,
-          name: inquiry.name,
-        },
-        subject: `🔔 New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
-        htmlContent: htmlContent,
-      }),
-    });
+      ],
+      replyTo: {
+        email: inquiry.email,
+        name: inquiry.name,
+      },
+      subject: `New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
+      htmlContent,
+    }),
+  });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('[SERVICE INQUIRY] Brevo API error:', errorData);
-      throw new Error(`Brevo API error: ${JSON.stringify(errorData)}`);
-    }
-
-    const data = await response.json();
-    console.log('[SERVICE INQUIRY] Email sent successfully via Brevo!');
-    console.log('[SERVICE INQUIRY] Message ID:', data.messageId);
-    return data;
-  } catch (error) {
-    console.error('[SERVICE INQUIRY] Failed to send email:', error);
-    throw error;
+  if (!response.ok) {
+    const err = await response.json();
+    console.error('[SERVICE INQUIRY] Brevo error:', err);
+    throw new Error('Brevo email failed');
   }
+
+  console.log('[SERVICE INQUIRY] Email sent successfully');
 };
 
 /**
  * POST /api/service-inquiry
- * Submit a service inquiry form
  */
 router.post('/service-inquiry', async (req: Request, res: Response) => {
   try {
     const inquiryData: ServiceInquiry = req.body;
 
-    // Validate required fields
+    // Validation
     if (!inquiryData.serviceName || !inquiryData.name || !inquiryData.email || !inquiryData.phone) {
-      return res.status(400).json({
-        error: 'Missing required fields',
-        required: ['serviceName', 'name', 'email', 'phone']
-      });
+      return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(inquiryData.email)) {
-      return res.status(400).json({
-        error: 'Invalid email format'
-      });
+      return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Validate phone format (basic validation)
     const phoneRegex = /^\+?[\d\s-]{10,}$/;
     if (!phoneRegex.test(inquiryData.phone)) {
-      return res.status(400).json({
-        error: 'Invalid phone number format'
-      });
+      return res.status(400).json({ error: 'Invalid phone number format' });
     }
 
-    // Send inquiry email to Turn2Law
-    await sendServiceInquiryEmail(inquiryData);
+    // CREATE TRACKING ENTRY
+    const serviceId = `SRV-${Date.now()}`;
 
-    // Return success response
-    return res.status(200).json({
-      success: true,
-      message: 'Your inquiry has been submitted successfully! We will contact you within 24 hours.',
-      inquiryDetails: {
-        serviceName: inquiryData.serviceName,
-        customerName: inquiryData.name,
-        submittedAt: new Date().toISOString()
-      }
+    createServiceTracking({
+      serviceId,
+      userEmail: inquiryData.email,
+      serviceName: inquiryData.serviceName,
+      status: 'submitted',
+      timeline: [
+        {
+          step: 'Request Submitted',
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      estimatedCompletion: '13 Jan',
+      createdAt: new Date().toISOString(),
     });
 
-  } catch (error: any) {
-    console.error('[SERVICE INQUIRY] Error processing inquiry:', error);
+    // EMAIL: production only
+    if (process.env.NODE_ENV === 'production') {
+      await sendServiceInquiryEmail(inquiryData);
+    } else {
+      console.log('[DEV MODE] Brevo email skipped');
+    }
+
+    return res.status(200).json({
+      success: true,
+      serviceId,
+      message: 'Inquiry submitted successfully',
+    });
+  } catch (error) {
+    console.error('[SERVICE INQUIRY] Error:', error);
     return res.status(500).json({
       error: 'Failed to submit inquiry',
-      message: 'Please try again later or contact us directly at turn2law@gmail.com',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Please try again later',
     });
   }
 });
