@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import serviceTrackingRoutes from './routes/service-tracking.routes';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -45,6 +46,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Serve static files for uploaded images
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+app.use('/api', serviceTrackingRoutes);
 
 // Root endpoint - API information
 app.get('/', (req: Request, res: Response) => {
