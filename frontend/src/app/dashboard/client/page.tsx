@@ -72,6 +72,225 @@ const Logo = () => (
   </svg>
 );
 
+// Service Order Interface
+interface ServiceOrder {
+  id: string;
+  tracking_id: string;
+  service_name: string;
+  service_type: string;
+  selected_plan: string;
+  status: 'pending' | 'processing' | 'completed' | 'cancelled';
+  customer_name: string;
+  customer_email: string;
+  estimated_completion_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ServiceTimelineStep {
+  step: string;
+  timestamp: string;
+}
+
+interface ServiceTracking {
+  serviceId: string;
+  serviceName: string;
+  status: 'submitted' | 'assigned' | 'in_progress' | 'completed';
+  estimatedCompletion?: string;
+  timeline: ServiceTimelineStep[];
+  createdAt: string;
+}
+
+
+// Service Tracking Tab Component
+const ServiceTrackingTab = ({ userId }: { userId: string }) => {
+  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+
+  useEffect(() => {
+    loadServiceOrders();
+  }, [userId]);
+
+  const loadServiceOrders = async () => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/service-orders?userId=${userId}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        setServiceOrders(data.serviceOrders || []);
+      } else {
+        console.error('Failed to load service orders');
+      }
+    } catch (error) {
+      console.error('Error loading service orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
+      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getStatusSteps = (status: string) => {
+    const steps = [
+      { key: 'submitted', label: 'Request Submitted', completed: true },
+      { key: 'processing', label: 'Processing', completed: status === 'processing' || status === 'completed' },
+      { key: 'completed', label: 'Completed', completed: status === 'completed' }
+    ];
+    return steps;
+  };
+
+  if (loading) {
+    return (
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <CardContent className="p-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your service orders...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (serviceOrders.length === 0) {
+    return (
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-headline">Service Tracking</CardTitle>
+          <p className="text-sm text-muted-foreground">Track the progress of your legal services</p>
+        </CardHeader>
+        <CardContent className="text-center py-12">
+          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-8 h-8 text-primary" />
+          </div>
+          <h3 className="text-lg font-semibold mb-2">No Service Orders Yet</h3>
+          <p className="text-muted-foreground mb-6">Your service orders will appear here once you submit a service request.</p>
+          <Button asChild>
+            <Link href="/services/partnership">Start a Service</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-headline">Your Service Orders</CardTitle>
+          <p className="text-sm text-muted-foreground">Track the progress of your legal services</p>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {serviceOrders.map((order) => (
+              <div
+                key={order.id}
+                className="p-4 border border-border/50 rounded-lg hover:bg-card/50 cursor-pointer transition-colors"
+                onClick={() => setSelectedOrder(order)}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold">{order.service_name}</h3>
+                  <Badge className={getStatusColor(order.status)}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <span>Tracking ID: {order.tracking_id}</span>
+                  <span>•</span>
+                  <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                </div>
+                {order.selected_plan && (
+                  <div className="text-sm text-muted-foreground mt-1">
+                    Plan: {order.selected_plan}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedOrder && (
+        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-headline">Order Details</CardTitle>
+            <p className="text-sm text-muted-foreground">Tracking ID: {selectedOrder.tracking_id}</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Order Summary */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Service</p>
+                <p className="font-semibold">{selectedOrder.service_name}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Status</p>
+                <Badge className={getStatusColor(selectedOrder.status)}>
+                  {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
+                </Badge>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Submitted</p>
+                <p className="font-semibold">{new Date(selectedOrder.created_at).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Estimated Completion</p>
+                <p className="font-semibold">{new Date(selectedOrder.estimated_completion_date).toLocaleDateString()}</p>
+              </div>
+            </div>
+
+            {/* Tracking Timeline */}
+            <div className="space-y-4">
+              <h3 className="font-semibold">Progress Timeline</h3>
+              <div className="relative pl-6 space-y-6">
+                <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
+                {getStatusSteps(selectedOrder.status).map((step, index) => (
+                  <div key={step.key} className="flex items-start gap-4">
+                    <div className={`w-3 h-3 rounded-full mt-1 ${step.completed ? 'bg-primary' : 'bg-border'}`} />
+                    <div>
+                      <p className={`font-medium ${step.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
+                        {step.label}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {step.key === 'submitted' && `Submitted on ${new Date(selectedOrder.created_at).toLocaleDateString()}`}
+                        {step.key === 'processing' && 'Your order is being processed by our legal team'}
+                        {step.key === 'completed' && 'Your service has been completed'}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Help Section */}
+            <div className="border-t pt-4 space-y-3">
+              <p className="text-sm font-medium">Need help with this service?</p>
+              <div className="flex flex-wrap gap-3">
+                <Button variant="outline" size="sm">
+                  <Phone className="mr-2 h-4 w-4" />
+                  Call Support
+                </Button>
+                <Button variant="outline" size="sm">
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Chat Support
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
 const ClientDashboard = () => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
@@ -85,6 +304,9 @@ const ClientDashboard = () => {
   });
   const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
   const [consultations, setConsultations] = useState<any[]>([]);
+  const [trackedServices, setTrackedServices] = useState<ServiceTracking[]>([]);
+  const [selectedService, setSelectedService] = useState<ServiceTracking | null>(null);
+
 
   useEffect(() => {
     loadDashboardData();
@@ -145,6 +367,27 @@ const ClientDashboard = () => {
       setStats(clientStats);
       setRecentActivity(activity);
       setConsultations(userConsultations);
+
+      // 🔥 Fetch service tracking (NEW)
+      const trackingRes = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/service-tracking?email=${profile.email}`
+      );
+
+      if (trackingRes.ok) {
+        const trackingData: ServiceTracking[] = await trackingRes.json();
+        setTrackedServices(trackingData);
+
+        if (trackingData.length > 0) {
+          const latest = trackingData.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() -
+              new Date(a.createdAt).getTime()
+          )[0];
+
+          setSelectedService(latest);
+        }
+      }
+
 
     } catch (error) {
       console.error('[Dashboard] Error loading dashboard:', error);
@@ -702,97 +945,94 @@ const ClientDashboard = () => {
                   Service Tracking
                 </CardTitle>
                 <p className="text-sm text-muted-foreground">
-                  Track the progress of your legal service or consultation
+                  Track the progress of your legal service
                 </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Estimated Delivery */}
-                <div className="p-4 rounded-lg bg-muted/40 border">
-                  <p className="text-sm text-muted-foreground">
-                    Estimated Completion Date
-                  </p>
-                  <p className="text-2xl font-semibold">13 Jan</p>
-
-                  <div className="flex items-center gap-2 mt-2 text-sm">
-                    <span className="text-muted-foreground">Service ID:</span>
-                    <span className="font-medium">SRV-1947326195396</span>
+                {!selectedService ? (
+                  <div className="text-center py-12">
+                    <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                    <h3 className="text-lg font-semibold">No Service Requests Found</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Once you submit a service inquiry, tracking details will appear here.
+                    </p>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {/* Top Info */}
+                    <div className="p-4 rounded-lg bg-muted/40 border">
+                      <p className="text-sm text-muted-foreground">
+                        Estimated Completion Date
+                      </p>
+                      <p className="text-2xl font-semibold">
+                        {selectedService.estimatedCompletion || 'To be updated'}
+                      </p>
 
-                {/* Tracking Timeline */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold">Tracking Status</h3>
+                      <div className="flex items-center gap-2 mt-2 text-sm">
+                        <span className="text-muted-foreground">Service ID:</span>
+                        <span className="font-medium">{selectedService.serviceId}</span>
+                      </div>
 
-                  <div className="relative pl-6 space-y-6">
-                    {/* vertical line */}
-                    <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
-
-                    {/* Step 1 */}
-                    <div className="flex items-start gap-4">
-                      <div className="w-3 h-3 rounded-full bg-primary mt-1" />
-                      <div>
-                        <p className="font-medium">Request Submitted</p>
-                        <p className="text-sm text-muted-foreground">
-                          Your service request was successfully submitted
-                        </p>
+                      <div className="flex items-center gap-2 mt-1 text-sm">
+                        <span className="text-muted-foreground">Service:</span>
+                        <span className="font-medium">{selectedService.serviceName}</span>
                       </div>
                     </div>
 
-                    {/* Step 2 */}
-                    <div className="flex items-start gap-4">
-                      <div className="w-3 h-3 rounded-full bg-primary mt-1" />
-                      <div>
-                        <p className="font-medium">Lawyer Assigned</p>
-                        <p className="text-sm text-muted-foreground">
-                          A verified lawyer has been assigned to your case
-                        </p>
+                    {/* Timeline */}
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Tracking Status</h3>
+
+                      <div className="relative pl-6 space-y-6">
+                        <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
+
+                        {selectedService.timeline.map((step, idx) => (
+                          <div key={idx} className="flex items-start gap-4">
+                            <div className="w-3 h-3 rounded-full bg-primary mt-1" />
+                            <div>
+                              <p className="font-medium">{step.step}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(step.timestamp).toLocaleString('en-IN')}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+
+                        {selectedService.status !== 'completed' && (
+                          <div className="flex items-start gap-4 opacity-40">
+                            <div className="w-3 h-3 rounded-full bg-border mt-1" />
+                            <div>
+                              <p className="font-medium">Completed</p>
+                              <p className="text-sm text-muted-foreground">
+                                Final documents & resolution
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* Step 3 */}
-                    <div className="flex items-start gap-4">
-                      <div className="w-3 h-3 rounded-full bg-secondary mt-1" />
-                      <div>
-                        <p className="font-medium">In Progress</p>
-                        <p className="text-sm text-muted-foreground">
-                          Work on your legal service is currently in progress
-                        </p>
+                    {/* Support */}
+                    <div className="border-t pt-4 space-y-3">
+                      <p className="text-sm font-medium">Need help?</p>
+                      <div className="flex flex-wrap gap-3">
+                        <Button variant="outline">
+                          <Phone className="mr-2 h-4 w-4" />
+                          Call Support
+                        </Button>
+                        <Button variant="outline">
+                          <MessageCircle className="mr-2 h-4 w-4" />
+                          Chat Support
+                        </Button>
                       </div>
                     </div>
-
-                    {/* Step 4 */}
-                    <div className="flex items-start gap-4 opacity-50">
-                      <div className="w-3 h-3 rounded-full bg-border mt-1" />
-                      <div>
-                        <p className="font-medium">Completed</p>
-                        <p className="text-sm text-muted-foreground">
-                          Final documents & resolution
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Help Section */}
-                <div className="border-t pt-4 space-y-3">
-                  <p className="text-sm font-medium">Need help with this service?</p>
-
-                  <div className="flex flex-wrap gap-3">
-                    <Button variant="outline">
-                      <Phone className="mr-2 h-4 w-4" />
-                      Call Support
-                    </Button>
-
-                    <Button variant="outline">
-                      <MessageCircle className="mr-2 h-4 w-4" />
-                      Chat Support
-                    </Button>
-                  </div>
-                </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
+
 
         </Tabs>
       </main>
