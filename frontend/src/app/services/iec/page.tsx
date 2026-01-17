@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { useRouter } from "next/navigation";
+import { checkServiceAuth, submitServiceRequest, ServiceSubmission } from "@/lib/service-requests";
+import { SuccessDialog } from "@/components/service-tracking/SuccessDialog";
 import {
   CheckCircle,
   FileText,
@@ -21,6 +24,8 @@ import {
 } from "lucide-react";
 
 export default function IECPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,49 +39,66 @@ export default function IECPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedServiceId, setSubmittedServiceId] = useState("");
+
+  useEffect(() => {
+    const init = async () => {
+      const { user: currentUser } = await checkServiceAuth();
+      setUser(currentUser);
+      if (currentUser) {
+        setFormData(prev => ({
+          ...prev,
+          name: currentUser.user_metadata?.full_name || "",
+          email: currentUser.email || "",
+          phone: currentUser.user_metadata?.phone || "",
+        }));
+      }
+    };
+    init();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      router.push(`/login?redirect=/services/iec`);
+      return;
+    }
+
     if (!formData.consent) {
       alert("Please agree to the terms and conditions");
       return;
     }
+
     setIsSubmitting(true);
-    
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/service-inquiry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          serviceName: 'Import Export Code (IEC) Registration',
-          ...formData,
-        }),
-      });
+      const submissionData: ServiceSubmission = {
+        serviceType: 'Import Export Code (IEC) Registration',
+        userId: user.id,
+        userEmail: user.email!,
+        userName: formData.name,
+        userPhone: formData.phone,
+        plan: formData.selectedPlan,
+        formData: {
+          businessName: formData.businessName,
+          businessType: formData.businessType,
+          pan: formData.pan,
+          message: formData.message,
+        }
+      };
 
-      const data = await response.json();
+      const result = await submitServiceRequest(submissionData);
 
-      if (response.ok) {
-        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          businessName: "",
-          businessType: "",
-          pan: "",
-          selectedPlan: "",
-          message: "",
-          consent: false,
-        });
+      if (result.success) {
+        setSubmittedServiceId(result.serviceRequest?.service_number || "");
+        setShowSuccess(true);
       } else {
-        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
+        alert(`❌ ${result.error}`);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('❌ Network error. Please check your connection and try again.');
+      alert('❌ An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -85,7 +107,7 @@ export default function IECPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6 bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <div className="container mx-auto max-w-7xl">
@@ -107,7 +129,7 @@ export default function IECPage() {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
-              
+
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
@@ -120,7 +142,7 @@ export default function IECPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
                 <div className="space-y-4">
@@ -335,7 +357,7 @@ export default function IECPage() {
         </div>
       </section>
 
-            {/* FAQ Section */}
+      {/* FAQ Section */}
       <section className="py-16 px-6">
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
@@ -383,7 +405,7 @@ export default function IECPage() {
               Fill out the form below and our experts will get in touch with you
             </p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
@@ -410,7 +432,7 @@ export default function IECPage() {
                 />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
@@ -436,14 +458,14 @@ export default function IECPage() {
                 />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Business Type *
                 </label>
-                <select 
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   required
                   value={formData.businessType}
                   onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
@@ -468,11 +490,11 @@ export default function IECPage() {
                 />
               </div>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
-              <select 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 required
                 value={formData.selectedPlan}
                 onChange={(e) => setFormData({ ...formData, selectedPlan: e.target.value })}
@@ -483,7 +505,7 @@ export default function IECPage() {
                 <option value="premium">Premium - ₹7,999</option>
               </select>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">
                 Additional Message
@@ -495,11 +517,11 @@ export default function IECPage() {
                 rows={3}
               />
             </div>
-            
+
             <div className="flex items-start gap-2 mb-6">
-              <input 
-                type="checkbox" 
-                required 
+              <input
+                type="checkbox"
+                required
                 className="mt-1"
                 checked={formData.consent}
                 onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
@@ -508,14 +530,34 @@ export default function IECPage() {
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
-            
-            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Application"}
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+
+            {!user ? (
+              <div className="bg-muted p-6 rounded-xl text-center">
+                <p className="text-muted-foreground mb-4">Please login to submit your application</p>
+                <Button
+                  type="button"
+                  onClick={() => router.push(`/login?redirect=/services/iec`)}
+                  className="w-full rounded-full"
+                  variant="outline"
+                >
+                  Login to Apply
+                </Button>
+              </div>
+            ) : (
+              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            )}
           </form>
         </div>
       </section>
+
+      <SuccessDialog
+        open={showSuccess}
+        onOpenChange={setShowSuccess}
+        serviceNumber={submittedServiceId}
+      />
 
       {/* Footer */}
       <Footer />

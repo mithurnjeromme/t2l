@@ -28,7 +28,7 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -87,8 +87,8 @@ app.get('/', (req: Request, res: Response) => {
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development'
   });
@@ -104,6 +104,7 @@ import paymentsRoutes from './api/payments';
 import queriesRoutes from './api/queries';
 import emailOTPRoutes from './api/email-otp';
 import serviceInquiryRoutes from './api/service-inquiry';
+import serviceRequestsRoutes from './api/service-requests';
 
 // Removed: app.use('/api/auth', authRoutes); 
 // Auth is now handled by Supabase Auth directly from frontend
@@ -113,11 +114,12 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api', queriesRoutes);
 app.use('/api/email-otp', emailOTPRoutes); // Custom email OTP verification (routes: /send-otp, /verify-otp)
 app.use('/api', serviceInquiryRoutes); // Service inquiry forms (no auth required)
+app.use('/api/service-requests', serviceRequestsRoutes); // Service tracking (new)
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });

@@ -28,8 +28,15 @@ import {
   Shield,
   Star,
   Gavel,
-  ChevronDown
+  ChevronDown,
+  AlertCircle,
+  CheckCircle,
+  ArrowRight,
+  Globe,
+  Upload,
+  MessageSquare,
 } from 'lucide-react';
+import { DocumentUpload } from "@/components/service-tracking/DocumentUpload";
 import Header from '@/components/layout/header';
 import {
   getClientStats,
@@ -37,7 +44,7 @@ import {
   getUserConsultations
 } from '@/lib/supabase';
 import { signOut } from '@/lib/supabase-auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface User {
   id: string;
@@ -87,94 +94,116 @@ interface ServiceOrder {
   updated_at: string;
 }
 
-interface ServiceTimelineStep {
-  step: string;
-  timestamp: string;
+interface ServiceRequest {
+  id: string;
+  service_number: string;
+  service_type: string;
+  status: 'submitted' | 'under_review' | 'in_progress' | 'on_hold' | 'completed';
+  plan: string;
+  form_data: Record<string, any>;
+  timeline: { status: string; timestamp: string }[];
+  estimated_completion: string | null;
+  created_at: string;
 }
 
-interface ServiceTracking {
-  serviceId: string;
-  serviceName: string;
-  status: 'submitted' | 'assigned' | 'in_progress' | 'completed';
-  estimatedCompletion?: string;
-  timeline: ServiceTimelineStep[];
-  createdAt: string;
-}
+const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string; icon: any }> = {
+  submitted: { label: 'Submitted', color: 'text-blue-600', bgColor: 'bg-blue-100 border-blue-200', icon: FileText },
+  under_review: { label: 'Under Review', color: 'text-yellow-600', bgColor: 'bg-yellow-100 border-yellow-200', icon: Clock },
+  in_progress: { label: 'In Progress', color: 'text-purple-600', bgColor: 'bg-purple-100 border-purple-200', icon: Clock },
+  on_hold: { label: 'On Hold', color: 'text-orange-600', bgColor: 'bg-orange-100 border-orange-200', icon: AlertCircle },
+  completed: { label: 'Completed', color: 'text-green-600', bgColor: 'bg-green-100 border-green-200', icon: CheckCircle },
+};
 
-
-// Service Tracking Tab Component
+// Service Tracking Tab Component - Premium UI
 const ServiceTrackingTab = ({ userId }: { userId: string }) => {
-  const [serviceOrders, setServiceOrders] = useState<ServiceOrder[]>([]);
+  const [requests, setRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedOrder, setSelectedOrder] = useState<ServiceOrder | null>(null);
+  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   useEffect(() => {
-    loadServiceOrders();
+    loadRequests();
   }, [userId]);
 
-  const loadServiceOrders = async () => {
+  const loadRequests = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/service-orders?userId=${userId}`);
+      const response = await fetch(`${apiUrl}/api/service-requests?userId=${userId}`);
 
       if (response.ok) {
         const data = await response.json();
-        setServiceOrders(data.serviceOrders || []);
-      } else {
-        console.error('Failed to load service orders');
+        setRequests(data);
+
+        // Preserve current selection if it still exists, otherwise select first
+        if (selectedRequest) {
+          const currentStillExists = data.find((r: ServiceRequest) => r.id === selectedRequest.id);
+          if (currentStillExists) {
+            setSelectedRequest(currentStillExists); // Update with fresh data
+          } else if (data.length > 0) {
+            setSelectedRequest(data[0]);
+          }
+        } else if (data.length > 0) {
+          setSelectedRequest(data[0]);
+        }
       }
     } catch (error) {
-      console.error('Error loading service orders:', error);
+      console.error('Error loading service requests:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'processing': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'completed': return 'bg-green-100 text-green-800 border-green-200';
-      case 'cancelled': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
   };
 
-  const getStatusSteps = (status: string) => {
-    const steps = [
-      { key: 'submitted', label: 'Request Submitted', completed: true },
-      { key: 'processing', label: 'Processing', completed: status === 'processing' || status === 'completed' },
-      { key: 'completed', label: 'Completed', completed: status === 'completed' }
-    ];
-    return steps;
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   if (loading) {
     return (
       <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
         <CardContent className="p-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your service orders...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading your service requests...</p>
         </CardContent>
       </Card>
     );
   }
 
-  if (serviceOrders.length === 0) {
+  if (requests.length === 0) {
     return (
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+      <Card className="border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-headline">Service Tracking</CardTitle>
-          <p className="text-sm text-muted-foreground">Track the progress of your legal services</p>
+          <CardTitle className="text-2xl font-headline flex items-center gap-2">
+            <FileText className="h-6 w-6 text-primary" />
+            Track Your Services
+          </CardTitle>
+          <p className="text-muted-foreground">Monitor the progress of your legal service requests</p>
         </CardHeader>
-        <CardContent className="text-center py-12">
-          <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-8 h-8 text-primary" />
+        <CardContent className="text-center py-16">
+          <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <FileText className="w-10 h-10 text-primary" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">No Service Orders Yet</h3>
-          <p className="text-muted-foreground mb-6">Your service orders will appear here once you submit a service request.</p>
-          <Button asChild>
-            <Link href="/services/partnership">Start a Service</Link>
+          <h3 className="text-xl font-semibold mb-3">No Service Requests Yet</h3>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            Start your business journey with our professional legal services. Your requests will appear here for easy tracking.
+          </p>
+          <Button asChild size="lg" className="rounded-full px-8">
+            <Link href="/services/gst-registration">
+              Browse Services
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </CardContent>
       </Card>
@@ -183,116 +212,165 @@ const ServiceTrackingTab = ({ userId }: { userId: string }) => {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-xl font-headline">Your Service Orders</CardTitle>
-          <p className="text-sm text-muted-foreground">Track the progress of your legal services</p>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {serviceOrders.map((order) => (
-              <div
-                key={order.id}
-                className="p-4 border border-border/50 rounded-lg hover:bg-card/50 cursor-pointer transition-colors"
-                onClick={() => setSelectedOrder(order)}
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold font-headline">Track Your Services</h2>
+          <p className="text-muted-foreground">Monitor the progress of your legal service requests</p>
+        </div>
+        <Badge variant="outline" className="text-sm px-3 py-1">
+          {requests.length} Active Request{requests.length !== 1 ? 's' : ''}
+        </Badge>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Request List */}
+        <div className="lg:col-span-1 space-y-3">
+          {requests.map((request) => {
+            const config = STATUS_CONFIG[request.status] || STATUS_CONFIG.submitted;
+            const isSelected = selectedRequest?.id === request.id;
+
+            return (
+              <Card
+                key={request.id}
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${isSelected
+                  ? 'ring-2 ring-primary border-primary/50 bg-primary/5'
+                  : 'border-border/50 hover:border-primary/30'
+                  }`}
+                onClick={() => setSelectedRequest(request)}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold">{order.service_name}</h3>
-                  <Badge className={getStatusColor(order.status)}>
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <span>Tracking ID: {order.tracking_id}</span>
-                  <span>•</span>
-                  <span>{new Date(order.created_at).toLocaleDateString()}</span>
-                </div>
-                {order.selected_plan && (
-                  <div className="text-sm text-muted-foreground mt-1">
-                    Plan: {order.selected_plan}
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <span className="font-mono text-sm font-semibold text-primary">
+                      {request.service_number}
+                    </span>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${config.bgColor}`}>
+                      {config.label}
+                    </span>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+                  <h4 className="font-semibold mb-1">{request.service_type}</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Submitted {formatDate(request.created_at)}
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
 
-      {selectedOrder && (
-        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-xl font-headline">Order Details</CardTitle>
-            <p className="text-sm text-muted-foreground">Tracking ID: {selectedOrder.tracking_id}</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Order Summary */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Service</p>
-                <p className="font-semibold">{selectedOrder.service_name}</p>
+        {/* Detail View */}
+        {selectedRequest && (
+          <Card className="lg:col-span-2 border-border/50 bg-gradient-to-br from-card to-card/50">
+            <CardHeader className="pb-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="font-mono text-lg font-bold text-primary">
+                    {selectedRequest.service_number}
+                  </span>
+                  <CardTitle className="text-xl font-headline mt-1">
+                    {selectedRequest.service_type}
+                  </CardTitle>
+                </div>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${STATUS_CONFIG[selectedRequest.status]?.bgColor}`}>
+                  {STATUS_CONFIG[selectedRequest.status]?.label}
+                </span>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Status</p>
-                <Badge className={getStatusColor(selectedOrder.status)}>
-                  {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Submitted</p>
-                <p className="font-semibold">{new Date(selectedOrder.created_at).toLocaleDateString()}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Estimated Completion</p>
-                <p className="font-semibold">{new Date(selectedOrder.estimated_completion_date).toLocaleDateString()}</p>
-              </div>
-            </div>
+            </CardHeader>
 
-            {/* Tracking Timeline */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Progress Timeline</h3>
-              <div className="relative pl-6 space-y-6">
-                <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
-                {getStatusSteps(selectedOrder.status).map((step, index) => (
-                  <div key={step.key} className="flex items-start gap-4">
-                    <div className={`w-3 h-3 rounded-full mt-1 ${step.completed ? 'bg-primary' : 'bg-border'}`} />
-                    <div>
-                      <p className={`font-medium ${step.completed ? 'text-foreground' : 'text-muted-foreground'}`}>
-                        {step.label}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {step.key === 'submitted' && `Submitted on ${new Date(selectedOrder.created_at).toLocaleDateString()}`}
-                        {step.key === 'processing' && 'Your order is being processed by our legal team'}
-                        {step.key === 'completed' && 'Your service has been completed'}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+            <CardContent className="space-y-6">
+              {/* Quick Info */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <div className="bg-muted/30 rounded-xl p-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Submitted</p>
+                  <p className="font-semibold">{formatDate(selectedRequest.created_at)}</p>
+                </div>
+                <div className="bg-muted/30 rounded-xl p-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Plan</p>
+                  <p className="font-semibold capitalize">{selectedRequest.plan || 'Basic'}</p>
+                </div>
+                <div className="bg-muted/30 rounded-xl p-4">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Est. Completion</p>
+                  <p className="font-semibold">
+                    {selectedRequest.estimated_completion
+                      ? formatDate(selectedRequest.estimated_completion)
+                      : 'Pending'}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Help Section */}
-            <div className="border-t pt-4 space-y-3">
-              <p className="text-sm font-medium">Need help with this service?</p>
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" size="sm">
-                  <Phone className="mr-2 h-4 w-4" />
-                  Call Support
-                </Button>
-                <Button variant="outline" size="sm">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Chat Support
-                </Button>
+              {/* Timeline */}
+              <div className="bg-muted/20 rounded-xl p-5">
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-primary" />
+                  Progress Timeline
+                </h4>
+                <div className="relative pl-6 space-y-4">
+                  <div className="absolute left-[9px] top-2 h-[calc(100%-20px)] w-px bg-gradient-to-b from-primary to-border" />
+                  {selectedRequest.timeline && selectedRequest.timeline.map((entry, idx) => {
+                    const config = STATUS_CONFIG[entry.status] || STATUS_CONFIG.submitted;
+                    const isLatest = idx === selectedRequest.timeline.length - 1;
+
+                    return (
+                      <div key={idx} className="flex items-start gap-4">
+                        <div className={`w-3 h-3 rounded-full mt-1.5 ring-4 ring-background ${isLatest ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
+                        <div className="flex-1">
+                          <p className={`font-medium ${isLatest ? 'text-foreground' : 'text-muted-foreground'}`}>
+                            {config.label}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDateTime(entry.timestamp)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+
+              {/* Documents Section */}
+              <div>
+                <DocumentUpload
+                  serviceRequestId={selectedRequest.id}
+                  serviceNumber={selectedRequest.service_number}
+                  serviceType={selectedRequest.service_type}
+                  existingDocuments={selectedRequest.form_data?.documents || []}
+                  onUploadComplete={() => {
+                    loadRequests(); // Refresh data to show new document
+                  }}
+                />
+              </div>
+
+              {/* Help Section */}
+              <div className="border-t border-border/50 pt-5">
+                <p className="text-sm font-medium mb-3">Need help with this service?</p>
+                <div className="flex flex-wrap gap-3">
+                  <Link href="tel:+919906102527">
+                    <Button className="w-full">
+                      <Phone className="mr-2 h-4 w-4" />
+                      Call Support (+91 99061 02527)
+                    </Button>
+                  </Link>
+                  <Link href="https://wa.me/919906102527" target="_blank">
+                    <Button variant="outline" className="w-full">
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Chat on WhatsApp
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 };
 
-const ClientDashboard = () => {
+import { Suspense } from 'react';
+
+const ClientDashboardContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
@@ -304,13 +382,25 @@ const ClientDashboard = () => {
   });
   const [recentActivity, setRecentActivity] = useState<Activity[]>([]);
   const [consultations, setConsultations] = useState<any[]>([]);
-  const [trackedServices, setTrackedServices] = useState<ServiceTracking[]>([]);
-  const [selectedService, setSelectedService] = useState<ServiceTracking | null>(null);
+  // Service tracking is handled by ServiceTrackingTab component
 
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+
+    // Check for tab parameter and scroll
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'track' || tabParam === 'Track') {
+      setActiveTab('Track');
+      // Small timeout to allow render
+      setTimeout(() => {
+        const trackElement = document.getElementById('service-tracking-section');
+        if (trackElement) {
+          trackElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 500);
+    }
+  }, [searchParams]);
 
   const loadDashboardData = async () => {
     try {
@@ -368,25 +458,7 @@ const ClientDashboard = () => {
       setRecentActivity(activity);
       setConsultations(userConsultations);
 
-      // 🔥 Fetch service tracking (NEW)
-      const trackingRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/service-tracking?email=${profile.email}`
-      );
-
-      if (trackingRes.ok) {
-        const trackingData: ServiceTracking[] = await trackingRes.json();
-        setTrackedServices(trackingData);
-
-        if (trackingData.length > 0) {
-          const latest = trackingData.sort(
-            (a, b) =>
-              new Date(b.createdAt).getTime() -
-              new Date(a.createdAt).getTime()
-          )[0];
-
-          setSelectedService(latest);
-        }
-      }
+      // Service tracking is now handled by ServiceTrackingTab component
 
 
     } catch (error) {
@@ -939,104 +1011,30 @@ const ClientDashboard = () => {
             </div>
           </TabsContent>
           <TabsContent value="Track" className="space-y-6">
-            <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-xl font-headline">
-                  Service Tracking
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Track the progress of your legal service
-                </p>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                {!selectedService ? (
-                  <div className="text-center py-12">
-                    <Clock className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-semibold">No Service Requests Found</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Once you submit a service inquiry, tracking details will appear here.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    {/* Top Info */}
-                    <div className="p-4 rounded-lg bg-muted/40 border">
-                      <p className="text-sm text-muted-foreground">
-                        Estimated Completion Date
-                      </p>
-                      <p className="text-2xl font-semibold">
-                        {selectedService.estimatedCompletion || 'To be updated'}
-                      </p>
-
-                      <div className="flex items-center gap-2 mt-2 text-sm">
-                        <span className="text-muted-foreground">Service ID:</span>
-                        <span className="font-medium">{selectedService.serviceId}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-1 text-sm">
-                        <span className="text-muted-foreground">Service:</span>
-                        <span className="font-medium">{selectedService.serviceName}</span>
-                      </div>
-                    </div>
-
-                    {/* Timeline */}
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Tracking Status</h3>
-
-                      <div className="relative pl-6 space-y-6">
-                        <div className="absolute left-[11px] top-2 h-full w-px bg-border" />
-
-                        {selectedService.timeline.map((step, idx) => (
-                          <div key={idx} className="flex items-start gap-4">
-                            <div className="w-3 h-3 rounded-full bg-primary mt-1" />
-                            <div>
-                              <p className="font-medium">{step.step}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {new Date(step.timestamp).toLocaleString('en-IN')}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-
-                        {selectedService.status !== 'completed' && (
-                          <div className="flex items-start gap-4 opacity-40">
-                            <div className="w-3 h-3 rounded-full bg-border mt-1" />
-                            <div>
-                              <p className="font-medium">Completed</p>
-                              <p className="text-sm text-muted-foreground">
-                                Final documents & resolution
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Support */}
-                    <div className="border-t pt-4 space-y-3">
-                      <p className="text-sm font-medium">Need help?</p>
-                      <div className="flex flex-wrap gap-3">
-                        <Button variant="outline">
-                          <Phone className="mr-2 h-4 w-4" />
-                          Call Support
-                        </Button>
-                        <Button variant="outline">
-                          <MessageCircle className="mr-2 h-4 w-4" />
-                          Chat Support
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+            <div id="service-tracking-section">
+              <ServiceTrackingTab userId={user.id} />
+            </div>
           </TabsContent>
 
 
         </Tabs>
       </main>
     </div>
+  );
+};
+
+const ClientDashboard = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    }>
+      <ClientDashboardContent />
+    </Suspense>
   );
 };
 

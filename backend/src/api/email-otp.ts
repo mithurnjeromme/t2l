@@ -7,58 +7,7 @@ const router = Router();
 // In-memory OTP storage (use Redis in production for scalability)
 const otpStore = new Map<string, { otp: string; expiresAt: number; attempts: number }>();
 
-// Brevo API configuration
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
-
-// Email sending function using Brevo (works on Render - no SMTP ports needed)
-const sendEmail = async (to: string, subject: string, htmlContent: string) => {
-  try {
-    console.log('='.repeat(80));
-    console.log('[EMAIL] Sending email to:', to);
-    console.log('[EMAIL] Subject:', subject);
-    console.log('[EMAIL] Brevo API Key configured:', !!BREVO_API_KEY);
-    console.log('[EMAIL] Sender email: turntwolaw@gmail.com');
-    console.log('='.repeat(80));
-
-    const response = await fetch(BREVO_API_URL, {
-      method: 'POST',
-      headers: {
-        'accept': 'application/json',
-        'api-key': BREVO_API_KEY || '',
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        sender: {
-          name: 'Turn2Law',
-          email: 'turntwolaw@gmail.com',
-        },
-        to: [
-          {
-            email: to,
-            name: to.split('@')[0],
-          },
-        ],
-        subject: subject,
-        htmlContent: htmlContent,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('[EMAIL] Brevo API error:', errorData);
-      throw new Error(`Brevo API error: ${JSON.stringify(errorData)}`);
-    }
-
-    const data = await response.json();
-    console.log('[EMAIL] Email sent successfully via Brevo!');
-    console.log('[EMAIL] Message ID:', data.messageId);
-    return data;
-  } catch (error) {
-    console.error('[EMAIL] Failed to send email:', error);
-    throw error;
-  }
-};
+import { sendEmail } from '../utils/email';
 
 // Generate 6-digit OTP
 function generateOTP(): string {
@@ -86,25 +35,25 @@ router.post('/send-otp', async (req: Request, res: Response) => {
 
     // Check if user exists in Supabase Auth
     const { data: users, error: userError } = await supabaseAdmin.auth.admin.listUsers();
-    
+
     if (userError) {
       console.error('[OTP] Error fetching users:', userError);
       return res.status(500).json({ error: 'Failed to check user' });
     }
 
     const user = users.users.find((u) => u.email === email);
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found. Please sign up first.' });
     }
 
     // Check if user signed up with Google OAuth
-    const isGoogleUser = user.app_metadata.provider === 'google' || 
-                         user.identities?.some((id: any) => id.provider === 'google');
-    
+    const isGoogleUser = user.app_metadata.provider === 'google' ||
+      user.identities?.some((id: any) => id.provider === 'google');
+
     if (isGoogleUser) {
-      return res.status(400).json({ 
-        error: 'This account uses Google Sign-in and does not require email verification' 
+      return res.status(400).json({
+        error: 'This account uses Google Sign-in and does not require email verification'
       });
     }
 
@@ -247,16 +196,16 @@ router.post('/send-otp', async (req: Request, res: Response) => {
 
     console.log(`[OTP] Sent OTP ${otp} to: ${email}`);
 
-    return res.json({ 
-      success: true, 
+    return res.json({
+      success: true,
       message: 'OTP sent successfully. Please check your email.',
       expiresIn: 600 // seconds (10 minutes)
     });
 
   } catch (error: any) {
     console.error('[OTP] Error sending OTP:', error);
-    return res.status(500).json({ 
-      error: 'Failed to send OTP. Please try again.' 
+    return res.status(500).json({
+      error: 'Failed to send OTP. Please try again.'
     });
   }
 });
@@ -278,24 +227,24 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
     const storedData = otpStore.get(email);
 
     if (!storedData) {
-      return res.status(400).json({ 
-        error: 'No OTP found for this email. Please request a new one.' 
+      return res.status(400).json({
+        error: 'No OTP found for this email. Please request a new one.'
       });
     }
 
     // Check if OTP has expired
     if (Date.now() > storedData.expiresAt) {
       otpStore.delete(email);
-      return res.status(400).json({ 
-        error: 'OTP has expired. Please request a new one.' 
+      return res.status(400).json({
+        error: 'OTP has expired. Please request a new one.'
       });
     }
 
     // Check number of attempts (max 5)
     if (storedData.attempts >= 5) {
       otpStore.delete(email);
-      return res.status(429).json({ 
-        error: 'Too many failed attempts. Please request a new OTP.' 
+      return res.status(429).json({
+        error: 'Too many failed attempts. Please request a new OTP.'
       });
     }
 
@@ -303,8 +252,8 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
     if (storedData.otp !== otp.trim()) {
       storedData.attempts += 1;
       otpStore.set(email, storedData);
-      
-      return res.status(400).json({ 
+
+      return res.status(400).json({
         error: 'Invalid OTP. Please check and try again.',
         attemptsRemaining: 5 - storedData.attempts
       });
@@ -315,14 +264,14 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
 
     // Update user's email_confirmed_at in Supabase
     const { data: users, error: userError } = await supabaseAdmin.auth.admin.listUsers();
-    
+
     if (userError) {
       console.error('[OTP] Error fetching users:', userError);
       return res.status(500).json({ error: 'Failed to verify email' });
     }
 
     const user = users.users.find((u) => u.email === email);
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -340,15 +289,15 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
 
     console.log(`[OTP] Email verified successfully for: ${email}`);
 
-    return res.json({ 
-      success: true, 
-      message: 'Email verified successfully! You can now log in.' 
+    return res.json({
+      success: true,
+      message: 'Email verified successfully! You can now log in.'
     });
 
   } catch (error: any) {
     console.error('[OTP] Error verifying OTP:', error);
-    return res.status(500).json({ 
-      error: 'Failed to verify OTP. Please try again.' 
+    return res.status(500).json({
+      error: 'Failed to verify OTP. Please try again.'
     });
   }
 });
@@ -371,7 +320,7 @@ router.post('/resend-otp', async (req: Request, res: Response) => {
     if (existingData && Date.now() < existingData.expiresAt) {
       const timeRemaining = Math.ceil((existingData.expiresAt - Date.now()) / 1000);
       if (timeRemaining > 540) { // More than 9 minutes remaining (prevent spam)
-        return res.status(429).json({ 
+        return res.status(429).json({
           error: 'Please wait before requesting a new OTP',
           secondsRemaining: timeRemaining - 540
         });
@@ -383,14 +332,14 @@ router.post('/resend-otp', async (req: Request, res: Response) => {
 
     // Check if user exists and is not verified
     const { data: users, error: userError } = await supabaseAdmin.auth.admin.listUsers();
-    
+
     if (userError) {
       console.error('[OTP] Error fetching users:', userError);
       return res.status(500).json({ error: 'Failed to check user' });
     }
 
     const user = users.users.find((u) => u.email === email);
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -468,16 +417,16 @@ router.post('/resend-otp', async (req: Request, res: Response) => {
 
     console.log(`[OTP] Resent OTP ${otp} to: ${email}`);
 
-    return res.json({ 
-      success: true, 
+    return res.json({
+      success: true,
       message: 'New OTP sent successfully',
       expiresIn: 600
     });
 
   } catch (error: any) {
     console.error('[OTP] Error resending OTP:', error);
-    return res.status(500).json({ 
-      error: 'Failed to resend OTP' 
+    return res.status(500).json({
+      error: 'Failed to resend OTP'
     });
   }
 });
