@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { checkServiceAuth, submitServiceRequest } from "@/lib/service-requests";
 import {
   CheckCircle,
   FileText,
@@ -19,8 +21,11 @@ import {
   Briefcase,
   FileCheck,
 } from "lucide-react";
+import { SuccessDialog } from "@/components/service-tracking/SuccessDialog";
 
 export default function LLPPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,53 +33,67 @@ export default function LLPPage() {
     llpName: "",
     numberOfPartners: "",
     message: "",
+    plan: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedServiceId, setSubmittedServiceId] = useState("");
+
+  useEffect(() => {
+    const init = async () => {
+      const { user: authUser, profile, isAuthenticated } = await checkServiceAuth();
+      if (isAuthenticated) {
+        setUser({ ...authUser, ...profile });
+        setFormData(prev => ({
+          ...prev,
+          name: profile?.full_name || "",
+          email: authUser.email || "",
+          phone: profile?.phone || "",
+        }));
+      }
+    };
+    init();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      alert("Please login to submit a service request.");
+      router.push(`/login?redirect=/services/llp`);
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/service-inquiry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          serviceName: 'Limited Liability Partnership (LLP) Registration',
-          ...formData,
-        }),
-      });
 
-      const data = await response.json();
+    const result = await submitServiceRequest({
+      userId: user.id,
+      userEmail: formData.email,
+      userName: formData.name,
+      userPhone: formData.phone,
+      serviceType: 'LLP',
+      plan: formData.plan || 'basic',
+      formData: {
+        llpName: formData.llpName,
+        numberOfPartners: formData.numberOfPartners,
+        message: formData.message,
+      },
+    });
 
-      if (response.ok) {
-        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          llpName: "",
-          numberOfPartners: "",
-          message: "",
-        });
-      } else {
-        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('❌ Network error. Please check your connection and try again.');
-    } finally {
-      setIsSubmitting(false);
+    setIsSubmitting(false);
+
+    if (result.success) {
+      setSubmittedServiceId(result.serviceRequest?.service_number);
+      setShowSuccess(true);
+    } else {
+      alert(`❌ ${result.error}`);
     }
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <section className="pt-32 pb-16 px-6 bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -95,7 +114,7 @@ export default function LLPPage() {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
                   <div className="text-3xl font-bold text-primary dark:text-accent">₹11,999</div>
@@ -107,7 +126,7 @@ export default function LLPPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
               <div className="space-y-4">
                 {[
@@ -272,7 +291,7 @@ export default function LLPPage() {
             <h2 className="text-3xl font-bold text-foreground mb-4">Register Your LLP Today</h2>
             <p className="text-muted-foreground">Fill out the form and our experts will contact you within 24 hours</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
@@ -284,7 +303,7 @@ export default function LLPPage() {
                 <Input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
@@ -295,7 +314,7 @@ export default function LLPPage() {
                 <Input required type="number" min="2" value={formData.numberOfPartners} onChange={(e) => setFormData({ ...formData, numberOfPartners: e.target.value })} placeholder="2" />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Proposed LLP Name *</label>
@@ -306,41 +325,66 @@ export default function LLPPage() {
                 <Input required placeholder="E.g., Consulting, Trading, Manufacturing" />
               </div>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Registered Office Address *</label>
               <Textarea required placeholder="Complete address with pincode" rows={2} />
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                required
+                value={formData.plan}
+                onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
+              >
                 <option value="">Choose a plan</option>
                 <option value="basic">Basic - ₹11,999</option>
                 <option value="standard">Standard - ₹16,999 (Most Popular)</option>
                 <option value="premium">Premium - ₹23,999</option>
               </select>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Additional Information</label>
               <Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Any specific requirements or questions..." rows={3} />
             </div>
-            
+
             <div className="flex items-start gap-2 mb-6">
               <input type="checkbox" required className="mt-1" />
               <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
-            
-            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Application"}
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+
+            {!user ? (
+              <div className="bg-muted p-6 rounded-xl text-center">
+                <p className="text-muted-foreground mb-4">Please login to submit your application</p>
+                <Button
+                  type="button"
+                  onClick={() => router.push(`/login?redirect=/services/llp`)}
+                  className="w-full rounded-full"
+                  variant="outline"
+                >
+                  Login to Apply
+                </Button>
+              </div>
+            ) : (
+              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            )}
           </form>
         </div>
       </section>
+
+      <SuccessDialog
+        open={showSuccess}
+        onOpenChange={setShowSuccess}
+        serviceNumber={submittedServiceId}
+      />
 
       {/* Footer */}
       <Footer />

@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { useRouter } from "next/navigation";
+import { checkServiceAuth, submitServiceRequest, ServiceSubmission } from "@/lib/service-requests";
+import { SuccessDialog } from "@/components/service-tracking/SuccessDialog";
 import {
   CheckCircle,
   FileText,
@@ -21,6 +24,8 @@ import {
 } from "lucide-react";
 
 export default function GSTReturnFilingPage() {
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,45 +34,64 @@ export default function GSTReturnFilingPage() {
     gstin: "",
     returnType: "",
     message: "",
+    plan: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedServiceId, setSubmittedServiceId] = useState("");
+
+  useEffect(() => {
+    const init = async () => {
+      const { user: currentUser } = await checkServiceAuth();
+      setUser(currentUser);
+      if (currentUser) {
+        setFormData(prev => ({
+          ...prev,
+          name: currentUser.user_metadata?.full_name || "",
+          email: currentUser.email || "",
+          phone: currentUser.user_metadata?.phone || "",
+        }));
+      }
+    };
+    init();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      router.push(`/login?redirect=/services/gst-return-filing`);
+      return;
+    }
+
     setIsSubmitting(true);
-    
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/service-inquiry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          serviceName: 'GST Return Filing',
-          ...formData,
-        }),
-      });
+      const submissionData: ServiceSubmission = {
+        serviceType: 'GST Return Filing',
+        userId: user.id,
+        userEmail: user.email!,
+        userName: formData.name,
+        userPhone: formData.phone,
+        plan: formData.plan,
+        formData: {
+          businessName: formData.businessName,
+          gstin: formData.gstin,
+          returnType: formData.returnType,
+          message: formData.message,
+        }
+      };
 
-      const data = await response.json();
+      const result = await submitServiceRequest(submissionData);
 
-      if (response.ok) {
-        alert("✅ Application submitted successfully! We'll contact you within 24 hours.");
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          businessName: "",
-          gstin: "",
-          returnType: "",
-          message: "",
-        });
+      if (result.success) {
+        setSubmittedServiceId(result.serviceRequest?.service_number || "");
+        setShowSuccess(true);
       } else {
-        alert(`❌ ${data.error || 'Failed to submit application. Please try again.'}`);
+        alert(`❌ ${result.error}`);
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('❌ Network error. Please check your connection and try again.');
+      alert('❌ An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -76,7 +100,7 @@ export default function GSTReturnFilingPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-6 bg-gradient-to-br from-primary/5 via-background to-primary/5">
         <div className="container mx-auto max-w-7xl">
@@ -98,7 +122,7 @@ export default function GSTReturnFilingPage() {
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
                   <div className="text-3xl font-bold text-primary dark:text-accent">₹999</div>
@@ -110,7 +134,7 @@ export default function GSTReturnFilingPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
               <div className="space-y-4">
                 {[
@@ -282,7 +306,7 @@ export default function GSTReturnFilingPage() {
             <h2 className="text-3xl font-bold text-foreground mb-4">Start Filing Your GST Returns</h2>
             <p className="text-muted-foreground">Fill out the form and our GST experts will contact you within 24 hours</p>
           </div>
-          
+
           <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
@@ -294,7 +318,7 @@ export default function GSTReturnFilingPage() {
                 <Input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
@@ -305,7 +329,7 @@ export default function GSTReturnFilingPage() {
                 <Input required value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} placeholder="ABC Enterprises" />
               </div>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">GSTIN</label>
@@ -313,7 +337,12 @@ export default function GSTReturnFilingPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Return Type *</label>
-                <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  required
+                  value={formData.returnType}
+                  onChange={(e) => setFormData({ ...formData, returnType: e.target.value })}
+                >
                   <option value="">Select return type</option>
                   <option value="monthly">Monthly Filing</option>
                   <option value="quarterly">Quarterly Filing (QRMP)</option>
@@ -321,36 +350,61 @@ export default function GSTReturnFilingPage() {
                 </select>
               </div>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
-              <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" required>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                required
+                value={formData.plan}
+                onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
+              >
                 <option value="">Choose a plan</option>
                 <option value="monthly">Monthly - ₹999/month</option>
                 <option value="quarterly">Quarterly - ₹2,499/quarter (Recommended)</option>
                 <option value="annual">Annual Return - ₹4,999/year</option>
               </select>
             </div>
-            
+
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Additional Information</label>
               <Textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} placeholder="Tell us about your business turnover, any specific requirements..." rows={3} />
             </div>
-            
+
             <div className="flex items-start gap-2 mb-6">
               <input type="checkbox" required className="mt-1" />
               <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
-            
-            <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Submit Application"}
-              <ArrowRight className="ml-2 w-4 h-4" />
-            </Button>
+
+            {!user ? (
+              <div className="bg-muted p-6 rounded-xl text-center">
+                <p className="text-muted-foreground mb-4">Please login to submit your application</p>
+                <Button
+                  type="button"
+                  onClick={() => router.push(`/login?redirect=/services/gst-return-filing`)}
+                  className="w-full rounded-full"
+                  variant="outline"
+                >
+                  Login to Apply
+                </Button>
+              </div>
+            ) : (
+              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit Application"}
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            )}
           </form>
         </div>
       </section>
+
+      <SuccessDialog
+        open={showSuccess}
+        onOpenChange={setShowSuccess}
+        serviceNumber={submittedServiceId}
+      />
 
       {/* Footer */}
       <Footer />
