@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
-import { Upload, FileText, CheckCircle, AlertCircle, Loader2, X, Send } from "lucide-react";
+import { Upload, FileText, CheckCircle, AlertCircle, Loader2, X, Send, Eye, RefreshCw } from "lucide-react";
 import { getRequiredDocuments } from "@/lib/service-constants";
 
 // Initialize Supabase client
@@ -254,14 +254,27 @@ export function DocumentUpload({ serviceRequestId, serviceNumber, serviceType, e
 
                             <div className="flex items-center gap-2">
                                 {uploaded ? (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleView(fileData)}
-                                        className="text-green-700 hover:text-green-800 hover:bg-green-100"
-                                    >
-                                        View
-                                    </Button>
+                                    <div className="flex gap-2">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleView(fileData)}
+                                            className="gap-2 h-8"
+                                        >
+                                            <Eye className="h-3.5 w-3.5" />
+                                            View
+                                        </Button>
+                                        <Button
+                                            variant="secondary"
+                                            size="sm"
+                                            onClick={() => handleFileSelect(docType)}
+                                            className="gap-2 h-8"
+                                            disabled={uploading}
+                                        >
+                                            <RefreshCw className="h-3.5 w-3.5" />
+                                            Update
+                                        </Button>
+                                    </div>
                                 ) : staged ? (
                                     <>
                                         <Button
@@ -290,9 +303,9 @@ export function DocumentUpload({ serviceRequestId, serviceNumber, serviceType, e
                                         onClick={() => handleFileSelect(docType)}
                                         className="gap-2"
                                     >
-                                        <p className="text-secondary-foreground">
-                                            Drag &quot;n&quot; drop files here, or click to select files
-                                        </p>        </Button>
+                                        <Upload className="h-3.5 w-3.5" />
+                                        Upload
+                                    </Button>
                                 )}
                             </div>
                         </div>
