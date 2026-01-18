@@ -58,11 +58,14 @@ const isWhitelistedAdmin = async (email: string): Promise<boolean> => {
 
 // Middleware to verify admin access via JWT
 const verifyAdmin = async (req: Request, res: Response, next: Function) => {
+    console.log('[VERIFY_ADMIN] Checking admin auth for:', req.path);
     try {
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
+        console.log('[VERIFY_ADMIN] Token present:', !!token);
 
         if (!token) {
+            console.log('[VERIFY_ADMIN] BLOCKED: No token');
             return res.status(401).json({ error: 'Authentication required' });
         }
 
@@ -307,9 +310,12 @@ router.get('/:id', async (req: Request, res: Response) => {
 
 // PUT /api/service-requests/:id - Update request (Protected Admin Route)
 router.put('/:id', verifyAdmin, async (req: Request, res: Response) => {
+    console.log('='.repeat(80));
+    console.log('[PUT] Received request to update service request:', req.params.id);
+    console.log('[PUT] Body:', req.body);
     try {
         const { id } = req.params;
-        const { status, estimatedCompletion, adminNotes } = req.body;
+        const { status, estimatedCompletion, adminNotes, notifyClient } = req.body;
         // adminUser is attached by middleware
 
         const { data: current, error: fetchError } = await supabaseAdmin
@@ -357,10 +363,20 @@ router.put('/:id', verifyAdmin, async (req: Request, res: Response) => {
         }
 
         if (statusChanged) {
-            // Send status update email using template
-            const emailHtml = getStatusUpdateEmail(data.user_name, data.service_type, data.service_number, status, adminNotes);
-            sendEmail(data.user_email, `Status Update - ${data.service_number}`, emailHtml)
-                .catch(err => console.error('Failed to send status email:', err));
+            if (notifyClient !== false) { // Default to true if undefined
+                // Send status update email using template
+                console.log('='.repeat(80));
+                console.log('[STATUS UPDATE] Status changed, sending email to:', data.user_email);
+                console.log('[STATUS UPDATE] New status:', status);
+                const emailHtml = getStatusUpdateEmail(data.user_name, data.service_type, data.service_number, status, adminNotes);
+                sendEmail(data.user_email, `Status Update - ${data.service_number}`, emailHtml)
+                    .then(() => console.log('[STATUS UPDATE] Email sent successfully!'))
+                    .catch(err => console.error('[STATUS UPDATE] Failed to send email:', err));
+            } else {
+                console.log('[STATUS UPDATE] Email notification disabled by admin. Skipping email.');
+            }
+        } else {
+            console.log('[STATUS UPDATE] Status not changed, skipping email');
         }
 
         return res.json({

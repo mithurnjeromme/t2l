@@ -28,6 +28,8 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
     FileText,
     Clock,
@@ -93,6 +95,7 @@ export default function AdminServicesPage() {
     const [editStatus, setEditStatus] = useState('');
     const [editDate, setEditDate] = useState('');
     const [editNotes, setEditNotes] = useState('');
+    const [notifyClient, setNotifyClient] = useState(true);
 
     useEffect(() => {
         checkAdminAndLoad();
@@ -195,6 +198,7 @@ export default function AdminServicesPage() {
         setEditStatus(request.status);
         setEditDate(request.estimated_completion || '');
         setEditNotes(request.admin_notes || '');
+        setNotifyClient(true); // Default to sending email
         setIsDetailOpen(true);
     };
 
@@ -269,6 +273,7 @@ export default function AdminServicesPage() {
                     status: editStatus,
                     estimatedCompletion: editDate || null,
                     adminNotes: editNotes,
+                    notifyClient,
                 }),
             });
 
@@ -635,6 +640,19 @@ export default function AdminServicesPage() {
                                             placeholder="e.g. Please upload the pending documents..."
                                             rows={3}
                                             className="resize-none"
+                                        />
+                                    </div>
+
+                                    <div className="flex items-center justify-between space-x-2 border p-3 rounded-lg bg-muted/20">
+                                        <div className="space-y-0.5">
+                                            <Label className="text-base font-medium">Notify Client via Email</Label>
+                                            <p className="text-sm text-muted-foreground">
+                                                Send an email notification about this update
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            checked={notifyClient}
+                                            onCheckedChange={setNotifyClient}
                                         />
                                     </div>
 
