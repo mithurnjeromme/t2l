@@ -31,13 +31,17 @@ export default function LLPPage() {
     email: "",
     phone: "",
     llpName: "",
+    businessActivity: "",
+    address: "",
     numberOfPartners: "",
     message: "",
     plan: "",
+    acceptTerms: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedServiceId, setSubmittedServiceId] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const init = async () => {
@@ -55,12 +59,45 @@ export default function LLPPage() {
     init();
   }, []);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) newErrors.name = "Full name is required";
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Enter a valid email";
+    }
+
+    const numericPhone = formData.phone.replace(/\D/g, "");
+    if (numericPhone.length < 10) newErrors.phone = "Enter a valid phone number";
+
+    if (!formData.llpName.trim()) newErrors.llpName = "Proposed LLP name is required";
+
+    const partners = Number(formData.numberOfPartners);
+    if (!partners || partners < 2) newErrors.numberOfPartners = "Minimum 2 partners required";
+
+    if (!formData.businessActivity.trim()) newErrors.businessActivity = "Business activity is required";
+
+    if (!formData.address.trim()) newErrors.address = "Registered office address is required";
+
+    if (!formData.plan) newErrors.plan = "Please select a plan";
+
+    if (!formData.acceptTerms) newErrors.acceptTerms = "You must accept the terms";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!user) {
       alert("Please login to submit a service request.");
       router.push(`/login?redirect=/services/llp`);
+      return;
+    }
+
+    if (!validateForm()) {
       return;
     }
 
@@ -76,6 +113,8 @@ export default function LLPPage() {
       formData: {
         llpName: formData.llpName,
         numberOfPartners: formData.numberOfPartners,
+        businessActivity: formData.businessActivity,
+        address: formData.address,
         message: formData.message,
       },
     });
@@ -292,50 +331,56 @@ export default function LLPPage() {
             <p className="text-muted-foreground">Fill out the form and our experts will contact you within 24 hours</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          <form onSubmit={handleSubmit} noValidate className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
-                <Input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
+                <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
+                {errors.name && <p className="text-sm text-destructive mt-2">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
-                <Input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
+                <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
+                {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
-                <Input required type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 98765 43210" />
+                <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 98765 43210" />
+                {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Number of Partners *</label>
-                <Input required type="number" min="2" value={formData.numberOfPartners} onChange={(e) => setFormData({ ...formData, numberOfPartners: e.target.value })} placeholder="2" />
+                <Input type="number" min="2" value={formData.numberOfPartners} onChange={(e) => setFormData({ ...formData, numberOfPartners: e.target.value })} placeholder="2" />
+                {errors.numberOfPartners && <p className="text-sm text-destructive mt-2">{errors.numberOfPartners}</p>}
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Proposed LLP Name *</label>
-                <Input required value={formData.llpName} onChange={(e) => setFormData({ ...formData, llpName: e.target.value })} placeholder="ABC LLP" />
+                <Input value={formData.llpName} onChange={(e) => setFormData({ ...formData, llpName: e.target.value })} placeholder="ABC LLP" />
+                {errors.llpName && <p className="text-sm text-destructive mt-2">{errors.llpName}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Business Activity *</label>
-                <Input required placeholder="E.g., Consulting, Trading, Manufacturing" />
+                <Input placeholder="E.g., Consulting, Trading, Manufacturing" value={formData.businessActivity} onChange={(e) => setFormData({ ...formData, businessActivity: e.target.value })} />
+                {errors.businessActivity && <p className="text-sm text-destructive mt-2">{errors.businessActivity}</p>}
               </div>
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Registered Office Address *</label>
-              <Textarea required placeholder="Complete address with pincode" rows={2} />
+              <Textarea placeholder="Complete address with pincode" rows={2} value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+              {errors.address && <p className="text-sm text-destructive mt-2">{errors.address}</p>}
             </div>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
               <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
                 value={formData.plan}
                 onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
               >
@@ -344,6 +389,7 @@ export default function LLPPage() {
                 <option value="standard">Standard - ₹16,999 (Most Popular)</option>
                 <option value="premium">Premium - ₹23,999</option>
               </select>
+              {errors.plan && <p className="text-sm text-destructive mt-2">{errors.plan}</p>}
             </div>
 
             <div className="mb-6">
@@ -352,11 +398,18 @@ export default function LLPPage() {
             </div>
 
             <div className="flex items-start gap-2 mb-6">
-              <input type="checkbox" required className="mt-1" />
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={formData.acceptTerms}
+                onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+              />
               <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
+
+            {errors.acceptTerms && <p className="text-sm text-destructive mb-6">{errors.acceptTerms}</p>}
 
             {!user ? (
               <div className="bg-muted p-6 rounded-xl text-center">

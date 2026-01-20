@@ -41,6 +41,7 @@ export default function IECPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedServiceId, setSubmittedServiceId] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const init = async () => {
@@ -58,6 +59,46 @@ export default function IECPage() {
     init();
   }, []);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    const numericPhone = formData.phone.replace(/\D/g, "");
+    if (numericPhone.length < 10) {
+      newErrors.phone = "Enter a valid phone number";
+    }
+
+    if (!formData.businessName.trim()) {
+      newErrors.businessName = "Business name is required";
+    }
+
+    if (!formData.businessType) {
+      newErrors.businessType = "Select a business type";
+    }
+
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(formData.pan.trim())) {
+      newErrors.pan = "Enter a valid PAN (ABCDE1234F)";
+    }
+
+    if (!formData.selectedPlan) {
+      newErrors.selectedPlan = "Please select a plan";
+    }
+
+    if (!formData.consent) {
+      newErrors.consent = "You must accept the terms";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -65,8 +106,7 @@ export default function IECPage() {
       return;
     }
 
-    if (!formData.consent) {
-      alert("Please agree to the terms and conditions");
+    if (!validateForm()) {
       return;
     }
 
@@ -406,30 +446,30 @@ export default function IECPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          <form onSubmit={handleSubmit} noValidate className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Full Name *
                 </label>
                 <Input
-                  required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="John Doe"
                 />
+                {errors.name && <p className="text-sm text-destructive mt-2">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Email Address *
                 </label>
                 <Input
-                  required
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="john@example.com"
                 />
+                {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
               </div>
             </div>
 
@@ -439,23 +479,23 @@ export default function IECPage() {
                   Phone Number *
                 </label>
                 <Input
-                  required
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+91 98765 43210"
                 />
+                {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Business Name *
                 </label>
                 <Input
-                  required
                   value={formData.businessName}
                   onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
                   placeholder="ABC Exports"
                 />
+                {errors.businessName && <p className="text-sm text-destructive mt-2">{errors.businessName}</p>}
               </div>
             </div>
 
@@ -466,7 +506,6 @@ export default function IECPage() {
                 </label>
                 <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  required
                   value={formData.businessType}
                   onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
                 >
@@ -476,18 +515,19 @@ export default function IECPage() {
                   <option value="llp">LLP</option>
                   <option value="private-limited">Private Limited</option>
                 </select>
+                {errors.businessType && <p className="text-sm text-destructive mt-2">{errors.businessType}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   PAN Number *
                 </label>
                 <Input
-                  required
                   value={formData.pan}
                   onChange={(e) => setFormData({ ...formData, pan: e.target.value.toUpperCase() })}
                   placeholder="ABCDE1234F"
                   maxLength={10}
                 />
+                {errors.pan && <p className="text-sm text-destructive mt-2">{errors.pan}</p>}
               </div>
             </div>
 
@@ -495,7 +535,6 @@ export default function IECPage() {
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
               <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
                 value={formData.selectedPlan}
                 onChange={(e) => setFormData({ ...formData, selectedPlan: e.target.value })}
               >
@@ -504,6 +543,7 @@ export default function IECPage() {
                 <option value="standard">Standard - ₹4,999 (Recommended)</option>
                 <option value="premium">Premium - ₹7,999</option>
               </select>
+              {errors.selectedPlan && <p className="text-sm text-destructive mt-2">{errors.selectedPlan}</p>}
             </div>
 
             <div className="mb-6">
@@ -521,7 +561,6 @@ export default function IECPage() {
             <div className="flex items-start gap-2 mb-6">
               <input
                 type="checkbox"
-                required
                 className="mt-1"
                 checked={formData.consent}
                 onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
@@ -530,6 +569,8 @@ export default function IECPage() {
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
+
+            {errors.consent && <p className="text-sm text-destructive mb-6">{errors.consent}</p>}
 
             {!user ? (
               <div className="bg-muted p-6 rounded-xl text-center">

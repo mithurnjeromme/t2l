@@ -35,10 +35,12 @@ export default function GSTReturnFilingPage() {
     returnType: "",
     message: "",
     plan: "",
+    acceptTerms: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedServiceId, setSubmittedServiceId] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const init = async () => {
@@ -56,10 +58,42 @@ export default function GSTReturnFilingPage() {
     init();
   }, []);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) newErrors.name = "Full name is required";
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Enter a valid email";
+    }
+
+    const numericPhone = formData.phone.replace(/\D/g, "");
+    if (numericPhone.length < 10) newErrors.phone = "Enter a valid phone number";
+
+    if (!formData.businessName.trim()) newErrors.businessName = "Business name is required";
+
+    if (formData.gstin.trim() && !/^[0-9A-Z]{15}$/i.test(formData.gstin.trim())) {
+      newErrors.gstin = "GSTIN must be 15 characters";
+    }
+
+    if (!formData.returnType) newErrors.returnType = "Select a return type";
+
+    if (!formData.plan) newErrors.plan = "Please select a plan";
+
+    if (!formData.acceptTerms) newErrors.acceptTerms = "You must accept the terms";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       router.push(`/login?redirect=/services/gst-return-filing`);
+      return;
+    }
+
+    if (!validateForm()) {
       return;
     }
 
@@ -307,26 +341,30 @@ export default function GSTReturnFilingPage() {
             <p className="text-muted-foreground">Fill out the form and our GST experts will contact you within 24 hours</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          <form onSubmit={handleSubmit} noValidate className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Full Name *</label>
-                <Input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
+                <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="John Doe" />
+                {errors.name && <p className="text-sm text-destructive mt-2">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Email Address *</label>
-                <Input required type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
+                <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="john@example.com" />
+                {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Phone Number *</label>
-                <Input required type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 98765 43210" />
+                <Input type="tel" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="+91 98765 43210" />
+                {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Business Name *</label>
-                <Input required value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} placeholder="ABC Enterprises" />
+                <Input value={formData.businessName} onChange={(e) => setFormData({ ...formData, businessName: e.target.value })} placeholder="ABC Enterprises" />
+                {errors.businessName && <p className="text-sm text-destructive mt-2">{errors.businessName}</p>}
               </div>
             </div>
 
@@ -334,12 +372,12 @@ export default function GSTReturnFilingPage() {
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">GSTIN</label>
                 <Input value={formData.gstin} onChange={(e) => setFormData({ ...formData, gstin: e.target.value })} placeholder="22AAAAA0000A1Z5" />
+                {errors.gstin && <p className="text-sm text-destructive mt-2">{errors.gstin}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Return Type *</label>
                 <select
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  required
                   value={formData.returnType}
                   onChange={(e) => setFormData({ ...formData, returnType: e.target.value })}
                 >
@@ -348,6 +386,7 @@ export default function GSTReturnFilingPage() {
                   <option value="quarterly">Quarterly Filing (QRMP)</option>
                   <option value="annual">Annual Return (GSTR-9)</option>
                 </select>
+                {errors.returnType && <p className="text-sm text-destructive mt-2">{errors.returnType}</p>}
               </div>
             </div>
 
@@ -355,7 +394,6 @@ export default function GSTReturnFilingPage() {
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
               <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
                 value={formData.plan}
                 onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
               >
@@ -364,6 +402,7 @@ export default function GSTReturnFilingPage() {
                 <option value="quarterly">Quarterly - ₹2,499/quarter (Recommended)</option>
                 <option value="annual">Annual Return - ₹4,999/year</option>
               </select>
+              {errors.plan && <p className="text-sm text-destructive mt-2">{errors.plan}</p>}
             </div>
 
             <div className="mb-6">
@@ -372,11 +411,18 @@ export default function GSTReturnFilingPage() {
             </div>
 
             <div className="flex items-start gap-2 mb-6">
-              <input type="checkbox" required className="mt-1" />
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={formData.acceptTerms}
+                onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+              />
               <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
+
+            {errors.acceptTerms && <p className="text-sm text-destructive mb-6">{errors.acceptTerms}</p>}
 
             {!user ? (
               <div className="bg-muted p-6 rounded-xl text-center">

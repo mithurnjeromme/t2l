@@ -38,11 +38,13 @@ export default function PrivateLimitedPage() {
     businessActivity: "",
     message: "",
     plan: "",
+    acceptTerms: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedServiceId, setSubmittedServiceId] = useState("");
   const [showLoginNudge, setShowLoginNudge] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const init = async () => {
@@ -62,10 +64,47 @@ export default function PrivateLimitedPage() {
     init();
   }, []);
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+    }
+
+    if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    const numericPhone = formData.phone.replace(/\D/g, "");
+    if (numericPhone.length < 10) {
+      newErrors.phone = "Enter a valid phone number";
+    }
+
+    const directors = Number(formData.numberOfDirectors);
+    if (!directors || directors < 2) {
+      newErrors.numberOfDirectors = "Minimum 2 directors required";
+    }
+
+    if (!formData.plan) {
+      newErrors.plan = "Please select a plan";
+    }
+
+    if (!formData.acceptTerms) {
+      newErrors.acceptTerms = "You must accept the terms";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       setShowLoginNudge(true);
+      return;
+    }
+
+    if (!validateForm()) {
       return;
     }
 
@@ -435,30 +474,30 @@ export default function PrivateLimitedPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          <form onSubmit={handleSubmit} noValidate className="bg-card border border-border rounded-2xl p-8 shadow-xl">
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Full Name *
                 </label>
                 <Input
-                  required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="John Doe"
                 />
+                {errors.name && <p className="text-sm text-destructive mt-2">{errors.name}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Email Address *
                 </label>
                 <Input
-                  required
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="john@example.com"
                 />
+                {errors.email && <p className="text-sm text-destructive mt-2">{errors.email}</p>}
               </div>
             </div>
 
@@ -468,25 +507,25 @@ export default function PrivateLimitedPage() {
                   Phone Number *
                 </label>
                 <Input
-                  required
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+91 98765 43210"
                 />
+                {errors.phone && <p className="text-sm text-destructive mt-2">{errors.phone}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Number of Directors *
                 </label>
                 <Input
-                  required
                   type="number"
                   min="2"
                   value={formData.numberOfDirectors}
                   onChange={(e) => setFormData({ ...formData, numberOfDirectors: e.target.value })}
                   placeholder="2"
                 />
+                {errors.numberOfDirectors && <p className="text-sm text-destructive mt-2">{errors.numberOfDirectors}</p>}
               </div>
             </div>
 
@@ -516,7 +555,6 @@ export default function PrivateLimitedPage() {
               <label className="block text-sm font-medium text-foreground mb-2">Select Plan *</label>
               <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
                 value={formData.plan}
                 onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
               >
@@ -525,6 +563,7 @@ export default function PrivateLimitedPage() {
                 <option value="standard">Standard - ₹19,999 (Recommended)</option>
                 <option value="premium">Premium - ₹29,999</option>
               </select>
+              {errors.plan && <p className="text-sm text-destructive mt-2">{errors.plan}</p>}
             </div>
 
             <div className="mb-6">
@@ -540,11 +579,18 @@ export default function PrivateLimitedPage() {
             </div>
 
             <div className="flex items-start gap-2 mb-6">
-              <input type="checkbox" required className="mt-1" />
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={formData.acceptTerms}
+                onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+              />
               <label className="text-sm text-muted-foreground">
                 I agree to the Terms & Conditions and authorize Turn2Law to contact me via phone/email *
               </label>
             </div>
+
+            {errors.acceptTerms && <p className="text-sm text-destructive mb-6">{errors.acceptTerms}</p>}
 
             {!user ? (
               <div className="bg-muted p-6 rounded-xl text-center">
