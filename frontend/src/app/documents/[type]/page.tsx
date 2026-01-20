@@ -13,6 +13,8 @@ import SpotlightCard from "@/components/ui/SpotlightCard";
 import { FileText, ClipboardCopy, Download, ArrowLeft } from "lucide-react";
 import { S } from "@genkit-ai/googleai";
 
+const DOCUMENTS_API_BASE_URL = process.env.NEXT_PUBLIC_DOCUMENTS_API_BASE_URL;
+
 export default function DocumentCreatePage() {
   const params = useParams<{ type?: string }>();
   const router = useRouter();
@@ -125,7 +127,11 @@ export default function DocumentCreatePage() {
   /* ------------------ DOWNLOAD HANDLER ------------------ */
   async function downloadFile(url: string) {
     try {
-      const fullUrl = "https://legal-doc-ai-7q8h.onrender.com" + url;
+      if (!DOCUMENTS_API_BASE_URL) {
+        throw new Error("Documents API base URL is not configured");
+      }
+
+      const fullUrl = `${DOCUMENTS_API_BASE_URL}${url}`;
       const res = await fetch(fullUrl);
       if (!res.ok) throw new Error("Failed");
 
@@ -150,6 +156,10 @@ export default function DocumentCreatePage() {
   setDraft("Please wait… generating document"); // ⭐ SHOW LOADING MESSAGE
 
   try {
+    if (!DOCUMENTS_API_BASE_URL) {
+      throw new Error("Documents API base URL is not configured");
+    }
+
     const form = new FormData();
     form.append("doc_type", docType);
     form.append("language", formData.language || "en");
@@ -207,7 +217,7 @@ export default function DocumentCreatePage() {
     form.append("scenario", JSON.stringify(scenarioObject));
 
     const res = await fetch(
-      "https://legal-doc-ai-7q8h.onrender.com/api/v1/documents/generate",
+      `${DOCUMENTS_API_BASE_URL}/api/v1/documents/generate`,
       { method: "POST", body: form }
     );
 

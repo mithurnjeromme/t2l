@@ -1,8 +1,12 @@
 import OpenAI from 'openai';
 
+// Prefer env-provided base URL so we don't leak service endpoints in code
+const NEBIUS_API_BASE_URL =
+  process.env.NEXT_PUBLIC_NEBIUS_API_BASE_URL || "https://api.studio.nebius.com/v1/";
+
 // Initialize Nebius AI client with OpenAI SDK
 export const nebiusClient = new OpenAI({
-  baseURL: "https://api.studio.nebius.com/v1/",
+  baseURL: NEBIUS_API_BASE_URL,
   apiKey: process.env.NEXT_PUBLIC_NEBIUS_AI_API_KEY,
   dangerouslyAllowBrowser: true // Allow client-side usage
 });
