@@ -1,0 +1,226 @@
+"use client";
+
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Header from '@/components/layout/header';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Settings as SettingsIcon, Shield, Bell } from 'lucide-react';
+import { getClientStats } from '@/lib/supabase';
+
+interface User {
+    id: string;
+    email: string;
+    fullName: string;
+    userType: string;
+    city?: string;
+    createdAt: string;
+}
+
+interface ClientStats {
+    totalConsultations: number;
+    activeCases: number;
+    walletBalance: number;
+    totalSpent: number;
+}
+
+export default function SettingsPage() {
+    const router = useRouter();
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [resetLoading, setResetLoading] = useState(false);
+    const [stats, setStats] = useState<ClientStats>({
+        totalConsultations: 0,
+        activeCases: 0,
+        walletBalance: 0,
+        totalSpent: 0
+    });
+
+    useEffect(() => {
+        loadSettingsData();
+    }, []);
+
+    const loadSettingsData = async () => {
+        try {
+            console.log('[Settings] Checking Supabase Auth session...');
+
+            // Import Supabase auth functions
+            const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
+
+            // Check Supabase session
+            const session = await getSession();
+
+            if (!session || !session.user) {
+                console.log('[Settings] No active session, redirecting to login');
+                router.push('/login');
+                return;
+            }
+
+            // Fetch user profile from database
+            const profile = await getUserProfile(session.user.id);
+
+            if (!profile) {
+                console.error('[Settings] Profile not found');
+                router.push('/login');
+                return;
+            }
+
+            // Set user data
+            setUser({
+                id: profile.id,
+                email: profile.email,
+                fullName: profile.full_name,
+                userType: profile.user_type,
+                city: profile.city,
+                createdAt: profile.created_at
+            });
+
+            // Fetch stats if client
+            if (profile.user_type === 'client') {
+                const clientStats = await getClientStats(profile.id);
+                setStats(clientStats);
+            }
+
+        } catch (error) {
+            console.error('[Settings] Error loading settings:', error);
+            router.push('/login');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handlePasswordReset = async () => {
+        if (!user?.email || resetLoading) return;
+
+        setResetLoading(true);
+        try {
+            const { resetPasswordRequest } = await import('@/lib/supabase-auth');
+            await resetPasswordRequest(user.email);
+            alert('Password reset link has been sent to your email.');
+        } catch (error) {
+            console.error('Error sending reset link:', error);
+            alert('Failed to send reset link. Please try again.');
+        } finally {
+            setResetLoading(false);
+        }
+    };
+
+    const handleNotificationSettings = () => {
+        alert('Notification settings will be available in the next update.');
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-muted-foreground">Loading settings...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return null;
+    }
+
+    return (
+        <div className="min-h-screen bg-background">
+            <Header hideAuthButtons={false} />
+
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-headline font-bold">Account Settings</h1>
+                    <p className="text-muted-foreground">Manage your profile, security, and preferences</p>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardHeader>
+                                <CardTitle className="text-xl font-headline">Profile Information</CardTitle>
+                                <p className="text-sm text-muted-foreground font-body">Manage your personal information and preferences</p>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-muted-foreground">Full Name</label>
+                                        <p className="text-lg font-medium">{user.fullName}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-muted-foreground">Email Address</label>
+                                        <p className="text-lg font-medium">{user.email}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-muted-foreground">City</label>
+                                        <p className="text-lg font-medium">{user.city || 'Not specified'}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium text-muted-foreground">Account Type</label>
+                                        <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30 capitalize">
+                                            {user.userType} Account
+                                        </Badge>
+                                    </div>
+                                </div>
+                                <div className="pt-4 border-t border-border/50">
+                                    <Button size="lg">
+                                        <SettingsIcon className="mr-2 h-5 w-5" />
+                                        Edit Profile
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="space-y-6">
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-headline">Quick Stats</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Member Since</span>
+                                    <span className="font-medium">
+                                        {user.createdAt
+                                            ? new Date(user.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short' })
+                                            : 'N/A'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Total Consultations</span>
+                                    <span className="font-medium">{stats.totalConsultations}</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Active Cases</span>
+                                    <span className="font-medium">{stats.activeCases}</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-headline">Account Security</CardTitle>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start"
+                                    onClick={handlePasswordReset}
+                                    disabled={resetLoading}
+                                >
+                                    <Shield className="mr-2 h-4 w-4" />
+                                    {resetLoading ? 'Sending...' : 'Change Password'}
+                                </Button>
+                                <Button variant="outline" className="w-full justify-start" onClick={handleNotificationSettings}>
+                                    <Bell className="mr-2 h-4 w-4" />
+                                    Notification Settings
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}

@@ -545,7 +545,7 @@ const ClientDashboardContent = () => {
               <TabsTrigger value="consultations">Consultations</TabsTrigger>
               <TabsTrigger value="cases">My Cases</TabsTrigger>
               <TabsTrigger value="lawyers">Find Lawyers</TabsTrigger>
-              <TabsTrigger value="profile">Profile</TabsTrigger>
+
               <TabsTrigger value="Track">Track Service</TabsTrigger>
             </TabsList>
           </div>
@@ -618,7 +618,7 @@ const ClientDashboardContent = () => {
                 </CardContent>
               </Card>
 
-              <Link href="/dashboard/client/wallet" className="block">
+              {/* <Link href="/dashboard/client/wallet" className="block">
                 <Card className="border-border/50 bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground relative overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer">
                   <div className="absolute inset-0 opacity-10">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent)]"></div>
@@ -638,7 +638,7 @@ const ClientDashboardContent = () => {
                     </div>
                   </CardContent>
                 </Card>
-              </Link>
+              </Link> */}
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/70 transition-all duration-300">
                 <CardContent className="p-6">
@@ -682,13 +682,13 @@ const ClientDashboardContent = () => {
                       </Link>
                     </Button>
 
-                    <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-primary/50 text-primary hover:bg-primary/10 font-body" asChild>
+                    {/* <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-primary/50 text-primary hover:bg-primary/10 font-body" asChild>
                       <Link href="/dashboard/client/wallet">
                         <DollarSign className="w-6 h-6" />
                         <span>My Wallet</span>
                         <span className="text-xs opacity-70">Manage funds</span>
                       </Link>
-                    </Button>
+                    </Button> */}
 
                     <Button size="lg" variant="outline" className="h-24 flex flex-col justify-center space-y-2 border-border/50 hover:bg-card font-body" onClick={() => setActiveTab('consultations')}>
                       <Calendar className="w-6 h-6" />
@@ -931,85 +931,7 @@ const ClientDashboardContent = () => {
             </div>
           </TabsContent>
 
-          {/* Enhanced Profile Tab */}
-          <TabsContent value="profile" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2">
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-headline">Profile Information</CardTitle>
-                    <p className="text-sm text-muted-foreground font-body">Manage your personal information and preferences</p>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                        <p className="text-lg font-medium">{user.fullName}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Email Address</label>
-                        <p className="text-lg font-medium">{user.email}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">City</label>
-                        <p className="text-lg font-medium">{user.city || 'Not specified'}</p>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Account Type</label>
-                        <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30">
-                          Client Account
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="pt-4 border-t border-border/50">
-                      <Button size="lg">
-                        <Settings className="mr-2 h-5 w-5" />
-                        Edit Profile
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
 
-              <div className="space-y-6">
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-headline">Quick Stats</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Member Since</span>
-                      <span className="font-medium">{new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'short' })}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Total Consultations</span>
-                      <span className="font-medium">{stats.totalConsultations}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Active Cases</span>
-                      <span className="font-medium">{stats.activeCases}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-headline">Account Security</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <Button variant="outline" className="w-full justify-start">
-                      <Shield className="mr-2 h-4 w-4" />
-                      Change Password
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Bell className="mr-2 h-4 w-4" />
-                      Notification Settings
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
           <TabsContent value="Track" className="space-y-6">
             <div id="service-tracking-section">
               <ServiceTrackingTab userId={user.id} />

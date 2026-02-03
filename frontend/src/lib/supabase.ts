@@ -141,7 +141,7 @@ export const getUserProfile = async (userId: string): Promise<User | null> => {
     .select('*')
     .eq('id', userId)
     .single();
-  
+
   if (error) {
     console.error('Error fetching user profile:', error);
     return null;
@@ -156,7 +156,7 @@ export const updateUserProfile = async (userId: string, updates: Partial<User>) 
     .eq('id', userId)
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -167,7 +167,7 @@ export const getLawyerProfile = async (userId: string): Promise<LawyerProfile | 
     .select('*')
     .eq('user_id', userId)
     .single();
-  
+
   if (error) {
     console.error('Error fetching lawyer profile:', error);
     return null;
@@ -182,7 +182,7 @@ export const updateLawyerProfile = async (userId: string, updates: Partial<Lawye
     .eq('user_id', userId)
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -198,7 +198,7 @@ export const getUserConsultations = async (userId: string, userType: 'client' | 
     `)
     .eq(field, userId)
     .order('created_at', { ascending: false });
-  
+
   if (error) {
     console.error('Error fetching consultations:', error);
     return [];
@@ -212,7 +212,7 @@ export const createConsultation = async (consultation: Partial<Consultation>) =>
     .insert([consultation])
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -223,7 +223,7 @@ export const updateConsultation = async (id: string, updates: Partial<Consultati
     .eq('id', id)
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -237,7 +237,7 @@ export const getConsultationMessages = async (consultationId: string) => {
     `)
     .eq('consultation_id', consultationId)
     .order('created_at', { ascending: true });
-  
+
   if (error) {
     console.error('Error fetching messages:', error);
     return [];
@@ -251,7 +251,7 @@ export const sendMessage = async (message: Partial<Message>) => {
     .insert([message])
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -281,7 +281,7 @@ export const getWalletBalance = async (userId: string): Promise<WalletBalance | 
     .select('*')
     .eq('user_id', userId)
     .single();
-  
+
   if (error) {
     console.error('Error fetching wallet balance:', error);
     return null;
@@ -295,7 +295,7 @@ export const getTransactions = async (userId: string) => {
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false });
-  
+
   if (error) {
     console.error('Error fetching transactions:', error);
     return [];
@@ -309,14 +309,14 @@ export const createTransaction = async (transaction: Partial<Transaction>) => {
     .insert([transaction])
     .select()
     .single();
-  
+
   return { data, error };
 };
 
 export const updateWalletBalance = async (userId: string, amount: number, type: 'credit' | 'debit') => {
   // Get current balance
   const walletBalance = await getWalletBalance(userId);
-  
+
   if (!walletBalance) {
     // Create new wallet balance
     const { data, error } = await supabase
@@ -330,33 +330,33 @@ export const updateWalletBalance = async (userId: string, amount: number, type: 
       }])
       .select()
       .single();
-    
+
     return { data, error };
   }
-  
+
   // Update existing balance
-  const newBalance = type === 'credit' 
-    ? walletBalance.balance + amount 
+  const newBalance = type === 'credit'
+    ? walletBalance.balance + amount
     : walletBalance.balance - amount;
-  
+
   const updates: Partial<WalletBalance> = {
     balance: newBalance,
     updated_at: new Date().toISOString()
   };
-  
+
   if (type === 'credit') {
     updates.total_earnings = walletBalance.total_earnings + amount;
   } else {
     updates.total_spent = walletBalance.total_spent + amount;
   }
-  
+
   const { data, error } = await supabase
     .from('wallet_balances')
     .update(updates)
     .eq('user_id', userId)
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -367,7 +367,7 @@ export const getLawGPTSessions = async (userId: string) => {
     .select('*')
     .eq('user_id', userId)
     .order('updated_at', { ascending: false });
-  
+
   if (error) {
     console.error('Error fetching LawGPT sessions:', error);
     return [];
@@ -385,21 +385,21 @@ export const createLawGPTSession = async (userId: string, title: string) => {
     }])
     .select()
     .single();
-  
+
   return { data, error };
 };
 
 export const updateLawGPTSession = async (sessionId: string, messages: any[]) => {
   const { data, error } = await supabase
     .from('lawgpt_sessions')
-    .update({ 
+    .update({
       messages,
       updated_at: new Date().toISOString()
     })
     .eq('id', sessionId)
     .select()
     .single();
-  
+
   return { data, error };
 };
 
@@ -410,17 +410,17 @@ export const getClientStats = async (userId: string) => {
     .from('consultations')
     .select('*', { count: 'exact', head: true })
     .eq('client_id', userId);
-  
+
   // Get active cases
   const { count: activeCases } = await supabase
     .from('consultations')
     .select('*', { count: 'exact', head: true })
     .eq('client_id', userId)
     .in('status', ['pending', 'accepted', 'in_progress']);
-  
+
   // Get wallet balance
   const walletBalance = await getWalletBalance(userId);
-  
+
   return {
     totalConsultations: totalConsultations || 0,
     activeCases: activeCases || 0,
@@ -435,43 +435,43 @@ export const getLawyerStats = async (userId: string) => {
     .from('consultations')
     .select('client_id')
     .eq('lawyer_id', userId);
-  
-  const uniqueClients = consultations 
-    ? new Set(consultations.map(c => c.client_id)).size 
+
+  const uniqueClients = consultations
+    ? new Set(consultations.map(c => c.client_id)).size
     : 0;
-  
+
   // Get total consultations
   const { count: totalConsultations } = await supabase
     .from('consultations')
     .select('*', { count: 'exact', head: true })
     .eq('lawyer_id', userId);
-  
+
   // Get completed consultations
   const { count: completedConsultations } = await supabase
     .from('consultations')
     .select('*', { count: 'exact', head: true })
     .eq('lawyer_id', userId)
     .eq('status', 'completed');
-  
+
   // Get wallet balance
   const walletBalance = await getWalletBalance(userId);
-  
+
   // Get this month's earnings
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
   startOfMonth.setHours(0, 0, 0, 0);
-  
+
   const { data: monthlyTransactions } = await supabase
     .from('transactions')
     .select('amount')
     .eq('user_id', userId)
     .eq('type', 'credit')
     .gte('created_at', startOfMonth.toISOString());
-  
+
   const monthlyEarnings = monthlyTransactions
     ? monthlyTransactions.reduce((sum, t) => sum + t.amount, 0)
     : 0;
-  
+
   return {
     totalClients: uniqueClients,
     totalConsultations: totalConsultations || 0,
@@ -486,7 +486,7 @@ export const getLawyerStats = async (userId: string) => {
 // Recent activity functions
 export const getRecentActivity = async (userId: string, userType: 'client' | 'lawyer', limit: number = 10) => {
   const activities: any[] = [];
-  
+
   // Get recent consultations
   const field = userType === 'client' ? 'client_id' : 'lawyer_id';
   const { data: consultations } = await supabase
@@ -501,11 +501,11 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
     .eq(field, userId)
     .order('created_at', { ascending: false })
     .limit(limit);
-  
+
   if (consultations) {
     activities.push(...consultations.map(c => {
       let participantName: string | undefined;
-      
+
       if (userType === 'client') {
         // For clients, get lawyer name
         const lawyer = (c as any).lawyer;
@@ -515,7 +515,7 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
         const client = (c as any).client;
         participantName = Array.isArray(client) ? client[0]?.full_name : client?.full_name;
       }
-      
+
       return {
         id: c.id,
         type: 'consultation',
@@ -526,7 +526,7 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
       };
     }));
   }
-  
+
   // Get recent transactions
   const { data: transactions } = await supabase
     .from('transactions')
@@ -534,7 +534,7 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(5);
-  
+
   if (transactions) {
     activities.push(...transactions.map(t => ({
       id: t.id,
@@ -546,9 +546,67 @@ export const getRecentActivity = async (userId: string, userType: 'client' | 'la
       date: t.created_at
     })));
   }
-  
+
   // Sort all activities by date
   activities.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  
+
   return activities.slice(0, limit);
+};
+
+// Notification functions
+export const getNotifications = async (userId: string) => {
+  // For now, we'll generate notifications from recent service requests and contact messages
+  // In a real app, you'd have a dedicated notifications table
+  const notifications: any[] = [];
+
+  try {
+    // 1. Get recent service request updates
+    const { data: requests } = await supabase
+      .from('service_requests')
+      .select('id, service_type, status, updated_at, service_number')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: false })
+      .limit(5);
+
+    if (requests) {
+      notifications.push(...requests.map(req => ({
+        id: req.id,
+        type: req.status === 'completed' ? 'success' : 'info',
+        title: `Service Update: ${req.service_type}`,
+        message: `Your request (${req.service_number}) is now ${req.status.replace('_', ' ')}. Email notification sent.`,
+        time: new Date(req.updated_at).toLocaleString(),
+        read: false,
+        source: 'service_request'
+      })));
+    }
+
+    // 2. Get recent contact messages (if admin or self)
+    // For demo/MVP, we'll just show a "Message Received" notification if the user has sent one recently
+    const { data: messages } = await supabase
+      .from('contact_messages')
+      .select('id, created_at, message')
+      .eq('email', (await supabase.auth.getUser()).data.user?.email || '')
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (messages) {
+      notifications.push(...messages.map(msg => ({
+        id: msg.id,
+        type: 'success',
+        title: 'Message Sent',
+        message: 'We received your message. Our team will contact you shortly.',
+        time: new Date(msg.created_at).toLocaleString(),
+        read: false,
+        source: 'contact_message'
+      })));
+    }
+
+    // Sort by time
+    notifications.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+
+  } catch (error) {
+    console.error('Error getting notifications:', error);
+  }
+
+  return notifications;
 };

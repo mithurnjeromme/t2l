@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 // Lawyer matching schema
 const schema = z.object({
-  legalNeedDescription: z.string().min(10, { message: "Please provide a more detailed description (at least 10 characters)."}),
+  legalNeedDescription: z.string().min(10, { message: "Please provide a more detailed description (at least 10 characters)." }),
 });
 
 export type FormState = {
@@ -104,13 +104,31 @@ This message was sent from the Turn2Law contact form at ${new Date().toLocaleStr
     console.log(emailContent);
     console.log('===================================\n');
 
+    // Insert into Supabase
+    const { supabase } = await import('@/lib/supabase');
+    const { error: dbError } = await supabase
+      .from('contact_messages')
+      .insert({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        phone: mobile,
+        message,
+        status: 'new'
+      });
+
+    if (dbError) {
+      console.error('Failed to save contact message to database:', dbError);
+      // We continue to try sending email even if DB save fails, or you could return error here
+    }
+
     // Try to send email using Resend if API key is configured
     if (process.env.RESEND_API_KEY) {
       try {
         // Dynamically import Resend to avoid errors if not installed
         const { Resend } = await import('resend');
         const resend = new Resend(process.env.RESEND_API_KEY);
-        
+
         await resend.emails.send({
           from: 'Turn2Law Contact Form <onboarding@resend.dev>', // Use your verified domain in production
           to: 'turntwolaw@gmail.com',
@@ -118,7 +136,7 @@ This message was sent from the Turn2Law contact form at ${new Date().toLocaleStr
           text: emailContent,
           replyTo: email, // Allows you to reply directly to the sender
         });
-        
+
         console.log('✅ Email sent successfully to turntwolaw@gmail.com');
       } catch (emailError) {
         console.error('❌ Failed to send email via Resend:', emailError);
@@ -129,15 +147,15 @@ This message was sent from the Turn2Law contact form at ${new Date().toLocaleStr
       console.warn('📧 To receive emails, follow the setup guide in /frontend/docs/EMAIL_SETUP_GUIDE.md');
     }
 
-    return { 
+    return {
       message: "Thank you for contacting us! We'll get back to you shortly.",
-      success: true 
+      success: true
     };
   } catch (e) {
     console.error('Contact form error:', e);
-    return { 
-      message: "Failed to send message. Please try again later.", 
-      error: "Server error" 
+    return {
+      message: "Failed to send message. Please try again later.",
+      error: "Server error"
     };
   }
 }

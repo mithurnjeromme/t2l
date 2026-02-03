@@ -101,7 +101,7 @@ const ServicesDropdown = () => {
       </button>
 
       {isOpen && (
-        <div 
+        <div
           className="absolute top-full left-1/2 -translate-x-1/2 pt-2"
           style={{ marginTop: '0' }}
         >
@@ -360,9 +360,11 @@ const HeaderUserDropdown = ({
             Analytics
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem className="cursor-pointer text-foreground hover:bg-muted">
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
+        <DropdownMenuItem className="cursor-pointer text-foreground hover:bg-muted" asChild>
+          <Link href="/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            Settings
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-border/50" />
         <DropdownMenuItem
@@ -390,28 +392,28 @@ const NotificationsPopover = ({ user }: { user: any }) => {
 
   // Real-time notifications integration
   useEffect(() => {
-    // TODO: Integrate with your real-time notification system
-    // Examples:
-    // 1. WebSocket connection for real-time updates
-    // 2. Server-Sent Events (SSE)
-    // 3. Polling API every few seconds
-    // 4. Push notifications
-    // Example implementation:
-    // const fetchNotifications = async () => {
-    //   try {
-    //     const response = await fetch(`/api/notifications/${user.id}`, {
-    //       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-    //     });
-    //     const data = await response.json();
-    //     setNotifications(data.notifications);
-    //   } catch (error) {
-    //     console.error('Failed to fetch notifications:', error);
-    //   }
-    // };
-    //
-    // fetchNotifications();
-    // const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
-    // return () => clearInterval(interval);
+    const fetchNotifications = async () => {
+      if (!user?.id) return;
+
+      try {
+        const { getNotifications } = await import('@/lib/supabase');
+        const data = await getNotifications(user.id);
+        const mappedData = data.map((n: any) => ({
+          ...n,
+          time: new Date(n.time).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          })
+        }));
+        setNotifications(mappedData);
+      } catch (error) {
+        console.error('Failed to fetch notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+    // Poll every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
   }, [user.id]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -609,16 +611,16 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
   const checkAuthSession = async () => {
     try {
       const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
-      
+
       // Check for active Supabase session
       const session = await getSession();
-      
+
       if (session && session.user) {
         console.log('[Header] Session found, fetching profile...');
-        
+
         // Fetch user profile
         const profile = await getUserProfile(session.user.id);
-        
+
         if (profile) {
           setUser({
             id: profile.id,
@@ -645,10 +647,10 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
       document.body.style.overflow = 'unset';
       return;
     }
-    
+
     // Prevent body scroll when menu is open
     document.body.style.overflow = 'hidden';
-    
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileMenuOpen(false);
     };

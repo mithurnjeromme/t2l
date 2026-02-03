@@ -538,14 +538,14 @@ export default function LawGPTPage() {
         console.log('[LawGPT] Checking Supabase Auth session...');
         setIsAuthChecking(true);
         const { getSession, getUserProfile } = await import('@/lib/supabase-auth');
-        
+
         const session = await getSession();
-        
+
         if (session && session.user) {
           console.log('[LawGPT] User authenticated:', session.user.id);
           setIsAuthenticated(true);
           setUserId(session.user.id);
-          
+
           // Load daily message count from localStorage
           const today = new Date().toDateString();
           const storedData = localStorage.getItem(`lawgpt_daily_${session.user.id}`);
@@ -570,7 +570,7 @@ export default function LawGPTPage() {
         setIsAuthChecking(false);
       }
     };
-    
+
     checkAuth();
   }, []);
 
@@ -578,10 +578,10 @@ export default function LawGPTPage() {
   useEffect(() => {
     const loadUserAndSessions = async () => {
       if (!userId) return;
-      
+
       try {
         const { getLawGPTSessions } = await import('@/lib/supabase');
-        
+
         // Load existing chat sessions
         const sessions = await getLawGPTSessions(userId);
         const formattedSessions: ChatSession[] = sessions.map((session: any) => ({
@@ -591,7 +591,7 @@ export default function LawGPTPage() {
           createdAt: new Date(session.created_at),
           updatedAt: new Date(session.updated_at)
         }));
-        
+
         setChatSessions(formattedSessions);
       } catch (error) {
         console.error('Error loading chat sessions:', error);
@@ -613,7 +613,7 @@ export default function LawGPTPage() {
 
       try {
         const { createLawGPTSession, updateLawGPTSession } = await import('@/lib/supabase');
-        
+
         // Generate title from first user message
         const title = chatHistory.find(msg => msg.type === 'user')?.content.substring(0, 50) + '...' || 'New Chat';
 
@@ -621,16 +621,16 @@ export default function LawGPTPage() {
           // Create new session
           console.log('[LawGPT] Creating new session with title:', title);
           const { data, error } = await createLawGPTSession(userId, title);
-          
+
           if (error) {
             console.error('[LawGPT] Error creating session:', error);
             return;
           }
-          
+
           if (data) {
             console.log('[LawGPT] Session created successfully:', data);
             setCurrentSessionId(data.id);
-            
+
             // Update session with messages
             console.log('[LawGPT] Updating session with messages:', chatHistory.length);
             const updateResult = await updateLawGPTSession(data.id, chatHistory);
@@ -639,7 +639,7 @@ export default function LawGPTPage() {
             } else {
               console.log('[LawGPT] Session messages updated successfully');
             }
-            
+
             // Add to sessions list
             setChatSessions(prev => [{
               id: data.id,
@@ -654,15 +654,15 @@ export default function LawGPTPage() {
           // Update existing session
           console.log('[LawGPT] Updating existing session:', currentSessionId);
           const { data, error } = await updateLawGPTSession(currentSessionId, chatHistory);
-          
+
           if (error) {
             console.error('[LawGPT] Error updating session:', error);
           } else {
             console.log('[LawGPT] Session updated successfully');
           }
-          
+
           // Update in sessions list
-          setChatSessions(prev => prev.map(session => 
+          setChatSessions(prev => prev.map(session =>
             session.id === currentSessionId
               ? { ...session, messages: chatHistory, updatedAt: new Date() }
               : session
@@ -771,7 +771,7 @@ export default function LawGPTPage() {
       }
 
       const responseText = await response.text();
-      
+
       // Parse JSON response and extract the "response" field
       try {
         const jsonResponse = JSON.parse(responseText);
@@ -801,18 +801,21 @@ export default function LawGPTPage() {
         // Still checking auth, wait a moment
         return;
       }
-      
+
       if (!isAuthenticated || !userId) {
         alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
         window.location.href = '/login';
         return;
       }
 
+      /*
+      // Daily limit bypassed as per request
       // Check daily message limit (5 messages per day)
       if (dailyMessageCount >= 5) {
         setShowLimitModal(true);
         return;
       }
+      */
 
       const currentMessage = message.trim();
 
@@ -826,11 +829,13 @@ export default function LawGPTPage() {
         currentTextarea.style.height = "24px";
       }
 
+      /*
       // Increment daily message count
       const newCount = dailyMessageCount + 1;
       setDailyMessageCount(newCount);
       const today = new Date().toDateString();
       localStorage.setItem(`lawgpt_daily_${userId}`, JSON.stringify({ date: today, count: newCount }));
+      */
 
       // Don't set currentSessionId here - let the save effect create it in Supabase
       // The UUID will be generated by Supabase and returned in the create response
@@ -856,7 +861,7 @@ export default function LawGPTPage() {
         };
 
         setChatHistory((prev) => [...prev, aiMessage]);
-        
+
         // Set loading to false after message is added
         setAiLoading(false);
       } catch (error) {
@@ -1074,94 +1079,94 @@ export default function LawGPTPage() {
               <div className="space-y-6 sm:space-y-8">
                 {chatHistory.map((chat, index) => (
                   <div key={chat.id} className="w-full">
-                      {chat.type === "user" ? (
-                        <div className="flex justify-end w-full">
-                          <div className="max-w-[90%] sm:max-w-lg">
-                            <AutoBubble
-                              message={chat.content}
-                              messageId={chat.id}
-                            />
-                          </div>
+                    {chat.type === "user" ? (
+                      <div className="flex justify-end w-full">
+                        <div className="max-w-[90%] sm:max-w-lg">
+                          <AutoBubble
+                            message={chat.content}
+                            messageId={chat.id}
+                          />
                         </div>
-                      ) : (
-                        <div className="flex flex-col gap-3 sm:gap-4 w-full">
-                          <div
-                            className="text-gray-700 dark:text-white/90 text-base sm:text-lg leading-relaxed sm:leading-7 prose prose-sm sm:prose-lg dark:prose-invert max-w-none"
-                            style={{ fontFamily: "Instrument Sans, sans-serif" }}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3 sm:gap-4 w-full">
+                        <div
+                          className="text-gray-700 dark:text-white/90 text-base sm:text-lg leading-relaxed sm:leading-7 prose prose-sm sm:prose-lg dark:prose-invert max-w-none"
+                          style={{ fontFamily: "Instrument Sans, sans-serif" }}
+                        >
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            rehypePlugins={[rehypeRaw]}
+                            components={{
+                              h1: ({ node, ...props }) => (
+                                <h1 className="text-xl sm:text-2xl font-bold mt-4 sm:mt-6 mb-3 sm:mb-4 text-gray-900 dark:text-white" {...props} />
+                              ),
+                              h2: ({ node, ...props }) => (
+                                <h2 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5 mb-2 sm:mb-3 text-gray-900 dark:text-white" {...props} />
+                              ),
+                              h3: ({ node, ...props }) => (
+                                <h3 className="text-base sm:text-lg font-bold mt-3 sm:mt-4 mb-2 text-gray-900 dark:text-white" {...props} />
+                              ),
+                              p: ({ node, ...props }) => (
+                                <p className="mb-2 sm:mb-3 text-gray-700 dark:text-white/90" {...props} />
+                              ),
+                              ul: ({ node, ...props }) => (
+                                <ul className="list-disc pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
+                              ),
+                              ol: ({ node, ...props }) => (
+                                <ol className="list-decimal pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
+                              ),
+                              li: ({ node, ...props }) => (
+                                <li className="text-gray-700 dark:text-white/90 text-sm sm:text-base" {...props} />
+                              ),
+                              strong: ({ node, ...props }) => (
+                                <strong className="font-bold text-gray-900 dark:text-white" {...props} />
+                              ),
+                              em: ({ node, ...props }) => (
+                                <em className="italic" {...props} />
+                              ),
+                              table: ({ node, ...props }) => (
+                                <div className="overflow-x-auto my-4">
+                                  <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600" {...props} />
+                                </div>
+                              ),
+                              thead: ({ node, ...props }) => (
+                                <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
+                              ),
+                              tbody: ({ node, ...props }) => (
+                                <tbody {...props} />
+                              ),
+                              tr: ({ node, ...props }) => (
+                                <tr className="border-b border-gray-300 dark:border-gray-600" {...props} />
+                              ),
+                              th: ({ node, ...props }) => (
+                                <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-left font-bold text-xs sm:text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" {...props} />
+                              ),
+                              td: ({ node, ...props }) => (
+                                <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-base text-gray-700 dark:text-white/90 border border-gray-300 dark:border-gray-600" {...props} />
+                              ),
+                              code: ({ node, inline, ...props }: any) => (
+                                inline ? (
+                                  <code className="bg-gray-100 dark:bg-gray-800 px-1 sm:px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono" {...props} />
+                                ) : (
+                                  <code className="block bg-gray-100 dark:bg-gray-800 p-2 sm:p-3 rounded text-xs sm:text-sm font-mono overflow-x-auto" {...props} />
+                                )
+                              ),
+                              blockquote: ({ node, ...props }) => (
+                                <blockquote className="border-l-4 border-[#3C9B97] pl-4 my-3 italic text-gray-600 dark:text-gray-400" {...props} />
+                              ),
+                              hr: ({ node, ...props }) => (
+                                <hr className="my-6 border-gray-300 dark:border-gray-600" {...props} />
+                              ),
+                            }}
                           >
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              rehypePlugins={[rehypeRaw]}
-                              components={{
-                                h1: ({ node, ...props }) => (
-                                  <h1 className="text-xl sm:text-2xl font-bold mt-4 sm:mt-6 mb-3 sm:mb-4 text-gray-900 dark:text-white" {...props} />
-                                ),
-                                h2: ({ node, ...props }) => (
-                                  <h2 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5 mb-2 sm:mb-3 text-gray-900 dark:text-white" {...props} />
-                                ),
-                                h3: ({ node, ...props }) => (
-                                  <h3 className="text-base sm:text-lg font-bold mt-3 sm:mt-4 mb-2 text-gray-900 dark:text-white" {...props} />
-                                ),
-                                p: ({ node, ...props }) => (
-                                  <p className="mb-2 sm:mb-3 text-gray-700 dark:text-white/90" {...props} />
-                                ),
-                                ul: ({ node, ...props }) => (
-                                  <ul className="list-disc pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
-                                ),
-                                ol: ({ node, ...props }) => (
-                                  <ol className="list-decimal pl-4 sm:pl-6 mb-2 sm:mb-3 space-y-1" {...props} />
-                                ),
-                                li: ({ node, ...props }) => (
-                                  <li className="text-gray-700 dark:text-white/90 text-sm sm:text-base" {...props} />
-                                ),
-                                strong: ({ node, ...props }) => (
-                                  <strong className="font-bold text-gray-900 dark:text-white" {...props} />
-                                ),
-                                em: ({ node, ...props }) => (
-                                  <em className="italic" {...props} />
-                                ),
-                                table: ({ node, ...props }) => (
-                                  <div className="overflow-x-auto my-4">
-                                    <table className="min-w-full border-collapse border border-gray-300 dark:border-gray-600" {...props} />
-                                  </div>
-                                ),
-                                thead: ({ node, ...props }) => (
-                                  <thead className="bg-gray-100 dark:bg-gray-800" {...props} />
-                                ),
-                                tbody: ({ node, ...props }) => (
-                                  <tbody {...props} />
-                                ),
-                                tr: ({ node, ...props }) => (
-                                  <tr className="border-b border-gray-300 dark:border-gray-600" {...props} />
-                                ),
-                                th: ({ node, ...props }) => (
-                                  <th className="px-2 sm:px-4 py-1.5 sm:py-2 text-left font-bold text-xs sm:text-base text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600" {...props} />
-                                ),
-                                td: ({ node, ...props }) => (
-                                  <td className="px-2 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-base text-gray-700 dark:text-white/90 border border-gray-300 dark:border-gray-600" {...props} />
-                                ),
-                                code: ({ node, inline, ...props }: any) => (
-                                  inline ? (
-                                    <code className="bg-gray-100 dark:bg-gray-800 px-1 sm:px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono" {...props} />
-                                  ) : (
-                                    <code className="block bg-gray-100 dark:bg-gray-800 p-2 sm:p-3 rounded text-xs sm:text-sm font-mono overflow-x-auto" {...props} />
-                                  )
-                                ),
-                                blockquote: ({ node, ...props }) => (
-                                  <blockquote className="border-l-4 border-[#3C9B97] pl-4 my-3 italic text-gray-600 dark:text-gray-400" {...props} />
-                                ),
-                                hr: ({ node, ...props }) => (
-                                  <hr className="my-6 border-gray-300 dark:border-gray-600" {...props} />
-                                ),
-                              }}
-                            >
-                              {chat.content}
-                            </ReactMarkdown>
-                          </div>
+                            {chat.content}
+                          </ReactMarkdown>
                         </div>
-                      )}
-                    </div>
-                  )
+                      </div>
+                    )}
+                  </div>
+                )
                 )}
 
                 {aiLoading && (
