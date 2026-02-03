@@ -21,9 +21,9 @@ export interface SignInData {
  */
 export const signUpWithEmail = async (data: SignUpData) => {
   const { email, password, fullName, userType, phone, city } = data;
-  
+
   console.log('[Supabase Auth] Signing up user:', email);
-  
+
   // Create auth user in Supabase WITHOUT email confirmation
   const { data: authData, error: authError } = await supabase.auth.signUp({
     email,
@@ -45,7 +45,7 @@ export const signUpWithEmail = async (data: SignUpData) => {
   }
 
   console.log('[Supabase Auth] Signup successful:', authData.user?.id);
-  
+
   // Profile will be created automatically by database trigger
   return { user: authData.user, session: authData.session };
 };
@@ -55,9 +55,9 @@ export const signUpWithEmail = async (data: SignUpData) => {
  */
 export const signInWithEmail = async (data: SignInData) => {
   const { email, password } = data;
-  
+
   console.log('[Supabase Auth] Signing in user:', email);
-  
+
   const { data: authData, error } = await supabase.auth.signInWithPassword({
     email,
     password
@@ -69,7 +69,7 @@ export const signInWithEmail = async (data: SignInData) => {
   }
 
   console.log('[Supabase Auth] Sign in successful:', authData.user?.id);
-  
+
   return { user: authData.user, session: authData.session };
 };
 
@@ -78,14 +78,14 @@ export const signInWithEmail = async (data: SignInData) => {
  */
 export const signOut = async () => {
   console.log('[Supabase Auth] Signing out');
-  
+
   const { error } = await supabase.auth.signOut();
-  
+
   if (error) {
     console.error('[Supabase Auth] Sign out error:', error);
     throw error;
   }
-  
+
   console.log('[Supabase Auth] Sign out successful');
 };
 
@@ -94,12 +94,12 @@ export const signOut = async () => {
  */
 export const getSession = async () => {
   const { data: { session }, error } = await supabase.auth.getSession();
-  
+
   if (error) {
     console.error('[Supabase Auth] Get session error:', error);
     throw error;
   }
-  
+
   return session;
 };
 
@@ -108,12 +108,12 @@ export const getSession = async () => {
  */
 export const getCurrentAuthUser = async () => {
   const { data: { user }, error } = await supabase.auth.getUser();
-  
+
   if (error) {
     console.error('[Supabase Auth] Get user error:', error);
     throw error;
   }
-  
+
   return user;
 };
 
@@ -122,16 +122,16 @@ export const getCurrentAuthUser = async () => {
  */
 export const resetPasswordRequest = async (email: string) => {
   console.log('[Supabase Auth] Requesting password reset for:', email);
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/reset-password`,
   });
-  
+
   if (error) {
     console.error('[Supabase Auth] Password reset request error:', error);
     throw error;
   }
-  
+
   console.log('[Supabase Auth] Password reset email sent');
 };
 
@@ -140,16 +140,16 @@ export const resetPasswordRequest = async (email: string) => {
  */
 export const updatePassword = async (newPassword: string) => {
   console.log('[Supabase Auth] Updating password');
-  
+
   const { error } = await supabase.auth.updateUser({
     password: newPassword
   });
-  
+
   if (error) {
     console.error('[Supabase Auth] Update password error:', error);
     throw error;
   }
-  
+
   console.log('[Supabase Auth] Password updated successfully');
 };
 
@@ -185,7 +185,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
  * Get user profile from database
  */
 export const getUserProfile = async (userId: string) => {
-  const { data, error} = await supabase
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('id', userId)
@@ -205,6 +205,28 @@ export const getUserProfile = async (userId: string) => {
 };
 
 /**
+ * Update user profile
+ */
+export const updateUserProfile = async (userId: string, updates: { full_name?: string; city?: string }) => {
+  console.log('[Supabase Auth] Updating profile for:', userId, updates);
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .update(updates)
+    .eq('id', userId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('[Supabase Auth] Update profile error:', error);
+    throw error;
+  }
+
+  console.log('[Supabase Auth] Profile updated successfully');
+  return data;
+};
+
+/**
  * ==========================================
  * ENHANCED AUTH METHODS - Google, OTP, Magic Link
  * ==========================================
@@ -216,7 +238,7 @@ export const getUserProfile = async (userId: string) => {
  */
 export const signInWithGoogle = async () => {
   console.log('[Supabase Auth] Initiating Google Sign-in');
-  
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
@@ -243,7 +265,7 @@ export const signInWithGoogle = async () => {
  */
 export const signInWithPhoneOTP = async (phone: string) => {
   console.log('[Supabase Auth] Sending OTP to:', phone);
-  
+
   const { data, error } = await supabase.auth.signInWithOtp({
     phone,
     options: {
@@ -266,7 +288,7 @@ export const signInWithPhoneOTP = async (phone: string) => {
  */
 export const verifyPhoneOTP = async (phone: string, token: string) => {
   console.log('[Supabase Auth] Verifying OTP for:', phone);
-  
+
   const { data, error } = await supabase.auth.verifyOtp({
     phone,
     token,
@@ -288,7 +310,7 @@ export const verifyPhoneOTP = async (phone: string, token: string) => {
  */
 export const signInWithMagicLink = async (email: string) => {
   console.log('[Supabase Auth] Sending magic link to:', email);
-  
+
   const { data, error } = await supabase.auth.signInWithOtp({
     email,
     options: {
@@ -311,9 +333,9 @@ export const signInWithMagicLink = async (email: string) => {
  */
 export const resendVerificationEmail = async () => {
   console.log('[Supabase Auth] Resending verification email');
-  
+
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user || !user.email) {
     throw new Error('No user logged in or email not found');
   }
@@ -355,7 +377,7 @@ export const isPhoneVerified = async (): Promise<boolean> => {
  */
 export const updateEmail = async (newEmail: string) => {
   console.log('[Supabase Auth] Updating email to:', newEmail);
-  
+
   const { error } = await supabase.auth.updateUser({
     email: newEmail
   });
@@ -373,7 +395,7 @@ export const updateEmail = async (newEmail: string) => {
  */
 export const updatePhone = async (newPhone: string) => {
   console.log('[Supabase Auth] Updating phone to:', newPhone);
-  
+
   const { error } = await supabase.auth.updateUser({
     phone: newPhone
   });
@@ -391,9 +413,9 @@ export const updatePhone = async (newPhone: string) => {
  */
 export const getAuthProviders = async () => {
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) return [];
-  
+
   // Get app metadata which includes providers
   return user.app_metadata?.providers || [];
 };
@@ -403,7 +425,7 @@ export const getAuthProviders = async () => {
  */
 export const linkGoogleAccount = async () => {
   console.log('[Supabase Auth] Linking Google account');
-  
+
   const { data, error } = await supabase.auth.linkIdentity({
     provider: 'google',
   });
@@ -422,16 +444,16 @@ export const linkGoogleAccount = async () => {
  */
 export const unlinkProvider = async (provider: 'google' | 'phone') => {
   console.log('[Supabase Auth] Unlinking provider:', provider);
-  
+
   const { data: { user } } = await supabase.auth.getUser();
-  
+
   if (!user) {
     throw new Error('No user logged in');
   }
 
   // Find the identity to unlink
   const identity = user.identities?.find((id: any) => id.provider === provider);
-  
+
   if (!identity) {
     throw new Error(`No ${provider} identity found`);
   }

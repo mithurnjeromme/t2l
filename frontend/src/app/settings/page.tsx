@@ -6,7 +6,8 @@ import Header from '@/components/layout/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Settings as SettingsIcon, Shield, Bell } from 'lucide-react';
+import { Input } from '@/components/ui/input'; // Assuming Input component exists
+import { Settings as SettingsIcon, Shield, Bell, Save, X } from 'lucide-react';
 import { getClientStats } from '@/lib/supabase';
 
 interface User {
@@ -30,6 +31,10 @@ export default function SettingsPage() {
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [resetLoading, setResetLoading] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editForm, setEditForm] = useState({ fullName: '', city: '' });
+    const [saveLoading, setSaveLoading] = useState(false);
+
     const [stats, setStats] = useState<ClientStats>({
         totalConsultations: 0,
         activeCases: 0,
@@ -90,6 +95,52 @@ export default function SettingsPage() {
         }
     };
 
+    const handleEditClick = () => {
+        if (user) {
+            setEditForm({
+                fullName: user.fullName || '',
+                city: user.city || ''
+            });
+            setIsEditing(true);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setEditForm({ fullName: '', city: '' });
+    };
+
+    const handleSaveProfile = async () => {
+        if (!user) return;
+
+        setSaveLoading(true);
+        try {
+            const { updateUserProfile } = await import('@/lib/supabase-auth');
+
+            const updates = {
+                full_name: editForm.fullName,
+                city: editForm.city
+            };
+
+            await updateUserProfile(user.id, updates);
+
+            // Update local state
+            setUser(prev => prev ? {
+                ...prev,
+                fullName: editForm.fullName,
+                city: editForm.city
+            } : null);
+
+            setIsEditing(false);
+            alert('Profile updated successfully!');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            alert('Failed to update profile. Please try again.');
+        } finally {
+            setSaveLoading(false);
+        }
+    };
+
     const handlePasswordReset = async () => {
         if (!user?.email || resetLoading) return;
 
@@ -139,35 +190,81 @@ export default function SettingsPage() {
                     <div className="lg:col-span-2">
                         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                             <CardHeader>
-                                <CardTitle className="text-xl font-headline">Profile Information</CardTitle>
-                                <p className="text-sm text-muted-foreground font-body">Manage your personal information and preferences</p>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <CardTitle className="text-xl font-headline">Profile Information</CardTitle>
+                                        <p className="text-sm text-muted-foreground font-body">Manage your personal information and preferences</p>
+                                    </div>
+                                    {isEditing && (
+                                        <Badge variant="outline" className="text-primary border-primary/50">Editing Mode</Badge>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-muted-foreground">Full Name</label>
-                                        <p className="text-lg font-medium">{user.fullName}</p>
+                                        {isEditing ? (
+                                            <Input
+                                                value={editForm.fullName}
+                                                onChange={(e) => setEditForm(prev => ({ ...prev, fullName: e.target.value }))}
+                                                className="bg-muted/50"
+                                            />
+                                        ) : (
+                                            <p className="text-lg font-medium">{user.fullName}</p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-muted-foreground">Email Address</label>
-                                        <p className="text-lg font-medium">{user.email}</p>
+                                        <p className="text-lg font-medium text-muted-foreground/80">{user.email}</p>
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-muted-foreground">City</label>
-                                        <p className="text-lg font-medium">{user.city || 'Not specified'}</p>
+                                        {isEditing ? (
+                                            <Input
+                                                value={editForm.city}
+                                                onChange={(e) => setEditForm(prev => ({ ...prev, city: e.target.value }))}
+                                                className="bg-muted/50"
+                                                placeholder="Enter your city"
+                                            />
+                                        ) : (
+                                            <p className="text-lg font-medium">{user.city || 'Not specified'}</p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-muted-foreground">Account Type</label>
-                                        <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30 capitalize">
+                                        <Badge variant="secondary" className="bg-secondary/20 text-secondary border-secondary/30 capitalize block w-fit">
                                             {user.userType} Account
                                         </Badge>
                                     </div>
                                 </div>
-                                <div className="pt-4 border-t border-border/50">
-                                    <Button size="lg">
-                                        <SettingsIcon className="mr-2 h-5 w-5" />
-                                        Edit Profile
-                                    </Button>
+                                <div className="pt-4 border-t border-border/50 flex gap-3">
+                                    {isEditing ? (
+                                        <>
+                                            <Button onClick={handleSaveProfile} disabled={saveLoading} className="min-w-[120px]">
+                                                {saveLoading ? (
+                                                    <span className="flex items-center">
+                                                        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
+                                                        Saving...
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        <Save className="mr-2 h-4 w-4" />
+                                                        Save Changes
+                                                    </>
+                                                )}
+                                            </Button>
+                                            <Button variant="outline" onClick={handleCancelEdit} disabled={saveLoading}>
+                                                <X className="mr-2 h-4 w-4" />
+                                                Cancel
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <Button size="lg" onClick={handleEditClick}>
+                                            <SettingsIcon className="mr-2 h-5 w-5" />
+                                            Edit Profile
+                                        </Button>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
