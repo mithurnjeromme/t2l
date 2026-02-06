@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/header';
@@ -9,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input'; // Assuming Input component exists
 import { Settings as SettingsIcon, Shield, Bell, Save, X } from 'lucide-react';
 import { getClientStats } from '@/lib/supabase';
+import { useNotification } from '@/contexts/notification-context';
 
 interface User {
     id: string;
@@ -28,6 +27,7 @@ interface ClientStats {
 
 export default function SettingsPage() {
     const router = useRouter();
+    const { showNotification } = useNotification();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [resetLoading, setResetLoading] = useState(false);
@@ -132,10 +132,10 @@ export default function SettingsPage() {
             } : null);
 
             setIsEditing(false);
-            alert('Profile updated successfully!');
+            showNotification('Profile updated successfully!', 'success');
         } catch (error) {
             console.error('Error updating profile:', error);
-            alert('Failed to update profile. Please try again.');
+            showNotification('Failed to update profile. Please try again.', 'error');
         } finally {
             setSaveLoading(false);
         }
@@ -148,17 +148,17 @@ export default function SettingsPage() {
         try {
             const { resetPasswordRequest } = await import('@/lib/supabase-auth');
             await resetPasswordRequest(user.email);
-            alert('Password reset link has been sent to your email.');
+            showNotification('Password reset link has been sent to your email!', 'success');
         } catch (error) {
             console.error('Error sending reset link:', error);
-            alert('Failed to send reset link. Please try again.');
+            showNotification('Failed to send reset link. Please try again.', 'error');
         } finally {
             setResetLoading(false);
         }
     };
 
     const handleNotificationSettings = () => {
-        alert('Notification settings will be available in the next update.');
+        showNotification('Notification settings will be available in the next update!', 'info');
     };
 
     if (loading) {

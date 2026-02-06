@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { MessagesProvider } from "@/lib/messages-context";
 import { ThemeProvider } from "@/lib/theme-context";
+import { NotificationProvider } from "@/contexts/notification-context";
 
 export const metadata: Metadata = {
   title: "Turn2Law - Your Trusted Legal Partner",
@@ -49,10 +50,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <ThemeProvider>
-          <MessagesProvider>
-            {children}
-            <Toaster />
-          </MessagesProvider>
+          <NotificationProvider>
+            <MessagesProvider>
+              {children}
+              <Toaster />
+            </MessagesProvider>
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html>
