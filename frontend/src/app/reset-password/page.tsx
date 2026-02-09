@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { ValidatedInput } from '@/components/ui/validated-input';
 import { updatePassword, resetPasswordRequest } from '@/lib/supabase-auth';
 import Link from 'next/link';
 
@@ -16,25 +16,104 @@ export default function ResetPasswordPage() {
   const [emailSent, setEmailSent] = useState(false);
   const [passwordChanged, setPasswordChanged] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [error, setError] = useState('');
+  const [tokenValid, setTokenValid] = useState(false);
+  const [validationState, setValidationState] = useState({
+    password: false,
+    confirmPassword: false,
+  });
 
-  // Check if this is a password update (user clicked link in email) - client side only
+  // Secure token handling - check session instead of URL params
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      setIsUpdate(params.get('type') === 'recovery' || !!params.get('access_token'));
-    }
+    const checkResetSession = async () => {
+      if (typeof window === 'undefined') return;
+
+      try {
+        const { supabase } = await import('@/lib/supabase');
+        
+        // Check if user has an active session (from reset link)
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (session) {
+          console.log('[Reset Password] Valid reset session detected');
+          setIsUpdate(true);
+          setTokenValid(true);
+          
+          // Clear URL parameters to prevent token leakage in browser history
+          // Use replaceState to avoid adding to history
+          if (window.location.search) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } else {
+          // Check URL params only for the secure flag
+          const params = new URLSearchParams(window.location.search);
+          const isSecureFlow = params.get('secure') === 'true';
+          
+          if (isSecureFlow) {
+            // Supabase should have set the session automatically
+            // If not, the token might be expired or invalid
+            setError('Reset link expired or invalid. Please request a new one.');
+          }
+          
+          setIsUpdate(false);
+        }
+      } catch (err) {
+        console.error('[Reset Password] Session check error:', err);
+        setError('Unable to verify reset link. Please try again.');
+      }
+    };
+
+    checkResetSession();
+    
+    // Listen for auth state changes (when user clicks the email link)
+    const { supabase } = require('@/lib/supabase');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        console.log('[Reset Password] Password recovery event detected');
+        setIsUpdate(true);
+        setTokenValid(true);
+        setError('');
+        
+        // Clear URL to prevent token exposure
+        if (window.location.search) {
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  const handleValidatedInputChange = (field: string, value: string, isValid: boolean) => {
+    if (field === 'password') {
+      setNewPassword(value);
+      setValidationState(prev => ({ ...prev, password: isValid }));
+    } else if (field === 'confirmPassword') {
+      setConfirmPassword(value);
+      // Validate that it matches the password
+      const matches = value === newPassword;
+      setValidationState(prev => ({ ...prev, confirmPassword: isValid && matches }));
+      if (value && !matches) {
+        setError('Passwords do not match');
+      } else {
+        setError('');
+      }
+    }
+  };
 
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
-      alert('Please enter your email address');
+      setError('Please enter your email address');
       return;
     }
 
     try {
       setIsLoading(true);
+      setError('');
       
       // Check if user signed up with Google (OAuth)
       const { supabase } = await import('@/lib/supabase');
@@ -48,7 +127,7 @@ export default function ResetPasswordPage() {
                                user.identities?.some(id => id.provider === 'google');
           
           if (isGoogleUser) {
-            alert('This account was created using Google Sign-in. Please use "Sign in with Google" button on the login page to access your account. No password is needed.');
+            setError('This account was created using Google Sign-in. Please use "Sign in with Google" button on the login page to access your account. No password is needed.');
             setIsLoading(false);
             return;
           }
@@ -59,7 +138,7 @@ export default function ResetPasswordPage() {
       setEmailSent(true);
     } catch (error: any) {
       console.error('Password reset request error:', error);
-      alert(error.message || 'Failed to send reset email');
+      setError(error.message || 'Failed to send reset email');
     } finally {
       setIsLoading(false);
     }
@@ -67,30 +146,41 @@ export default function ResetPasswordPage() {
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    if (!newPassword || !confirmPassword) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      alert('Password must be at least 6 characters');
+    // Validate both fields
+    if (!validationState.password) {
+      setError('Please enter a valid password that meets all requirements');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (!tokenValid) {
+      setError('Invalid or expired reset link. Please request a new one.');
       return;
     }
 
     try {
       setIsLoading(true);
       await updatePassword(newPassword);
+      
+      // Clear password from memory
+      setNewPassword('');
+      setConfirmPassword('');
+      
       setPasswordChanged(true);
-      setTimeout(() => router.push('/login'), 3000);
+      
+      // Redirect after a delay
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
     } catch (error: any) {
       console.error('Password update error:', error);
-      alert(error.message || 'Failed to update password');
+      setError(error.message || 'Failed to update password');
     } finally {
       setIsLoading(false);
     }
@@ -186,37 +276,55 @@ export default function ResetPasswordPage() {
 
           {isUpdate ? (
             <form onSubmit={handleUpdatePassword} className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="newPassword" className="text-sm font-medium text-foreground">
-                  New Password
-                </label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                  required
-                  minLength={6}
-                />
-              </div>
+              {/* Error Message */}
+              {error && (
+                <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {!tokenValid && (
+                <div className="p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200 text-sm">
+                  ⚠️ Verifying reset link... If this persists, please request a new reset link.
+                </div>
+              )}
+
+              <ValidatedInput
+                type="password"
+                value={newPassword}
+                onValueChange={(value, isValid) => handleValidatedInputChange('password', value, isValid)}
+                validationType="password"
+                showPasswordStrength={true}
+                placeholder="Enter new strong password"
+                label="New Password"
+                required
+                disabled={!tokenValid}
+              />
 
               <div className="space-y-2">
                 <label htmlFor="confirmPassword" className="text-sm font-medium text-foreground">
                   Confirm Password
                 </label>
-                <Input
-                  id="confirmPassword"
+                <ValidatedInput
                   type="password"
                   value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
+                  onValueChange={(value, isValid) => handleValidatedInputChange('confirmPassword', value, isValid)}
+                  validationType="password"
+                  placeholder="Confirm your new password"
                   required
-                  minLength={6}
+                  disabled={!tokenValid}
+                  className={confirmPassword && newPassword !== confirmPassword ? 'border-red-500' : ''}
                 />
+                {confirmPassword && newPassword !== confirmPassword && (
+                  <p className="text-sm text-red-500">Passwords do not match</p>
+                )}
               </div>
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading || !tokenValid || !validationState.password || newPassword !== confirmPassword}
+              >
                 {isLoading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -246,22 +354,28 @@ export default function ResetPasswordPage() {
               </div>
 
               <form onSubmit={handleRequestReset} className="space-y-4">
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-sm font-medium text-foreground">
-                    Email Address
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your.email@example.com"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Only for accounts created with email and password
-                  </p>
-                </div>
+                {/* Error Message */}
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 text-sm">
+                    {error}
+                  </div>
+                )}
+
+                <ValidatedInput
+                  type="email"
+                  value={email}
+                  onValueChange={(value, isValid) => {
+                    setEmail(value);
+                    setValidationState(prev => ({ ...prev, email: isValid }));
+                  }}
+                  validationType="email"
+                  placeholder="your.email@example.com"
+                  label="Email Address"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  Only for accounts created with email and password
+                </p>
 
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (

@@ -119,12 +119,14 @@ export const getCurrentAuthUser = async () => {
 
 /**
  * Request password reset email
+ * Uses secure PKCE flow to prevent token leakage
  */
 export const resetPasswordRequest = async (email: string) => {
   console.log('[Supabase Auth] Requesting password reset for:', email);
 
+  // Use the reset password flow with PKCE
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
+    redirectTo: `${window.location.origin}/reset-password?secure=true`,
   });
 
   if (error) {
@@ -136,10 +138,15 @@ export const resetPasswordRequest = async (email: string) => {
 };
 
 /**
- * Update user password
+ * Update user password with additional security checks
  */
 export const updatePassword = async (newPassword: string) => {
   console.log('[Supabase Auth] Updating password');
+
+  // Validate password strength before sending to server
+  if (newPassword.length < 8) {
+    throw new Error('Password must be at least 8 characters long');
+  }
 
   const { error } = await supabase.auth.updateUser({
     password: newPassword
@@ -151,6 +158,9 @@ export const updatePassword = async (newPassword: string) => {
   }
 
   console.log('[Supabase Auth] Password updated successfully');
+  
+  // Clear any sensitive data from memory
+  newPassword = '';
 };
 
 /**

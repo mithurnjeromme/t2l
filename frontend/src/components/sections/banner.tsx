@@ -6,9 +6,8 @@ const Banner = () => {
         <div className="animate-scroll whitespace-nowrap">
           <div className="inline-flex items-center gap-8 sm:gap-12 md:gap-16 text-white dark:text-white">
             {[
-              "SELECT FROM 200+ LAWYERS",
+              "SELECT FROM EXPERT LAWYERS",
               "TRUSTED BY 100+ USERS",
-              "POWERED BY AI",
               "MADE FOR INDIANS",
             ].map((text, i) => (
               <div key={i} className="flex items-center gap-3 sm:gap-4">
@@ -21,9 +20,8 @@ const Banner = () => {
 
             {/* Duplicate for seamless scroll */}
             {[
-              "SELECT FROM 200+ LAWYERS",
+              "SELECT FROM EXPERT LAWYERS",
               "TRUSTED BY 100+ USERS",
-              "POWERED BY AI",
               "MADE FOR INDIANS",
             ].map((text, i) => (
               <div

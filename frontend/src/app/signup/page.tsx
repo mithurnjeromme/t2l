@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ValidatedInput } from '@/components/ui/validated-input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
+import { validateFile } from '@/utils/validation';
 
 const Logo = () => (
   <>
@@ -177,6 +179,19 @@ const SignupPage = () => {
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState('');
   const [resendTimer, setResendTimer] = useState(0);
+  
+  // Validation state tracking
+  const [validationState, setValidationState] = useState<{ [key: string]: boolean }>({
+    name: false,
+    email: false,
+    password: false,
+    mobile: false,
+    city: false,
+    barNumber: false,
+    experience: false,
+    consultationFee: false,
+  });
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -196,6 +211,11 @@ const SignupPage = () => {
     consultationFee: ''
   });
 
+  const handleValidatedInputChange = (field: string, value: string, isValid: boolean) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    setValidationState(prev => ({ ...prev, [field]: isValid }));
+  };
+
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -203,15 +223,15 @@ const SignupPage = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select a valid image file');
-        return;
-      }
+      // Validate file using utility
+      const validation = validateFile(file, {
+        maxSize: 5 * 1024 * 1024, // 5MB
+        allowedTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'],
+        required: false
+      });
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image size should be less than 5MB');
+      if (!validation.isValid) {
+        alert(validation.error);
         return;
       }
       
@@ -232,6 +252,19 @@ const SignupPage = () => {
     setError('');
     
     try {
+      // Validate all required fields before submission
+      const requiredFields = signupType === 'lawyer'
+        ? ['name', 'email', 'password', 'mobile', 'barNumber', 'experience', 'consultationFee']
+        : ['name', 'email', 'password', 'mobile', 'city'];
+      
+      const invalidFields = requiredFields.filter(field => !validationState[field]);
+      
+      if (invalidFields.length > 0) {
+        setError(`Please correctly fill in: ${invalidFields.join(', ')}`);
+        setIsLoading(false);
+        return;
+      }
+      
       console.log('[Signup] Starting Supabase Auth registration...');
       
       // Import Supabase auth functions
@@ -388,31 +421,39 @@ const SignupPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Common fields */}
-            <Input
+            <ValidatedInput
               type="text"
-              placeholder="Name"
+              placeholder="Full Name"
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              onValueChange={(value, isValid) => handleValidatedInputChange('name', value, isValid)}
+              validationType="text"
+              textOptions={{ minLength: 2, maxLength: 100 }}
               className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
+              label="Full Name"
             />
 
-            <Input
+            <ValidatedInput
               type="email"
-              placeholder="Email"
+              placeholder="Email Address"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onValueChange={(value, isValid) => handleValidatedInputChange('email', value, isValid)}
+              validationType="email"
               className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
+              label="Email Address"
             />
 
-            <Input
+            <ValidatedInput
               type="password"
-              placeholder="Password"
+              placeholder="Create Strong Password"
               value={formData.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
+              onValueChange={(value, isValid) => handleValidatedInputChange('password', value, isValid)}
+              validationType="password"
+              showPasswordStrength={true}
               className="bg-background border-border text-foreground placeholder-muted-foreground"
               required
+              label="Password"
             />
 
             {/* Mobile number */}
@@ -425,11 +466,13 @@ const SignupPage = () => {
                 className="w-20 bg-background border-border text-foreground placeholder-muted-foreground text-center"
                 required
               />
-              <Input
+              <ValidatedInput
                 type="tel"
                 placeholder="Mobile Number"
                 value={formData.mobile}
-                onChange={(e) => handleInputChange('mobile', e.target.value)}
+                onValueChange={(value, isValid) => handleValidatedInputChange('mobile', value, isValid)}
+                validationType="phone"
+                countryCode={formData.countryCode}
                 className="flex-1 bg-background border-border text-foreground placeholder-muted-foreground"
                 required
               />
@@ -438,13 +481,16 @@ const SignupPage = () => {
             {/* User specific fields */}
             {signupType === 'user' && (
               <>
-                <Input
+                <ValidatedInput
                   type="text"
                   placeholder="City"
                   value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
+                  onValueChange={(value, isValid) => handleValidatedInputChange('city', value, isValid)}
+                  validationType="text"
+                  textOptions={{ minLength: 2, maxLength: 50, allowSpecialChars: false }}
                   className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
+                  label="City"
                 />
               </>
             )}
@@ -452,22 +498,26 @@ const SignupPage = () => {
             {/* Lawyer specific fields */}
             {signupType === 'lawyer' && (
               <>
-                <Input
+                <ValidatedInput
                   type="text"
                   placeholder="Bar Council Registration Number"
                   value={formData.barNumber}
-                  onChange={(e) => handleInputChange('barNumber', e.target.value)}
+                  onValueChange={(value, isValid) => handleValidatedInputChange('barNumber', value, isValid)}
+                  validationType="barNumber"
                   className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
+                  label="Bar Council Number"
                 />
                 
-                <Input
+                <ValidatedInput
                   type="number"
                   placeholder="Years of Experience"
                   value={formData.experience}
-                  onChange={(e) => handleInputChange('experience', e.target.value)}
+                  onValueChange={(value, isValid) => handleValidatedInputChange('experience', value, isValid)}
+                  validationType="experience"
                   className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
+                  label="Years of Experience"
                 />
                 
                 <Select onValueChange={(value) => handleInputChange('specialization', value)}>
@@ -506,20 +556,22 @@ const SignupPage = () => {
                 
                 <Input
                   type="text"
-                  placeholder="Languages Spoken"
+                  placeholder="Languages Spoken (comma-separated)"
                   value={formData.languages}
                   onChange={(e) => handleInputChange('languages', e.target.value)}
                   className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
                 />
                 
-                <Input
+                <ValidatedInput
                   type="number"
                   placeholder="Consultation Fee (₹)"
                   value={formData.consultationFee}
-                  onChange={(e) => handleInputChange('consultationFee', e.target.value)}
+                  onValueChange={(value, isValid) => handleValidatedInputChange('consultationFee', value, isValid)}
+                  validationType="consultationFee"
                   className="bg-background border-border text-foreground placeholder-muted-foreground"
                   required
+                  label="Consultation Fee (₹)"
                 />
                 
                 {/* Profile Image Upload */}
