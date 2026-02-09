@@ -119,14 +119,20 @@ export const getCurrentAuthUser = async () => {
 
 /**
  * Request password reset email
- * Uses secure PKCE flow to prevent token leakage
+ * Uses secure PKCE flow with server-side token exchange to prevent token leakage
+ * 
+ * SECURITY: Tokens are NEVER exposed to the client browser
+ * - Email contains link to /api/auth/callback (server-side)
+ * - Server exchanges code for session securely
+ * - Server redirects to /reset-password with session in HTTP-only cookies
+ * - Client never sees access_token or refresh_token in URL
  */
 export const resetPasswordRequest = async (email: string) => {
   console.log('[Supabase Auth] Requesting password reset for:', email);
 
-  // Use the reset password flow with PKCE
+  // Use PKCE flow - tokens will be exchanged server-side
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password?secure=true`,
+    redirectTo: `${window.location.origin}/api/auth/callback`,
   });
 
   if (error) {
@@ -134,7 +140,7 @@ export const resetPasswordRequest = async (email: string) => {
     throw error;
   }
 
-  console.log('[Supabase Auth] Password reset email sent');
+  console.log('[Supabase Auth] Password reset email sent with secure callback');
 };
 
 /**

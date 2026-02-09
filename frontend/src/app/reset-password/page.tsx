@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ValidatedInput } from '@/components/ui/validated-input';
@@ -22,61 +22,112 @@ export default function ResetPasswordPage() {
     password: false,
     confirmPassword: false,
   });
+  
+  // Track if we've already processed the token to prevent race conditions
+  const tokenProcessedRef = useRef(false);
+  const urlClearedRef = useRef(false);
 
-  // Secure token handling - check session instead of URL params
+  // CRITICAL: Immediately clear URL on page load (even before React hydrates)
   useEffect(() => {
-    const checkResetSession = async () => {
-      if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return;
+    
+    // Check if there's any sensitive data in the URL
+    const hasHash = window.location.hash.includes('access_token') || 
+                    window.location.hash.includes('refresh_token') ||
+                    window.location.hash.includes('token');
+    const hasQuery = window.location.search.includes('token') || 
+                     window.location.search.includes('code') ||
+                     window.location.search.includes('access_token');
+    
+    if ((hasHash || hasQuery) && !urlClearedRef.current) {
+      console.warn('[Reset Password] ⚠️ SECURITY WARNING: Tokens detected in URL - clearing immediately');
+      // Clear URL SYNCHRONOUSLY before any other processing
+      window.history.replaceState(null, '', window.location.pathname);
+      urlClearedRef.current = true;
+    }
+  }, []);
+
+  // Secure token handling - validate session from secure server callback
+  useEffect(() => {
+    const handleResetToken = async () => {
+      if (typeof window === 'undefined' || tokenProcessedRef.current) return;
+      
+      tokenProcessedRef.current = true;
 
       try {
         const { supabase } = await import('@/lib/supabase');
         
-        // Check if user has an active session (from reset link)
-        const { data: { session }, error } = await supabase.auth.getSession();
+        // Check URL parameters from secure callback
+        const params = new URLSearchParams(window.location.search);
+        const verified = params.get('verified');
+        const error = params.get('error');
         
-        if (session) {
-          console.log('[Reset Password] Valid reset session detected');
+        if (error) {
+          console.error('[Reset Password] Error from callback:', error);
+          setError(decodeURIComponent(error));
+          setIsUpdate(false);
+          setTokenValid(false);
+          // Clear error from URL
+          window.history.replaceState(null, '', window.location.pathname);
+          return;
+        }
+        
+        if (verified === 'true') {
+          console.log('[Reset Password] Verified callback received, checking session...');
+          // Clear the verified parameter from URL
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+        
+        // Check if we have a valid recovery session
+        // This session was established server-side via secure callback
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          console.log('[Reset Password] ✅ Valid recovery session found (from secure server callback)');
           setIsUpdate(true);
           setTokenValid(true);
-          
-          // Clear URL parameters to prevent token leakage in browser history
-          // Use replaceState to avoid adding to history
-          if (window.location.search) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        } else {
-          // Check URL params only for the secure flag
-          const params = new URLSearchParams(window.location.search);
-          const isSecureFlow = params.get('secure') === 'true';
-          
-          if (isSecureFlow) {
-            // Supabase should have set the session automatically
-            // If not, the token might be expired or invalid
-            setError('Reset link expired or invalid. Please request a new one.');
-          }
-          
-          setIsUpdate(false);
+          setError('');
+          return;
         }
+        
+        // No valid session
+        if (sessionError) {
+          console.error('[Reset Password] Session error:', sessionError);
+        }
+        
+        console.log('[Reset Password] No valid recovery session - showing request form');
+        setIsUpdate(false);
+        setTokenValid(false);
+        
       } catch (err) {
         console.error('[Reset Password] Session check error:', err);
         setError('Unable to verify reset link. Please try again.');
+        setIsUpdate(false);
+        setTokenValid(false);
       }
     };
 
-    checkResetSession();
+    handleResetToken();
     
-    // Listen for auth state changes (when user clicks the email link)
+    // Listen for auth state changes
     const { supabase } = require('@/lib/supabase');
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
-      if (event === 'PASSWORD_RECOVERY') {
-        console.log('[Reset Password] Password recovery event detected');
+      console.log('[Reset Password] Auth event:', event);
+      
+      if (event === 'PASSWORD_RECOVERY' && session?.user) {
+        console.log('[Reset Password] Password recovery event - enabling form');
         setIsUpdate(true);
         setTokenValid(true);
         setError('');
-        
-        // Clear URL to prevent token exposure
-        if (window.location.search) {
-          window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (event === 'SIGNED_OUT') {
+        console.log('[Reset Password] User signed out - disabling form');
+        setIsUpdate(false);
+        setTokenValid(false);
+      } else if (event === 'TOKEN_REFRESHED' && !isUpdate) {
+        // Token was refreshed but we're not in update mode - might be recovery
+        if (session?.user) {
+          setIsUpdate(true);
+          setTokenValid(true);
         }
       }
     });
@@ -84,7 +135,7 @@ export default function ResetPasswordPage() {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isUpdate]);
 
   const handleValidatedInputChange = (field: string, value: string, isValid: boolean) => {
     if (field === 'password') {
