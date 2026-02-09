@@ -130,9 +130,15 @@ export const getCurrentAuthUser = async () => {
 export const resetPasswordRequest = async (email: string) => {
   console.log('[Supabase Auth] Requesting password reset for:', email);
 
+  // Get production URL from environment or fallback to window.location.origin
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+  const redirectUrl = `${siteUrl}/api/auth/callback`;
+  
+  console.log('[Supabase Auth] Using redirect URL:', redirectUrl);
+
   // Use PKCE flow - tokens will be exchanged server-side
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/api/auth/callback`,
+    redirectTo: redirectUrl,
   });
 
   if (error) {

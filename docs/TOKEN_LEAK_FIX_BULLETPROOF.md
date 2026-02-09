@@ -209,7 +209,23 @@ if (!session?.user) {
 
 ## ⚙️ Configuration Required
 
-### Supabase Email Template Update
+### 1. Update Supabase Site URL (CRITICAL!)
+
+**⚠️ COMMON ISSUE:** If your reset emails link to `http://localhost:3000` in production, your Site URL is misconfigured!
+
+1. Go to Supabase Dashboard -> Settings -> Authentication
+2. Update **Site URL** from `http://localhost:3000` to your production domain:
+   ```
+   https://turn2law.com
+   ```
+3. Update **Redirect URLs** to include:
+   ```
+   https://turn2law.com/api/auth/callback
+   https://turn2law.com/reset-password
+   ```
+4. Click **Save**
+
+### 2. Supabase Email Template Update
 
 **CRITICAL:** You MUST update the email template in Supabase dashboard:
 
@@ -283,6 +299,17 @@ Client reads session from cookies (no tokens in URL) ✅
 2. Request NEW reset email (don't use old ones)
 3. Clear browser cache
 4. Check middleware is deployed
+
+### Issue: Reset emails link to localhost instead of production domain
+
+**Cause:** Supabase Site URL is set to `http://localhost:3000`
+
+**Fix:**
+1. Go to Supabase Dashboard -> Settings -> Authentication
+2. Change Site URL from `http://localhost:3000` to `https://turn2law.com`
+3. Update Redirect URLs to include production domain
+4. Save and request NEW reset email
+5. See `/docs/LOCALHOST_URL_FIX.md` for detailed guide
 
 ### Issue: Reset form not appearing
 
