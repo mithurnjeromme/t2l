@@ -47,7 +47,7 @@ export function middleware(request: NextRequest) {
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' data: https://fonts.gstatic.com",
         "img-src 'self' data: https: blob:",
-        "connect-src 'self' https://*.supabase.co https://turn2law-backend-p3r6.onrender.com",
+        "connect-src 'self' https://*.supabase.co https://turn2law-backend-p3r6.onrender.com https://turn2law-lawgpt-2.onrender.com",
         "frame-ancestors 'none'",
       ].join('; ')
     );
