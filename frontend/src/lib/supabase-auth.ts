@@ -118,34 +118,61 @@ export const getCurrentAuthUser = async () => {
 };
 
 /**
- * Request password reset email
+ * Request password reset OTP
  *
  * Flow:
- * 1. User requests password reset
- * 2. Supabase sends email with link to /reset-password?token_hash=...&type=recovery
- * 3. Reset page captures token, clears URL immediately, then verifies via verifyOtp
- * 4. User can then set new password
+ * 1. User enters email
+ * 2. We send a 6-digit OTP code to their email (no link!)
+ * 3. User enters the code on the website
+ * 4. We verify the code and establish session
+ * 5. User can then set new password
  */
 export const resetPasswordRequest = async (email: string) => {
-  console.log('[Supabase Auth] Requesting password reset for:', email);
+  console.log('[Supabase Auth] Requesting password reset OTP for:', email);
 
-  // Get production URL from environment or fallback to window.location.origin
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-  // Redirect directly to reset-password page - client will handle token verification
-  const redirectUrl = `${siteUrl}/reset-password`;
-
-  console.log('[Supabase Auth] Using redirect URL:', redirectUrl);
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: redirectUrl,
+  // Use signInWithOtp to send a 6-digit code instead of a link
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: false, // Don't create new user if email doesn't exist
+    },
   });
 
   if (error) {
-    console.error('[Supabase Auth] Password reset request error:', error);
+    console.error('[Supabase Auth] Password reset OTP request error:', error);
     throw error;
   }
 
-  console.log('[Supabase Auth] Password reset email sent');
+  console.log('[Supabase Auth] Password reset OTP sent to email');
+};
+
+/**
+ * Verify password reset OTP code
+ *
+ * @param email - The user's email
+ * @param otpCode - The 6-digit code from email
+ * @returns Session if successful
+ */
+export const verifyPasswordResetOtp = async (email: string, otpCode: string) => {
+  console.log('[Supabase Auth] Verifying password reset OTP for:', email);
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    email,
+    token: otpCode,
+    type: 'email',
+  });
+
+  if (error) {
+    console.error('[Supabase Auth] OTP verification error:', error);
+    throw error;
+  }
+
+  if (!data.session) {
+    throw new Error('Failed to establish session');
+  }
+
+  console.log('[Supabase Auth] OTP verified successfully');
+  return data.session;
 };
 
 /**

@@ -150,10 +150,14 @@ export default function SettingsPage() {
         try {
             const { resetPasswordRequest } = await import('@/lib/supabase-auth');
             await resetPasswordRequest(user.email);
-            showNotification('Password reset link has been sent to your email!', 'success');
+            showNotification('Verification code sent! Redirecting...', 'success');
+            // Redirect to reset-password page with email prefilled
+            setTimeout(() => {
+                router.push(`/reset-password?email=${encodeURIComponent(user.email)}`);
+            }, 1500);
         } catch (error) {
-            console.error('Error sending reset link:', error);
-            showNotification('Failed to send reset link. Please try again.', 'error');
+            console.error('Error sending reset code:', error);
+            showNotification('Failed to send verification code. Please try again.', 'error');
         } finally {
             setResetLoading(false);
         }
