@@ -571,22 +571,16 @@ const Footer = () => {
               </p>
               <div className="flex flex-wrap gap-8 justify-center">
                 <Link
-                  href="#"
+                  href="/privacy-policy"
                   className="text-gray-500 dark:text-white/40 hover:text-primary transition-colors duration-200 text-sm font-body"
                 >
                   Privacy Policy
                 </Link>
                 <Link
-                  href="#"
+                  href="/terms-of-service"
                   className="text-gray-500 dark:text-white/40 hover:text-primary transition-colors duration-200 text-sm font-body"
                 >
                   Terms of Service
-                </Link>
-                <Link
-                  href="#"
-                  className="text-gray-500 dark:text-white/40 hover:text-primary transition-colors duration-200 text-sm font-body"
-                >
-                  Legal Disclaimer
                 </Link>
               </div>
             </div>
