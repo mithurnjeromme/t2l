@@ -119,24 +119,23 @@ export const getCurrentAuthUser = async () => {
 
 /**
  * Request password reset email
- * Uses secure PKCE flow with server-side token exchange to prevent token leakage
- * 
- * SECURITY: Tokens are NEVER exposed to the client browser
- * - Email contains link to /api/auth/callback (server-side)
- * - Server exchanges code for session securely
- * - Server redirects to /reset-password with session in HTTP-only cookies
- * - Client never sees access_token or refresh_token in URL
+ *
+ * Flow:
+ * 1. User requests password reset
+ * 2. Supabase sends email with link to /reset-password?token_hash=...&type=recovery
+ * 3. Reset page captures token, clears URL immediately, then verifies via verifyOtp
+ * 4. User can then set new password
  */
 export const resetPasswordRequest = async (email: string) => {
   console.log('[Supabase Auth] Requesting password reset for:', email);
 
   // Get production URL from environment or fallback to window.location.origin
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
-  const redirectUrl = `${siteUrl}/api/auth/callback`;
-  
+  // Redirect directly to reset-password page - client will handle token verification
+  const redirectUrl = `${siteUrl}/reset-password`;
+
   console.log('[Supabase Auth] Using redirect URL:', redirectUrl);
 
-  // Use PKCE flow - tokens will be exchanged server-side
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: redirectUrl,
   });
@@ -146,7 +145,7 @@ export const resetPasswordRequest = async (email: string) => {
     throw error;
   }
 
-  console.log('[Supabase Auth] Password reset email sent with secure callback');
+  console.log('[Supabase Auth] Password reset email sent');
 };
 
 /**
