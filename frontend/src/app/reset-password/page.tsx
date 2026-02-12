@@ -27,20 +27,34 @@ export default function ResetPasswordPage() {
   const tokenProcessedRef = useRef(false);
   const urlClearedRef = useRef(false);
 
-  // CRITICAL: Immediately clear URL on page load (even before React hydrates)
+  // Store captured token for verification
+  const capturedTokenRef = useRef<{ tokenHash: string; type: string } | null>(null);
+
+  // CRITICAL: Immediately capture and clear URL on page load (even before React hydrates)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
+    const params = new URLSearchParams(window.location.search);
+    const tokenHash = params.get('token_hash');
+    const type = params.get('type');
+
+    // Capture token_hash before clearing URL
+    if (tokenHash && type && !capturedTokenRef.current) {
+      console.log('[Reset Password] Capturing token_hash for verification');
+      capturedTokenRef.current = { tokenHash, type };
+    }
+
     // Check if there's any sensitive data in the URL
-    const hasHash = window.location.hash.includes('access_token') || 
+    const hasHash = window.location.hash.includes('access_token') ||
                     window.location.hash.includes('refresh_token') ||
                     window.location.hash.includes('token');
-    const hasQuery = window.location.search.includes('token') || 
+    const hasQuery = window.location.search.includes('token') ||
                      window.location.search.includes('code') ||
-                     window.location.search.includes('access_token');
-    
+                     window.location.search.includes('access_token') ||
+                     window.location.search.includes('token_hash');
+
     if ((hasHash || hasQuery) && !urlClearedRef.current) {
-      console.warn('[Reset Password] ⚠️ SECURITY WARNING: Tokens detected in URL - clearing immediately');
+      console.log('[Reset Password] Clearing sensitive data from URL');
       // Clear URL SYNCHRONOUSLY before any other processing
       window.history.replaceState(null, '', window.location.pathname);
       urlClearedRef.current = true;
@@ -51,54 +65,81 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const handleResetToken = async () => {
       if (typeof window === 'undefined' || tokenProcessedRef.current) return;
-      
+
       tokenProcessedRef.current = true;
 
       try {
         const { supabase } = await import('@/lib/supabase');
-        
-        // Check URL parameters from secure callback
+
+        // Check for error in URL (already cleared but we captured it)
         const params = new URLSearchParams(window.location.search);
-        const verified = params.get('verified');
-        const error = params.get('error');
-        
-        if (error) {
-          console.error('[Reset Password] Error from callback:', error);
-          setError(decodeURIComponent(error));
+        const urlError = params.get('error');
+
+        if (urlError) {
+          console.error('[Reset Password] Error from callback:', urlError);
+          setError(decodeURIComponent(urlError));
           setIsUpdate(false);
           setTokenValid(false);
-          // Clear error from URL
           window.history.replaceState(null, '', window.location.pathname);
           return;
         }
-        
+
+        // If we captured a token_hash, verify it now
+        if (capturedTokenRef.current) {
+          const { tokenHash, type } = capturedTokenRef.current;
+          console.log('[Reset Password] Verifying captured token_hash...');
+
+          const { data, error: verifyError } = await supabase.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: type as 'recovery',
+          });
+
+          if (verifyError) {
+            console.error('[Reset Password] Token verification error:', verifyError);
+            setError(verifyError.message || 'Invalid or expired reset link');
+            setIsUpdate(false);
+            setTokenValid(false);
+            capturedTokenRef.current = null;
+            return;
+          }
+
+          if (data.session) {
+            console.log('[Reset Password] ✅ Session established via token verification');
+            setIsUpdate(true);
+            setTokenValid(true);
+            setError('');
+            capturedTokenRef.current = null;
+            return;
+          }
+        }
+
+        // Check for verified=true from server callback (legacy support)
+        const verified = params.get('verified');
         if (verified === 'true') {
           console.log('[Reset Password] Verified callback received, checking session...');
-          // Clear the verified parameter from URL
           window.history.replaceState(null, '', window.location.pathname);
         }
-        
+
         // Check if we have a valid recovery session
-        // This session was established server-side via secure callback
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
+
         if (session?.user) {
-          console.log('[Reset Password] ✅ Valid recovery session found (from secure server callback)');
+          console.log('[Reset Password] ✅ Valid recovery session found');
           setIsUpdate(true);
           setTokenValid(true);
           setError('');
           return;
         }
-        
+
         // No valid session
         if (sessionError) {
           console.error('[Reset Password] Session error:', sessionError);
         }
-        
+
         console.log('[Reset Password] No valid recovery session - showing request form');
         setIsUpdate(false);
         setTokenValid(false);
-        
+
       } catch (err) {
         console.error('[Reset Password] Session check error:', err);
         setError('Unable to verify reset link. Please try again.');
@@ -107,13 +148,17 @@ export default function ResetPasswordPage() {
       }
     };
 
-    handleResetToken();
-    
-    // Listen for auth state changes
+    // Small delay to ensure URL capture effect runs first
+    const timer = setTimeout(handleResetToken, 50);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Separate effect for auth state changes
+  useEffect(() => {
     const { supabase } = require('@/lib/supabase');
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: string, session: any) => {
       console.log('[Reset Password] Auth event:', event);
-      
+
       if (event === 'PASSWORD_RECOVERY' && session?.user) {
         console.log('[Reset Password] Password recovery event - enabling form');
         setIsUpdate(true);

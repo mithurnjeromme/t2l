@@ -883,6 +883,14 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                     <User className="w-4 h-4 inline-block mr-2" />
                     Dashboard
                   </Link>
+                  <Link
+                    href="/settings"
+                    className="py-3 px-4 rounded-md text-foreground hover:bg-muted font-medium"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Settings className="w-4 h-4 inline-block mr-2" />
+                    Settings
+                  </Link>
                   <Button
                     variant="destructive"
                     className="w-full"
