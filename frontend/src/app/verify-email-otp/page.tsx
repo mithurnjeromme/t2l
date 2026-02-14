@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getCurrentAuthUser, signOut } from '@/lib/supabase-auth';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/notification-context';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export default function EmailOTPVerificationPage() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +101,7 @@ export default function EmailOTPVerificationPage() {
 
       setOtpSent(true);
       setCountdown(60); // 60 seconds countdown
-      alert('OTP sent successfully! Check your email.');
+      showNotification('OTP sent successfully! Check your email.', 'success');
     } catch (error: any) {
       console.error('Send OTP error:', error);
       setError(error.message || 'Failed to send OTP');
@@ -141,7 +143,7 @@ export default function EmailOTPVerificationPage() {
       }
 
       // Success! Redirect to home
-      alert('Email verified successfully!');
+      showNotification('Email verified successfully!', 'success');
       router.push('/');
     } catch (error: any) {
       console.error('Verify OTP error:', error);

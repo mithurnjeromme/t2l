@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { checkServiceAuth, submitServiceRequest, ServiceSubmission } from "@/lib/service-requests";
 import { SuccessDialog } from "@/components/service-tracking/SuccessDialog";
 import { LoginNudgeDialog } from "@/components/auth/LoginNudgeDialog";
+import { useNotification } from '@/contexts/notification-context';
 import {
   CheckCircle,
   Clock,
@@ -28,6 +29,7 @@ import {
 
 export default function PrivateLimitedPage() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -132,11 +134,11 @@ export default function PrivateLimitedPage() {
         setSubmittedServiceId(result.serviceRequest?.service_number || "");
         setShowSuccess(true);
       } else {
-        alert(`❌ ${result.error}`);
+        showNotification(result.error || 'Service request failed', 'error');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('❌ An unexpected error occurred. Please try again.');
+      showNotification('An unexpected error occurred. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -151,7 +153,7 @@ export default function PrivateLimitedPage() {
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-gray-700/10 text-primary dark:text-gray-400 text-sm font-medium mb-6">
                 <Building2 className="w-4 h-4" />
                 Company Formation
               </div>
@@ -162,7 +164,7 @@ export default function PrivateLimitedPage() {
                 Incorporate your Private Limited Company with complete legal compliance. Enjoy limited liability, raise funds, and build credibility with India's most popular business structure.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Button size="lg" className="rounded-full bg-primary dark:bg-gray-700 hover:bg-primary/90 dark:hover:bg-gray-700/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   Register Your Company
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
@@ -171,11 +173,11 @@ export default function PrivateLimitedPage() {
               {/* Quick Stats */}
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
-                  <div className="text-3xl font-bold text-primary dark:text-accent">₹14,999</div>
+                  <div className="text-3xl font-bold text-primary dark:text-gray-400">₹14,999</div>
                   <div className="text-sm text-muted-foreground">Starting From</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-primary dark:text-accent">Min 2</div>
+                  <div className="text-3xl font-bold text-primary dark:text-gray-400">Min 2</div>
                   <div className="text-sm text-muted-foreground">Directors Required</div>
                 </div>
               </div>
@@ -185,8 +187,8 @@ export default function PrivateLimitedPage() {
               <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Shield className="w-6 h-6 text-primary dark:text-accent" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-gray-700/10 flex items-center justify-center flex-shrink-0">
+                      <Shield className="w-6 h-6 text-primary dark:text-gray-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">Limited Liability</h3>
@@ -194,8 +196,8 @@ export default function PrivateLimitedPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <TrendingUp className="w-6 h-6 text-primary dark:text-accent" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-gray-700/10 flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-6 h-6 text-primary dark:text-gray-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">Easy Fundraising</h3>
@@ -203,8 +205,8 @@ export default function PrivateLimitedPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-6 h-6 text-primary dark:text-accent" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-gray-700/10 flex items-center justify-center flex-shrink-0">
+                      <Award className="w-6 h-6 text-primary dark:text-gray-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">High Credibility</h3>
@@ -227,45 +229,45 @@ export default function PrivateLimitedPage() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Basic Plan */}
             <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-sm font-semibold text-primary dark:text-accent mb-2">BASIC</div>
+              <div className="text-sm font-semibold text-primary dark:text-gray-400 mb-2">BASIC</div>
               <div className="text-4xl font-bold text-foreground mb-4">
                 ₹14,999
               </div>
               <p className="text-muted-foreground mb-6">For startups & small businesses</p>
               <ul className="space-y-3 mb-8">
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">DSC for 2 Directors</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">DIN for 2 Directors</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Name Approval (RUN)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">MOA & AOA Drafting</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Company Incorporation</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Company PAN Card</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Tax Deduction and Collection Account Number Card</span>
                 </li>
               </ul>
             </div>
 
             {/* Standard Plan */}
-            <div className="bg-primary dark:bg-accent text-primary-foreground dark:text-accent-foreground border-2 border-primary dark:border-accent rounded-2xl p-8 hover:shadow-xl transition-shadow relative">
+            <div className="bg-primary dark:bg-gray-700 text-primary-foreground dark:text-gray-100 border-2 border-primary dark:border-gray-600 rounded-2xl p-8 hover:shadow-xl transition-shadow relative">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary text-secondary-foreground px-4 py-1 rounded-full text-sm font-semibold">
                 POPULAR
               </div>
@@ -304,34 +306,34 @@ export default function PrivateLimitedPage() {
 
             {/* Premium Plan */}
             <div className="bg-card border border-border rounded-2xl p-8 hover:shadow-xl transition-shadow">
-              <div className="text-sm font-semibold text-primary dark:text-accent mb-2">PREMIUM</div>
+              <div className="text-sm font-semibold text-primary dark:text-gray-400 mb-2">PREMIUM</div>
               <div className="text-4xl font-bold text-foreground mb-4">
                 ₹29,999
               </div>
               <p className="text-muted-foreground mb-6">Complete business setup</p>
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Everything in Standard</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">MSME/Udyam Registration</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Trademark Registration</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">ESI & PF Registration</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Professional Tax</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-primary dark:text-accent flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-primary dark:text-gray-400 flex-shrink-0 mt-0.5" />
                   <span className="text-sm">Dedicated Account Manager</span>
                 </li>
               </ul>
@@ -358,7 +360,7 @@ export default function PrivateLimitedPage() {
               { icon: FileText, title: "Email & Mobile", desc: "Valid for all Directors" },
             ].map((doc, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <doc.icon className="w-10 h-10 text-primary dark:text-accent mb-4" />
+                <doc.icon className="w-10 h-10 text-primary dark:text-gray-400 mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{doc.title}</h3>
                 <p className="text-sm text-muted-foreground">{doc.desc}</p>
               </div>
@@ -383,7 +385,7 @@ export default function PrivateLimitedPage() {
               { step: 6, title: "Bank Account", desc: "Open current account and commence business" },
             ].map((item, idx) => (
               <div key={idx} className="flex gap-6 items-start">
-                <div className="w-12 h-12 rounded-full bg-primary dark:bg-accent text-primary-foreground dark:text-accent-foreground flex items-center justify-center font-bold flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-primary dark:bg-gray-700 text-primary-foreground dark:text-gray-100 flex items-center justify-center font-bold flex-shrink-0">
                   {item.step}
                 </div>
                 <div className="flex-1">
@@ -412,7 +414,7 @@ export default function PrivateLimitedPage() {
               { icon: Briefcase, title: "Tax Benefits", desc: "Enjoy various tax deductions and benefits" },
             ].map((benefit, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <benefit.icon className="w-10 h-10 text-primary dark:text-accent mb-4" />
+                <benefit.icon className="w-10 h-10 text-primary dark:text-gray-400 mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground">{benefit.desc}</p>
               </div>
@@ -453,7 +455,7 @@ export default function PrivateLimitedPage() {
               <details key={idx} className="bg-card border border-border rounded-xl p-6 group">
                 <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
                   {faq.q}
-                  <span className="text-primary dark:text-accent group-open:rotate-180 transition-transform">▼</span>
+                  <span className="text-primary dark:text-gray-400 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <p className="text-muted-foreground mt-4">{faq.a}</p>
               </details>
@@ -605,7 +607,7 @@ export default function PrivateLimitedPage() {
                 </Button>
               </div>
             ) : (
-              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-gray-700 hover:bg-primary/90 dark:hover:bg-gray-700/90" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Application"}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>

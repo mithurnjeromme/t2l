@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { checkServiceAuth, submitServiceRequest, ServiceSubmission } from "@/lib/service-requests";
 import { SuccessDialog } from "@/components/service-tracking/SuccessDialog";
 import { LoginNudgeDialog } from "@/components/auth/LoginNudgeDialog";
+import { useNotification } from '@/contexts/notification-context';
 import {
   CheckCircle,
   FileText,
@@ -23,6 +24,7 @@ import {
 
 export default function OPCPage() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -125,11 +127,11 @@ export default function OPCPage() {
         setSubmittedServiceId(result.serviceRequest?.service_number || "");
         setShowSuccess(true);
       } else {
-        alert(`❌ ${result.error}`);
+        showNotification(result.error || 'Service request failed', 'error');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('❌ An unexpected error occurred. Please try again.');
+      showNotification('An unexpected error occurred. Please try again.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -143,7 +145,7 @@ export default function OPCPage() {
         <div className="container mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent text-sm font-medium mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 dark:bg-gray-700/10 text-primary dark:text-gray-400 text-sm font-medium mb-6">
                 <Building2 className="w-4 h-4" />
                 Company Formation
               </div>
@@ -154,7 +156,7 @@ export default function OPCPage() {
                 Perfect for solo entrepreneurs! Register your OPC with limited liability protection and run your business independently with complete control.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg" className="rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Button size="lg" className="rounded-full bg-primary dark:bg-gray-700 hover:bg-primary/90 dark:hover:bg-gray-700/90" onClick={() => document.getElementById('contact-form')?.scrollIntoView({ behavior: 'smooth' })}>
                   Register Your OPC
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
@@ -162,11 +164,11 @@ export default function OPCPage() {
 
               <div className="grid grid-cols-2 gap-6 mt-12">
                 <div>
-                  <div className="text-3xl font-bold text-primary dark:text-accent">₹12,999</div>
+                  <div className="text-3xl font-bold text-primary dark:text-gray-400">₹12,999</div>
                   <div className="text-sm text-muted-foreground">Starting From</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-primary dark:text-accent">1 Person</div>
+                  <div className="text-3xl font-bold text-primary dark:text-gray-400">1 Person</div>
                   <div className="text-sm text-muted-foreground">Solo Entrepreneur</div>
                 </div>
               </div>
@@ -180,8 +182,8 @@ export default function OPCPage() {
                   { icon: Award, title: "Separate Legal Entity", desc: "Company has its own identity" },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-accent/10 flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-6 h-6 text-primary dark:text-accent" />
+                    <div className="w-12 h-12 rounded-full bg-primary/10 dark:bg-gray-700/10 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-6 h-6 text-primary dark:text-gray-400" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-foreground mb-1">{item.title}</h3>
@@ -217,14 +219,14 @@ export default function OPCPage() {
                 features: ["Everything in Standard", "MSME Registration", "Trademark Filing", "Tax Consultation", "Account Manager"]
               }
             ].map((plan, idx) => (
-              <div key={idx} className={`rounded-2xl p-8 ${plan.popular ? 'bg-primary dark:bg-accent text-primary-foreground dark:text-accent-foreground border-2 border-primary dark:border-accent' : 'bg-card border border-border'} hover:shadow-xl transition-shadow relative`}>
+              <div key={idx} className={`rounded-2xl p-8 ${plan.popular ? 'bg-primary dark:bg-gray-700 text-primary-foreground dark:text-gray-100 border-2 border-primary dark:border-gray-600' : 'bg-card border border-border'} hover:shadow-xl transition-shadow relative`}>
                 {plan.popular && <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary px-4 py-1 rounded-full text-sm font-semibold">POPULAR</div>}
                 <div className="text-sm font-semibold mb-2">{plan.name}</div>
                 <div className="text-4xl font-bold mb-4">{plan.price}</div>
                 <ul className="space-y-3">
                   {plan.features.map((f, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? '' : 'text-primary dark:text-accent'}`} />
+                      <CheckCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? '' : 'text-primary dark:text-gray-400'}`} />
                       <span className="text-sm">{f}</span>
                     </li>
                   ))}
@@ -248,12 +250,12 @@ export default function OPCPage() {
             ].map((item, idx) => (
               <div key={idx} className="relative">
                 <div className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                  <div className="text-3xl font-bold text-primary/20 dark:text-accent/20 mb-2">{item.step}</div>
+                  <div className="text-3xl font-bold text-primary/20 dark:text-gray-400/20 mb-2">{item.step}</div>
                   <h3 className="font-semibold text-foreground mb-2 text-sm">{item.title}</h3>
                   <p className="text-xs text-muted-foreground">{item.desc}</p>
                 </div>
                 {idx < 4 && (
-                  <ArrowRight className="hidden md:block absolute top-1/2 -right-2 -translate-y-1/2 w-5 h-5 text-primary dark:text-accent" />
+                  <ArrowRight className="hidden md:block absolute top-1/2 -right-2 -translate-y-1/2 w-5 h-5 text-primary dark:text-gray-400" />
                 )}
               </div>
             ))}
@@ -276,7 +278,7 @@ export default function OPCPage() {
               { title: "Utility Bills", desc: "Electricity/Water bill" },
             ].map((doc, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <FileText className="w-10 h-10 text-primary dark:text-accent mb-4" />
+                <FileText className="w-10 h-10 text-primary dark:text-gray-400 mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{doc.title}</h3>
                 <p className="text-sm text-muted-foreground">{doc.desc}</p>
               </div>
@@ -298,7 +300,7 @@ export default function OPCPage() {
               { icon: FileText, title: "Brand Recognition", desc: "Enhanced credibility and trust in the market" },
             ].map((benefit, idx) => (
               <div key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow">
-                <benefit.icon className="w-12 h-12 text-primary dark:text-accent mb-4" />
+                <benefit.icon className="w-12 h-12 text-primary dark:text-gray-400 mb-4" />
                 <h3 className="font-semibold text-foreground mb-2">{benefit.title}</h3>
                 <p className="text-sm text-muted-foreground">{benefit.desc}</p>
               </div>
@@ -321,7 +323,7 @@ export default function OPCPage() {
               <details key={idx} className="bg-card border border-border rounded-xl p-6 hover:shadow-lg transition-shadow group">
                 <summary className="font-semibold text-foreground cursor-pointer list-none flex items-center justify-between">
                   {faq.q}
-                  <span className="text-primary dark:text-accent group-open:rotate-180 transition-transform">▼</span>
+                  <span className="text-primary dark:text-gray-400 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
                 <p className="text-sm text-muted-foreground mt-4">{faq.a}</p>
               </details>
@@ -430,7 +432,7 @@ export default function OPCPage() {
                 </Button>
               </div>
             ) : (
-              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-accent hover:bg-primary/90 dark:hover:bg-accent/90" disabled={isSubmitting}>
+              <Button type="submit" size="lg" className="w-full rounded-full bg-primary dark:bg-gray-700 hover:bg-primary/90 dark:hover:bg-gray-700/90" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Application"}
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>

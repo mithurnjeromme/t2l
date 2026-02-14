@@ -32,236 +32,11 @@ import {
   Video,
   MoreVertical,
   FileText,
-  ChevronDown,
-  ChevronRight,
   Building2,
   FileCheck,
 } from "lucide-react";
 import { useMessages } from "@/lib/messages-context";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-
-// Services dropdown menu data structure
-const servicesMenuData = {
-  companyFormation: {
-    title: "Company Formation",
-    icon: Building2,
-    items: [
-      { name: "Partnership Firm", href: "/services/partnership" },
-      { name: "Private Limited Company", href: "/services/private-limited" },
-      { name: "One Person Company", href: "/services/opc" },
-      { name: "Limited Liability Partnership", href: "/services/llp" },
-    ],
-  },
-  registrationsLicenses: {
-    title: "Registrations & Licenses",
-    icon: FileCheck,
-    items: [
-      { name: "Gst Registration", href: "/services/gst-registration" },
-      { name: "Annual Gst Return Filing", href: "/services/gst-return-filing" },
-      { name: "Export Import Code", href: "/services/iec" },
-    ],
-  },
-};
-
-// Services Dropdown Component (Desktop)
-const ServicesDropdown = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
-  const pathname = useActivePath();
-  const closeTimeoutRef = useState<NodeJS.Timeout | null>(null)[0];
-
-  const handleMouseEnter = () => {
-    if (closeTimeoutRef) clearTimeout(closeTimeoutRef);
-    setIsOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setIsOpen(false);
-      setActiveSubmenu(null);
-    }, 300); // 300ms delay before closing
-    closeTimeoutRef && clearTimeout(closeTimeoutRef);
-    Object.assign(closeTimeoutRef || {}, timeout);
-  };
-
-  return (
-    <div
-      className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <button
-        className={cn(
-          "flex items-center gap-1 hover:text-primary transition-colors font-medium",
-          pathname.startsWith("/services") && "text-primary"
-        )}
-      >
-        Services
-        <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
-      </button>
-
-      {isOpen && (
-        <div
-          className="absolute top-full left-1/2 -translate-x-1/2 pt-2"
-          style={{ marginTop: '0' }}
-        >
-          <div className="w-64 bg-card border border-border/50 rounded-lg shadow-xl backdrop-blur-sm">
-            <div className="p-2">
-              {/* Company Formation */}
-              <div
-                className="relative"
-                onMouseEnter={() => setActiveSubmenu("companyFormation")}
-              >
-                <div className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted cursor-pointer text-foreground">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="h-4 w-4" />
-                    <span className="font-medium">{servicesMenuData.companyFormation.title}</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </div>
-
-                {/* Company Formation Submenu */}
-                {activeSubmenu === "companyFormation" && (
-                  <>
-                    {/* Bridge element - wider and positioned to cover gap */}
-                    <div className="absolute left-full top-0 w-3 h-full z-40" />
-                    <div className="absolute left-full top-0 ml-1 w-64 bg-card border border-border/50 rounded-lg shadow-xl z-50 backdrop-blur-sm">
-                      <div className="p-2">
-                        {servicesMenuData.companyFormation.items.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className="block px-3 py-2 rounded-md hover:bg-muted text-sm text-foreground transition-colors"
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* Registrations & Licenses */}
-              <div
-                className="relative"
-                onMouseEnter={() => setActiveSubmenu("registrationsLicenses")}
-              >
-                <div className="flex items-center justify-between px-3 py-2 rounded-md hover:bg-muted cursor-pointer text-foreground">
-                  <div className="flex items-center gap-2">
-                    <FileCheck className="h-4 w-4" />
-                    <span className="font-medium">{servicesMenuData.registrationsLicenses.title}</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4" />
-                </div>
-
-                {/* Registrations & Licenses Submenu */}
-                {activeSubmenu === "registrationsLicenses" && (
-                  <>
-                    {/* Bridge element - wider and positioned to cover gap */}
-                    <div className="absolute left-full top-0 w-3 h-full z-40" />
-                    <div className="absolute left-full top-0 ml-1 w-72 bg-card border border-border/50 rounded-lg shadow-xl z-50 backdrop-blur-sm">
-                      <div className="p-2">
-                        {servicesMenuData.registrationsLicenses.items.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className="block px-3 py-2 rounded-md hover:bg-muted text-sm text-foreground transition-colors"
-                          >
-                            {item.name}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Mobile Services Menu Component
-const MobileServicesMenu = ({ onClose }: { onClose: () => void }) => {
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
-
-  const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
-
-  return (
-    <div className="flex flex-col gap-1">
-      {/* Company Formation Section */}
-      <div className="rounded-md overflow-hidden border border-border/30">
-        <button
-          onClick={() => toggleSection("companyFormation")}
-          className="w-full flex items-center justify-between py-3 px-3 text-foreground hover:bg-muted"
-        >
-          <div className="flex items-center gap-3">
-            <Building2 className="w-5 h-5 text-foreground/80" />
-            <span className="font-medium">Company Formation</span>
-          </div>
-          <ChevronDown
-            className={cn(
-              "w-4 h-4 transition-transform",
-              expandedSection === "companyFormation" && "rotate-180"
-            )}
-          />
-        </button>
-        {expandedSection === "companyFormation" && (
-          <div className="bg-muted/30 px-3 pb-2">
-            {servicesMenuData.companyFormation.items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block py-2 px-3 text-sm text-foreground hover:text-primary"
-                onClick={onClose}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Registrations & Licenses Section */}
-      <div className="rounded-md overflow-hidden border border-border/30">
-        <button
-          onClick={() => toggleSection("registrationsLicenses")}
-          className="w-full flex items-center justify-between py-3 px-3 text-foreground hover:bg-muted"
-        >
-          <div className="flex items-center gap-3">
-            <FileCheck className="w-5 h-5 text-foreground/80" />
-            <span className="font-medium">Registrations & Licenses</span>
-          </div>
-          <ChevronDown
-            className={cn(
-              "w-4 h-4 transition-transform",
-              expandedSection === "registrationsLicenses" && "rotate-180"
-            )}
-          />
-        </button>
-        {expandedSection === "registrationsLicenses" && (
-          <div className="bg-muted/30 px-3 pb-2 max-h-64 overflow-y-auto">
-            {servicesMenuData.registrationsLicenses.items.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="block py-2 px-3 text-sm text-foreground hover:text-primary"
-                onClick={onClose}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
 
 const Logo = () => (
   <>
@@ -733,7 +508,15 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           >
             Document Drafting
           </Link>
-          <ServicesDropdown />
+          <Link
+            href="/services"
+            className={cn(
+              "hover:text-primary transition-colors font-medium",
+              pathname.startsWith("/services") && "text-primary",
+            )}
+          >
+            Services
+          </Link>
         </nav>
         {/* Right side: auth actions + mobile menu button */}
         {!hideAuthButtons && !user && (
@@ -824,6 +607,18 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                 <span className="font-medium">Document Drafting</span>
               </Link>
 
+              <Link
+                href="/services"
+                className={cn(
+                  "flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted",
+                  pathname.startsWith("/services") && "bg-muted",
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Building2 className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Services</span>
+              </Link>
+
               {/* Chat & Notifications */}
               <Link
                 href="/messages"
@@ -843,14 +638,6 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                 <span className="font-medium">Notifications</span>
               </Link>
             </nav>
-
-            {/* Services Menu Section */}
-            <div className="mt-4 border-t border-border/40 pt-4">
-              <h4 className="text-sm font-semibold text-foreground mb-3 px-1">
-                Services
-              </h4>
-              <MobileServicesMenu onClose={() => setMobileMenuOpen(false)} />
-            </div>
 
             {/* Theme & Auth Section */}
             <div className="mt-4 border-t border-border/40 pt-4 flex flex-col gap-3">

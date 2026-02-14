@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/contexts/notification-context';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -95,6 +96,7 @@ interface WalletData {
 
 const ClientWallet = () => {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [walletData, setWalletData] = useState<WalletData>({
@@ -210,17 +212,17 @@ const ClientWallet = () => {
   const handleAddMoney = async () => {
     const amount = parseFloat(addMoneyAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid amount');
+      showNotification('Please enter a valid amount', 'error');
       return;
     }
 
     if (amount < 100) {
-      alert('Minimum amount to add is ₹100');
+      showNotification('Minimum amount to add is ₹100', 'error');
       return;
     }
 
     if (amount > 100000) {
-      alert('Maximum amount per transaction is ₹1,00,000');
+      showNotification('Maximum amount per transaction is ₹1,00,000', 'error');
       return;
     }
 
@@ -268,7 +270,7 @@ const ClientWallet = () => {
         window.location.href = data.paymentUrl;
       } else {
         // For testing: simulate successful payment
-        alert('Paytm payment gateway is being set up. For now, simulating successful payment.');
+        showNotification('Paytm payment gateway is being set up. For now, simulating successful payment.', 'info');
         
         // Update transaction to success
         const newTransaction: Transaction = {
@@ -296,11 +298,11 @@ const ClientWallet = () => {
 
         setAddMoneyAmount('');
         setIsAddMoneyOpen(false);
-        alert(`₹${amount} added successfully to your wallet!`);
+        showNotification(`₹${amount} added successfully to your wallet!`, 'success');
       }
     } catch (error) {
       console.error('Payment error:', error);
-      alert('Failed to process payment. Please try again.');
+      showNotification('Failed to process payment. Please try again.', 'error');
     } finally {
       setProcessingPayment(false);
     }
@@ -309,17 +311,17 @@ const ClientWallet = () => {
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount <= 0) {
-      alert('Please enter a valid amount');
+      showNotification('Please enter a valid amount', 'error');
       return;
     }
 
     if (amount > walletData.balance) {
-      alert('Insufficient balance');
+      showNotification('Insufficient balance', 'error');
       return;
     }
 
     if (amount < 500) {
-      alert('Minimum withdrawal amount is ₹500');
+      showNotification('Minimum withdrawal amount is ₹500', 'error');
       return;
     }
 
@@ -361,10 +363,10 @@ const ClientWallet = () => {
 
       setWithdrawAmount('');
       setIsWithdrawOpen(false);
-      alert(`Withdrawal request for ₹${amount} submitted successfully. It will be processed within 2-3 business days.`);
+      showNotification(`Withdrawal request for ₹${amount} submitted successfully. It will be processed within 2-3 business days.`, 'success');
     } catch (error) {
       console.error('Withdrawal error:', error);
-      alert('Failed to process withdrawal. Please try again.');
+      showNotification('Failed to process withdrawal. Please try again.', 'error');
     }
   };
 

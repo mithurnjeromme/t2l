@@ -8,6 +8,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import { signInWithMagicLink } from '@/lib/supabase-auth';
+import { useNotification } from '@/contexts/notification-context';
+
 
 const Logo = () => (
   <>
@@ -167,6 +169,7 @@ const Turn2LawTextLogo = () => (
 
 const LoginPage = () => {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -223,7 +226,7 @@ const LoginPage = () => {
       console.error('[Login] Error:', error);
       const errorMessage = error.message || 'Login failed. Please check your credentials and try again.';
       setError(errorMessage);
-      alert(errorMessage);
+      showNotification(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -346,15 +349,15 @@ const LoginPage = () => {
               type="button"
               onClick={async () => {
                 if (!formData.email) {
-                  alert('Please enter your email first');
+                  showNotification('Please enter your email first', 'error');
                   return;
                 }
                 try {
                   setIsLoading(true);
                   await signInWithMagicLink(formData.email);
-                  alert('Magic link sent! Check your email.');
+                  showNotification('Magic link sent! Check your email.', 'success');
                 } catch (error: any) {
-                  alert(error.message || 'Failed to send magic link');
+                  showNotification(error.message || 'Failed to send magic link', 'error');
                 } finally {
                   setIsLoading(false);
                 }

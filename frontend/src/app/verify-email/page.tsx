@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { resendVerificationEmail, getCurrentAuthUser, isEmailVerified } from '@/lib/supabase-auth';
 import Link from 'next/link';
+import { useNotification } from '@/contexts/notification-context';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [email, setEmail] = useState('');
   const [isResending, setIsResending] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
@@ -63,10 +65,10 @@ export default function VerifyEmailPage() {
         });
       }, 1000);
 
-      alert('Verification email sent! Please check your inbox.');
+      showNotification('Verification email sent! Please check your inbox.', 'success');
     } catch (error: any) {
       console.error('Resend email error:', error);
-      alert(error.message || 'Failed to resend verification email');
+      showNotification(error.message || 'Failed to resend verification email', 'error');
     } finally {
       setIsResending(false);
     }

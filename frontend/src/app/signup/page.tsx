@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import GoogleSignInButton from '@/components/auth/GoogleSignInButton';
 import { validateFile } from '@/utils/validation';
+import { useNotification } from '@/contexts/notification-context';
 
 const Logo = () => (
   <>
@@ -170,6 +171,7 @@ const Turn2LawTextLogo = () => (
 
 const SignupPage = () => {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [signupType, setSignupType] = useState<'user' | 'lawyer'>('user');
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -231,7 +233,7 @@ const SignupPage = () => {
       });
       
       if (!validation.isValid) {
-        alert(validation.error);
+        showNotification(validation.error, 'error');
         return;
       }
       
@@ -332,14 +334,14 @@ const SignupPage = () => {
       // Redirect to email OTP verification page 
       // The verify-email-otp page will automatically send OTP when it loads
       console.log('[Signup] Registration successful, redirecting to email verification');
-      alert(`${finalUserType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Check your email for the verification code.`);
+      showNotification(`${finalUserType === 'lawyer' ? 'Lawyer' : 'Client'} registration successful! Check your email for the verification code.`, 'success');
       router.push(`/verify-email-otp?email=${encodeURIComponent(formData.email)}`);
       
     } catch (error: any) {
       console.error('[Signup] Registration error:', error);
       const errorMessage = error.message || 'Registration failed. Please try again.';
       setError(errorMessage);
-      alert(errorMessage);
+      showNotification(errorMessage, 'error');
     } finally {
       setIsLoading(false);
     }

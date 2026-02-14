@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Sparkles, Send, CheckCircle2, Loader2 } from "lucide-react";
 import Header from "@/components/layout/header";
 import { FlipWords } from "@/components/ui/flip-words";
+import { useNotification } from "@/contexts/notification-context";
 
 const TypingEffect = () => (
   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-4 sm:mb-6 leading-tight text-center px-2">
@@ -20,6 +21,7 @@ const TypingEffect = () => (
 
 const ConsultPage = () => {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [userQuery, setUserQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -36,11 +38,13 @@ const ConsultPage = () => {
       
       if (!session || !session.user) {
         // User is not logged in - prompt them to login/signup
-        alert(
-          "Please login or sign up to submit your query.\n\n" +
-          "You will be redirected to the login page."
+        showNotification(
+          "Please login or sign up to submit your query. You will be redirected to the login page.",
+          'info'
         );
-        router.push('/login');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
         setIsSubmitting(false);
         return;
       }
@@ -98,7 +102,7 @@ const ConsultPage = () => {
           // Use default message if JSON parse fails
         }
         
-        alert(`Error: ${errorMessage}`);
+        showNotification(`Error: ${errorMessage}`, 'error');
         throw new Error(`Failed to submit query: ${response.status} - ${errorMessage}`);
       }
 
@@ -115,7 +119,7 @@ const ConsultPage = () => {
     } catch (error) {
       console.error("❌ Error submitting query:", error);
       setIsSubmitting(false);
-      alert("Failed to submit query. Please try again.");
+      showNotification("Failed to submit query. Please try again.", 'error');
     }
   };
 

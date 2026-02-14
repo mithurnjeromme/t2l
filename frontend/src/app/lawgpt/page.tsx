@@ -6,6 +6,7 @@ import WowAhhAnimation from "./Animation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import { useNotification } from "@/contexts/notification-context";
 
 // Simple skeleton loader component
 function SkeletonLoader() {
@@ -516,6 +517,7 @@ interface ChatMessage {
 }
 
 export default function LawGPTPage() {
+  const { showNotification } = useNotification();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -804,8 +806,13 @@ export default function LawGPTPage() {
       }
 
       if (!isAuthenticated || !userId) {
-        alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
-        window.location.href = '/login';
+        showNotification(
+          "Please login or sign up to use LawGPT. You will be redirected to the login page.",
+          'info'
+        );
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
         return;
       }
 
@@ -1014,8 +1021,13 @@ export default function LawGPTPage() {
                       // Check authentication when user tries to type
                       if (!isAuthChecking && (!isAuthenticated || !userId)) {
                         e.target.blur(); // Remove focus
-                        alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
-                        window.location.href = '/login';
+                        showNotification(
+                          "Please login or sign up to use LawGPT. You will be redirected to the login page.",
+                          'info'
+                        );
+                        setTimeout(() => {
+                          window.location.href = '/login';
+                        }, 2000);
                       }
                     }}
                     onChange={(e) => {
@@ -1194,8 +1206,13 @@ export default function LawGPTPage() {
                     // Check authentication when user tries to type
                     if (!isAuthChecking && (!isAuthenticated || !userId)) {
                       e.target.blur(); // Remove focus
-                      alert("Please login or sign up to use LawGPT.\n\nYou will be redirected to the login page.");
-                      window.location.href = '/login';
+                      showNotification(
+                        "Please login or sign up to use LawGPT. You will be redirected to the login page.",
+                        'info'
+                      );
+                      setTimeout(() => {
+                        window.location.href = '/login';
+                      }, 2000);
                     }
                   }}
                   onChange={(e) => {

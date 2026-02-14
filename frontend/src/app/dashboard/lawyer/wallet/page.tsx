@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useNotification } from '@/contexts/notification-context';
 import {
   Dialog,
   DialogContent,
@@ -102,6 +103,7 @@ interface BankAccount {
 }
 
 const LawyerWalletPage = () => {
+  const { showNotification } = useNotification();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
@@ -226,15 +228,15 @@ const LawyerWalletPage = () => {
   const handleWithdraw = async () => {
     const amount = parseFloat(withdrawAmount);
     if (isNaN(amount) || amount < 500) {
-      alert('Minimum withdrawal amount is ₹500');
+      showNotification('Minimum withdrawal amount is ₹500', 'error');
       return;
     }
     if (amount > walletBalance) {
-      alert('Insufficient balance');
+      showNotification('Insufficient balance', 'error');
       return;
     }
     if (!selectedBank) {
-      alert('Please select a bank account');
+      showNotification('Please select a bank account', 'error');
       return;
     }
     if (!user) return;
@@ -276,10 +278,10 @@ const LawyerWalletPage = () => {
       setSelectedBank('');
 
       // Show success message
-      alert(`Withdrawal of ₹${amount} initiated successfully! It will be processed in 2-3 business days.`);
+      showNotification(`Withdrawal of ₹${amount} initiated successfully! It will be processed in 2-3 business days.`, 'success');
     } catch (error) {
       console.error('Withdrawal error:', error);
-      alert('Failed to process withdrawal. Please try again.');
+      showNotification('Failed to process withdrawal. Please try again.', 'error');
     }
   };
 
@@ -330,7 +332,7 @@ const LawyerWalletPage = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+    showNotification('Copied to clipboard!', 'success');
   };
 
   if (loading) {

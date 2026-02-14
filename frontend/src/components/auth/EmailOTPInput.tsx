@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useNotification } from '@/contexts/notification-context';
 
 interface EmailOTPInputProps {
   onSuccess?: () => void;
@@ -13,6 +14,7 @@ interface EmailOTPInputProps {
 
 export default function EmailOTPInput({ onSuccess, onError }: EmailOTPInputProps) {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [isOTPSent, setIsOTPSent] = useState(false);
@@ -22,7 +24,7 @@ export default function EmailOTPInput({ onSuccess, onError }: EmailOTPInputProps
 
   const handleSendOTP = async () => {
     if (!email || !email.includes('@')) {
-      alert('Please enter a valid email address');
+      showNotification('Please enter a valid email address', 'error');
       return;
     }
 
@@ -53,11 +55,11 @@ export default function EmailOTPInput({ onSuccess, onError }: EmailOTPInputProps
         });
       }, 1000);
 
-      alert('OTP sent successfully! Check your email inbox.');
+      showNotification('OTP sent successfully! Check your email inbox.', 'success');
     } catch (error: any) {
       console.error('Send OTP error:', error);
       onError?.(error.message || 'Failed to send OTP');
-      alert(error.message || 'Failed to send OTP. Please try again.');
+      showNotification(error.message || 'Failed to send OTP. Please try again.', 'error');
     } finally {
       setIsSending(false);
     }
@@ -65,7 +67,7 @@ export default function EmailOTPInput({ onSuccess, onError }: EmailOTPInputProps
 
   const handleVerifyOTP = async () => {
     if (!otp || otp.length !== 6) {
-      alert('Please enter the 6-digit code');
+      showNotification('Please enter the 6-digit code', 'error');
       return;
     }
 
@@ -104,21 +106,22 @@ export default function EmailOTPInput({ onSuccess, onError }: EmailOTPInputProps
             }]);
         }
 
-        alert('Login successful!');
+        showNotification('Login successful!', 'success');
         
-        // Redirect to dashboard
-        if (profile?.user_type === 'lawyer') {
-          router.push('/dashboard/lawyer');
-        } else {
-          router.push('/dashboard/client');
-        }
-        
-        onSuccess?.();
+        // Add 2-second delay before redirect and callback
+        setTimeout(() => {
+          if (profile?.user_type === 'lawyer') {
+            router.push('/dashboard/lawyer');
+          } else {
+            router.push('/dashboard/client');
+          }
+          onSuccess?.();
+        }, 2000);
       }
     } catch (error: any) {
       console.error('Verify OTP error:', error);
       onError?.(error.message || 'Invalid OTP');
-      alert(error.message || 'Invalid OTP. Please try again.');
+      showNotification(error.message || 'Invalid OTP. Please try again.', 'error');
     } finally {
       setIsVerifying(false);
     }

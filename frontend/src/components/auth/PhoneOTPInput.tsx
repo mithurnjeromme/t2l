@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { signInWithPhoneOTP, verifyPhoneOTP } from '@/lib/supabase-auth';
+import { useNotification } from '@/contexts/notification-context';
 
 interface PhoneOTPInputProps {
   onSuccess?: () => void;
@@ -11,6 +12,7 @@ interface PhoneOTPInputProps {
 }
 
 export default function PhoneOTPInput({ onSuccess, onError }: PhoneOTPInputProps) {
+  const { showNotification } = useNotification();
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [isOTPSent, setIsOTPSent] = useState(false);
@@ -53,11 +55,11 @@ export default function PhoneOTPInput({ onSuccess, onError }: PhoneOTPInputProps
         });
       }, 1000);
 
-      alert('OTP sent successfully! Check your phone.');
+      showNotification('OTP sent successfully! Check your phone.', 'success');
     } catch (error: any) {
       console.error('Send OTP error:', error);
       onError?.(error.message || 'Failed to send OTP');
-      alert(error.message || 'Failed to send OTP. Please try again.');
+      showNotification(error.message || 'Failed to send OTP. Please try again.', 'error');
     } finally {
       setIsSending(false);
     }
@@ -80,7 +82,7 @@ export default function PhoneOTPInput({ onSuccess, onError }: PhoneOTPInputProps
     } catch (error: any) {
       console.error('Verify OTP error:', error);
       onError?.(error.message || 'Invalid OTP');
-      alert(error.message || 'Invalid OTP. Please try again.');
+      showNotification(error.message || 'Invalid OTP. Please try again.', 'error');
     } finally {
       setIsVerifying(false);
     }

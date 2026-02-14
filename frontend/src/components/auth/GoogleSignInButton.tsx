@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { signInWithGoogle } from '@/lib/supabase-auth';
+import { useNotification } from '@/contexts/notification-context';
 
 interface GoogleSignInButtonProps {
   mode?: 'signin' | 'signup';
@@ -11,6 +12,7 @@ interface GoogleSignInButtonProps {
 
 export default function GoogleSignInButton({ mode = 'signin', className = '' }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { showNotification } = useNotification();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -19,7 +21,7 @@ export default function GoogleSignInButton({ mode = 'signin', className = '' }: 
       // Redirect handled by Supabase
     } catch (error: any) {
       console.error('Google sign-in error:', error);
-      alert(error.message || 'Failed to sign in with Google. Please try again.');
+      showNotification(error.message || 'Failed to sign in with Google. Please try again.', 'error');
       setIsLoading(false);
     }
   };

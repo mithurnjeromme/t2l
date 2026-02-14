@@ -34,26 +34,27 @@ const CustomNotification: React.FC<CustomNotificationProps> = ({
 
   const getIcon = () => {
     const iconColor = "text-white"; // Always white for good contrast on colored backgrounds
+    const iconSize = "w-5 h-5 sm:w-6 sm:h-6"; // Smaller on mobile
     switch (type) {
       case 'success':
-        return <CheckCircle className={`w-6 h-6 ${iconColor}`} />;
+        return <CheckCircle className={`${iconSize} ${iconColor}`} />;
       case 'error':
-        return <X className={`w-6 h-6 ${iconColor}`} />;
+        return <X className={`${iconSize} ${iconColor}`} />;
       case 'info':
-        return <Mail className={`w-6 h-6 ${iconColor}`} />;
+        return <Mail className={`${iconSize} ${iconColor}`} />;
       default:
-        return <CheckCircle className={`w-6 h-6 ${iconColor}`} />;
+        return <CheckCircle className={`${iconSize} ${iconColor}`} />;
     }
   };
 
   const getBackgroundColor = () => {
     switch (type) {
       case 'success':
-        return 'bg-[#17726E] border border-[#17726E]/20'; // Solid teal
+        return 'bg-[#17726E] border border-[#17726E]/20'; // Tertiary teal from app palette
       case 'error':
-        return 'bg-red-600 border border-red-600/20'; // Solid red
+        return 'bg-destructive border border-destructive/20'; // App's destructive color
       case 'info':
-        return 'bg-[#DF9C49] border border-[#DF9C49]/20'; // Solid gold
+        return 'bg-[#DF9C49] border border-[#DF9C49]/20'; // Primary gold from app palette
       default:
         return 'bg-[#DF9C49] border border-[#DF9C49]/20';
     }
@@ -73,15 +74,15 @@ const CustomNotification: React.FC<CustomNotificationProps> = ({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-[9999] max-w-md">
+    <div className="fixed top-4 sm:top-4 right-4 sm:right-4 left-4 sm:left-auto z-[9999] max-w-sm sm:max-w-md mx-auto sm:mx-0">
       <div
         className={cn(
-          "flex items-center space-x-3 p-4 rounded-xl shadow-lg",
+          "flex items-center space-x-2 sm:space-x-3 p-3 sm:p-4 rounded-xl shadow-lg",
           "transform transition-all duration-300 ease-out",
           getBackgroundColor(),
           isVisible 
-            ? "translate-x-0 opacity-100 scale-100" 
-            : "translate-x-full opacity-0 scale-95"
+            ? "translate-y-0 sm:translate-x-0 opacity-100 scale-100" 
+            : "-translate-y-full sm:translate-y-0 sm:translate-x-full opacity-0 scale-95"
         )}
       >
         {/* Icon */}
@@ -90,8 +91,8 @@ const CustomNotification: React.FC<CustomNotificationProps> = ({
         </div>
 
         {/* Message */}
-        <div className="flex-1">
-          <p className={cn("font-medium text-sm leading-relaxed", getTextColor())}>
+        <div className="flex-1 min-w-0">
+          <p className={cn("font-medium text-xs sm:text-sm leading-relaxed break-words", getTextColor())}>
             {message}
           </p>
         </div>
@@ -99,9 +100,9 @@ const CustomNotification: React.FC<CustomNotificationProps> = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="flex-shrink-0 p-1 rounded-full hover:bg-white/20 transition-colors duration-200"
+          className="flex-shrink-0 p-1.5 sm:p-1 rounded-full hover:bg-white/20 transition-colors duration-200 touch-manipulation"
         >
-          <X className="w-4 h-4 text-white" />
+          <X className="w-4 h-4 sm:w-4 sm:h-4 text-white" />
         </button>
       </div>
     </div>
