@@ -40,7 +40,7 @@ export function middleware(request: NextRequest) {
   // Only set CSP in production to avoid dev issues
   if (process.env.NODE_ENV === 'production') {
     const backendApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://turn2law-backend-p3r6.onrender.com';
-    const lawgptApiUrl = process.env.NEXT_PUBLIC_LAWGPT_API_URL || 'https://turn2law-lawgpt-zzj3.onrender.com';
+    const lawgptApiUrl = process.env.NEXT_PUBLIC_LAWGPT_API_URL || 'https://turn2law-lawgpt-2.onrender.com';
     
     response.headers.set(
       'Content-Security-Policy',
