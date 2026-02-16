@@ -43,7 +43,7 @@ const KnowAboutUs = () => {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="mb-8">
-          <h2 className="text-3xl lg:text-4xl font-body font-semibold text-foreground mb-4">
+          <h2 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4">
             Know about <span className="text-primary">us</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl font-body">

@@ -190,7 +190,7 @@ export default function SettingsPage() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-headline font-bold">Account Settings</h1>
+                    <h1 className="text-3xl font-body font-bold">Account Settings</h1>
                     <p className="text-muted-foreground">Manage your profile, security, and preferences</p>
                 </div>
 
@@ -200,7 +200,7 @@ export default function SettingsPage() {
                             <CardHeader>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <CardTitle className="text-xl font-headline">Profile Information</CardTitle>
+                                        <CardTitle className="text-xl font-body">Profile Information</CardTitle>
                                         <p className="text-sm text-muted-foreground font-body">Manage your personal information and preferences</p>
                                     </div>
                                     {isEditing && (
@@ -281,7 +281,7 @@ export default function SettingsPage() {
                     <div className="space-y-6">
                         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                             <CardHeader>
-                                <CardTitle className="text-lg font-headline">Quick Stats</CardTitle>
+                                <CardTitle className="text-lg font-body">Quick Stats</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -305,7 +305,7 @@ export default function SettingsPage() {
 
                         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                             <CardHeader>
-                                <CardTitle className="text-lg font-headline">Account Security</CardTitle>
+                                <CardTitle className="text-lg font-body">Account Security</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <Button

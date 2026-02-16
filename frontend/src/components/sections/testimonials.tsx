@@ -3,7 +3,7 @@ const Testimonials = () => {
     <section id="testimonials" className="py-16 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-body font-semibold leading-tight">
+          <h2 className="text-3xl lg:text-4xl font-body font-bold leading-tight">
             <span className="text-primary">Turn2Law</span>{" "}
             <span className="text-foreground">has helped</span>
             <br />

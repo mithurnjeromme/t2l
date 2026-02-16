@@ -193,7 +193,7 @@ function MessagesContent() {
             <Menu className="h-5 w-5 text-foreground" />
           )}
         </Button>
-        <h2 className="text-foreground font-semibold">Messages</h2>
+        <h2 className="text-foreground font-bold">Messages</h2>
         <div className="w-5" />
       </div>
 
@@ -209,7 +209,7 @@ function MessagesContent() {
             {/* Sidebar Header */}
             <div className="p-6 border-b border-border hidden md:block">
               <div className="flex items-center justify-between mb-4">
-                <h1 className="font-bold text-foreground text-xl font-headline">
+                <h1 className="font-bold text-foreground text-xl font-body">
                   Messages
                 </h1>
                 <Button

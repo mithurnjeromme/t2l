@@ -366,7 +366,7 @@ const LawyerWalletPage = () => {
                   </Button>
                 </Link>
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-headline font-semibold text-foreground">
+                  <h1 className="text-3xl lg:text-4xl font-body font-bold text-foreground">
                     Professional Wallet
                   </h1>
                   <p className="text-muted-foreground font-body mt-1">
@@ -407,9 +407,9 @@ const LawyerWalletPage = () => {
                       <p className="text-sm opacity-90 font-body">Available Balance</p>
                       <div className="flex items-center gap-3 mt-1">
                         {isBalanceVisible ? (
-                          <h2 className="text-4xl font-headline font-bold">{formatCurrency(walletBalance)}</h2>
+                          <h2 className="text-4xl font-body font-bold">{formatCurrency(walletBalance)}</h2>
                         ) : (
-                          <h2 className="text-4xl font-headline font-bold">₹ ••••••</h2>
+                          <h2 className="text-4xl font-body font-bold">₹ ••••••</h2>
                         )}
                         <Button
                           variant="ghost"
@@ -430,7 +430,7 @@ const LawyerWalletPage = () => {
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
                     <p className="text-xs opacity-90 mb-1">This Month</p>
-                    <p className="text-2xl font-headline font-semibold">{formatCurrency(totalEarningsThisMonth)}</p>
+                    <p className="text-2xl font-body font-semibold">{formatCurrency(totalEarningsThisMonth)}</p>
                     <p className="text-xs opacity-75 flex items-center gap-1 mt-1">
                       <TrendingUp className="w-3 h-3" />
                       +{monthlyGrowth}%
@@ -438,12 +438,12 @@ const LawyerWalletPage = () => {
                   </div>
                   <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
                     <p className="text-xs opacity-90 mb-1">Withdrawn</p>
-                    <p className="text-2xl font-headline font-semibold">{formatCurrency(totalWithdrawn)}</p>
+                    <p className="text-2xl font-body font-semibold">{formatCurrency(totalWithdrawn)}</p>
                     <p className="text-xs opacity-75 mt-1">Total lifetime</p>
                   </div>
                   <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm">
                     <p className="text-xs opacity-90 mb-1">Pending</p>
-                    <p className="text-2xl font-headline font-semibold">{formatCurrency(pendingAmount)}</p>
+                    <p className="text-2xl font-body font-semibold">{formatCurrency(pendingAmount)}</p>
                     <p className="text-xs opacity-75 mt-1">Processing</p>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ const LawyerWalletPage = () => {
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl font-headline">Withdraw Funds</DialogTitle>
+                        <DialogTitle className="text-2xl font-body">Withdraw Funds</DialogTitle>
                         <DialogDescription>
                           Withdraw your earnings to your registered bank account
                         </DialogDescription>
@@ -530,7 +530,7 @@ const LawyerWalletPage = () => {
             {/* Professional Stats */}
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg font-headline">Professional Stats</CardTitle>
+                <CardTitle className="text-lg font-body">Professional Stats</CardTitle>
                 <CardDescription>Your practice performance</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -541,7 +541,7 @@ const LawyerWalletPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Consultations</p>
-                      <p className="text-xl font-headline font-semibold">{totalConsultations}</p>
+                      <p className="text-xl font-body font-semibold">{totalConsultations}</p>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -554,7 +554,7 @@ const LawyerWalletPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Avg. Fee</p>
-                      <p className="text-xl font-headline font-semibold">{formatCurrency(averageFee)}</p>
+                      <p className="text-xl font-body font-semibold">{formatCurrency(averageFee)}</p>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -567,7 +567,7 @@ const LawyerWalletPage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Rating</p>
-                      <p className="text-xl font-headline font-semibold">5.0</p>
+                      <p className="text-xl font-body font-semibold">5.0</p>
                     </div>
                   </div>
                   <Badge variant="secondary" className="bg-secondary/20 text-secondary">Excellent</Badge>
@@ -586,7 +586,7 @@ const LawyerWalletPage = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl font-headline">Registered Bank Accounts</CardTitle>
+                  <CardTitle className="text-xl font-body">Registered Bank Accounts</CardTitle>
                   <CardDescription>Manage your bank accounts for withdrawals</CardDescription>
                 </div>
                 <Dialog open={isAddBankOpen} onOpenChange={setIsAddBankOpen}>
@@ -598,7 +598,7 @@ const LawyerWalletPage = () => {
                   </DialogTrigger>
                   <DialogContent className="max-w-md">
                     <DialogHeader>
-                      <DialogTitle className="text-2xl font-headline">Add Bank Account</DialogTitle>
+                      <DialogTitle className="text-2xl font-body">Add Bank Account</DialogTitle>
                       <DialogDescription>
                         Add a new bank account for withdrawals
                       </DialogDescription>
@@ -681,7 +681,7 @@ const LawyerWalletPage = () => {
             <CardHeader>
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <CardTitle className="text-xl font-headline">Transaction History</CardTitle>
+                  <CardTitle className="text-xl font-body">Transaction History</CardTitle>
                   <CardDescription>Complete record of all your earnings and withdrawals</CardDescription>
                 </div>
                 <div className="flex flex-wrap gap-3">
@@ -725,7 +725,7 @@ const LawyerWalletPage = () => {
                     <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
                       <Receipt className="w-8 h-8 text-muted-foreground" />
                     </div>
-                    <h3 className="font-headline font-semibold text-foreground mb-2">No Transactions Found</h3>
+                    <h3 className="font-body font-semibold text-foreground mb-2">No Transactions Found</h3>
                     <p className="text-sm text-muted-foreground">
                       {searchTerm || filterType !== 'all' || filterStatus !== 'all'
                         ? 'Try adjusting your filters'
@@ -763,7 +763,7 @@ const LawyerWalletPage = () => {
                                 )}
                               </div>
                               <div className="text-right">
-                                <p className={`text-xl font-headline font-semibold ${
+                                <p className={`text-xl font-body font-semibold ${
                                   transaction.type === 'credit' ? 'text-secondary' : 'text-foreground'
                                 }`}>
                                   {transaction.type === 'credit' ? '+' : '-'}{formatCurrency(transaction.amount)}
@@ -828,7 +828,7 @@ const LawyerWalletPage = () => {
             {/* Security Features */}
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg font-headline flex items-center gap-2">
+                <CardTitle className="text-lg font-body flex items-center gap-2">
                   <Shield className="w-5 h-5 text-primary" />
                   Security & Compliance
                 </CardTitle>
@@ -868,7 +868,7 @@ const LawyerWalletPage = () => {
             {/* Help & Support */}
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-lg font-headline flex items-center gap-2">
+                <CardTitle className="text-lg font-body flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 text-primary" />
                   Help & Support
                 </CardTitle>

@@ -450,7 +450,7 @@ const ClientWallet = () => {
                   <Wallet className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-3xl lg:text-4xl font-headline font-semibold text-foreground">
+                  <h1 className="text-3xl lg:text-4xl font-body font-bold text-foreground">
                     My Wallet
                   </h1>
                   <p className="text-muted-foreground font-body">Manage your funds and transactions</p>
@@ -648,7 +648,7 @@ const ClientWallet = () => {
               </div>
               <div>
                 <p className="text-sm opacity-90 mb-1">Wallet Balance</p>
-                <p className="text-3xl font-headline font-bold">₹{walletData.balance.toFixed(2)}</p>
+                <p className="text-3xl font-body font-bold">₹{walletData.balance.toFixed(2)}</p>
                 <p className="text-xs opacity-80 mt-2">Available for use</p>
               </div>
             </CardContent>
@@ -664,7 +664,7 @@ const ClientWallet = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Total Received</p>
-                <p className="text-3xl font-headline font-semibold text-foreground">₹{walletData.totalEarnings.toFixed(2)}</p>
+                <p className="text-3xl font-body font-semibold text-foreground">₹{walletData.totalEarnings.toFixed(2)}</p>
                 <p className="text-xs text-green-600 mt-2">+15% this month</p>
               </div>
             </CardContent>
@@ -680,7 +680,7 @@ const ClientWallet = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Total Spent</p>
-                <p className="text-3xl font-headline font-semibold text-foreground">₹{walletData.totalSpent.toFixed(2)}</p>
+                <p className="text-3xl font-body font-semibold text-foreground">₹{walletData.totalSpent.toFixed(2)}</p>
                 <p className="text-xs text-muted-foreground mt-2">On legal services</p>
               </div>
             </CardContent>
@@ -696,7 +696,7 @@ const ClientWallet = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Pending Amount</p>
-                <p className="text-3xl font-headline font-semibold text-foreground">₹{walletData.pendingAmount.toFixed(2)}</p>
+                <p className="text-3xl font-body font-semibold text-foreground">₹{walletData.pendingAmount.toFixed(2)}</p>
                 <p className="text-xs text-muted-foreground mt-2">Being processed</p>
               </div>
             </CardContent>
@@ -706,7 +706,7 @@ const ClientWallet = () => {
         {/* Quick Actions */}
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-headline">Quick Actions</CardTitle>
+            <CardTitle className="text-xl font-body">Quick Actions</CardTitle>
             <CardDescription>Common wallet operations</CardDescription>
           </CardHeader>
           <CardContent>
@@ -758,7 +758,7 @@ const ClientWallet = () => {
         {/* Payment Methods */}
         <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-xl font-headline">Payment Methods</CardTitle>
+            <CardTitle className="text-xl font-body">Payment Methods</CardTitle>
             <CardDescription>Manage your payment options</CardDescription>
           </CardHeader>
           <CardContent>
@@ -797,7 +797,7 @@ const ClientWallet = () => {
           <CardHeader>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <CardTitle className="text-xl font-headline">Transaction History</CardTitle>
+                <CardTitle className="text-xl font-body">Transaction History</CardTitle>
                 <CardDescription>View all your wallet transactions</CardDescription>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -912,7 +912,7 @@ const ClientWallet = () => {
               <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4">
                 <Shield className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-headline font-semibold mb-2">100% Secure</h3>
+              <h3 className="font-body font-semibold mb-2">100% Secure</h3>
               <p className="text-sm text-muted-foreground">
                 Your funds are protected with bank-level security and encryption
               </p>
@@ -924,7 +924,7 @@ const ClientWallet = () => {
               <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-secondary" />
               </div>
-              <h3 className="font-headline font-semibold mb-2">Instant Payments</h3>
+              <h3 className="font-body font-semibold mb-2">Instant Payments</h3>
               <p className="text-sm text-muted-foreground">
                 Make quick payments for legal services without delays
               </p>
@@ -936,7 +936,7 @@ const ClientWallet = () => {
               <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4">
                 <Gift className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="font-headline font-semibold mb-2">Rewards Coming Soon</h3>
+              <h3 className="font-body font-semibold mb-2">Rewards Coming Soon</h3>
               <p className="text-sm text-muted-foreground">
                 Earn cashback and rewards on wallet transactions
               </p>
@@ -953,7 +953,7 @@ const ClientWallet = () => {
                   <AlertCircle className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-headline font-semibold text-lg mb-2">Need Help with Your Wallet?</h3>
+                  <h3 className="font-body font-semibold text-lg mb-2">Need Help with Your Wallet?</h3>
                   <p className="text-sm text-muted-foreground mb-4">
                     Our support team is available 24/7 to assist you with any wallet-related queries or issues.
                   </p>

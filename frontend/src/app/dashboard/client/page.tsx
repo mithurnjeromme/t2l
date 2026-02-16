@@ -185,7 +185,7 @@ const ServiceTrackingTab = ({ userId }: { userId: string }) => {
     return (
       <Card className="border-border/50 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="text-2xl font-headline flex items-center gap-2">
+          <CardTitle className="text-2xl font-body flex items-center gap-2">
             <FileText className="h-6 w-6 text-primary" />
             Track Your Services
           </CardTitle>
@@ -215,7 +215,7 @@ const ServiceTrackingTab = ({ userId }: { userId: string }) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold font-headline">Track Your Services</h2>
+          <h2 className="text-2xl font-bold font-body">Track Your Services</h2>
           <p className="text-muted-foreground">Monitor the progress of your legal service requests</p>
         </div>
         <Badge variant="outline" className="text-sm px-3 py-1">
@@ -267,7 +267,7 @@ const ServiceTrackingTab = ({ userId }: { userId: string }) => {
                   <span className="font-mono text-lg font-bold text-primary">
                     {selectedRequest.service_number}
                   </span>
-                  <CardTitle className="text-xl font-headline mt-1">
+                  <CardTitle className="text-xl font-body mt-1">
                     {selectedRequest.service_type}
                   </CardTitle>
                 </div>
@@ -499,7 +499,7 @@ const ClientDashboardContent = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-headline font-semibold text-foreground mb-4">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-body font-bold text-foreground mb-4">
                 Welcome back, <span className="text-primary">{user.fullName.split(' ')[0]}</span>
               </h1>
               <p className="text-lg sm:text-xl text-muted-foreground mb-6 max-w-2xl font-body">
@@ -560,7 +560,7 @@ const ClientDashboardContent = () => {
               <CardHeader className="relative">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
                   <div className="w-full sm:max-w-[70%]">
-                    <CardTitle className="text-2xl sm:text-3xl lg:text-3xl font-headline font-semibold mb-2">
+                    <CardTitle className="text-2xl sm:text-3xl lg:text-3xl font-body font-bold mb-2">
                       Welcome back, {user.fullName}!
                     </CardTitle>
                     <p className="text-base sm:text-lg text-primary-foreground/90 max-w-2xl font-body">
@@ -593,7 +593,7 @@ const ClientDashboardContent = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1 font-body">Total Consultations</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.totalConsultations}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">{stats.totalConsultations}</p>
                       <p className="text-xs text-secondary mt-1 font-body">Lifetime bookings</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -608,7 +608,7 @@ const ClientDashboardContent = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1 font-body">Active Cases</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.activeCases}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">{stats.activeCases}</p>
                       <p className="text-xs text-secondary mt-1 font-body">Legal matters in progress</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -627,7 +627,7 @@ const ClientDashboardContent = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium opacity-90 mb-1">Wallet Balance</p>
-                        <p className="text-3xl font-headline font-semibold">₹{stats.walletBalance.toLocaleString('en-IN')}</p>
+                        <p className="text-3xl font-body font-semibold">₹{stats.walletBalance.toLocaleString('en-IN')}</p>
                         <p className="text-xs opacity-80 mt-1 flex items-center gap-1">
                           View wallet <ChevronRight className="w-3 h-3" />
                         </p>
@@ -645,7 +645,7 @@ const ClientDashboardContent = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Total Spent</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">₹{stats.totalSpent.toLocaleString('en-IN')}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">₹{stats.totalSpent.toLocaleString('en-IN')}</p>
                       <p className="text-xs text-secondary mt-1">On legal services</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -661,7 +661,7 @@ const ClientDashboardContent = () => {
               {/* Enhanced Quick Actions */}
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-headline">Quick Actions</CardTitle>
+                  <CardTitle className="text-xl font-body">Quick Actions</CardTitle>
                   <p className="text-sm text-muted-foreground font-body">Get started with our legal services</p>
                 </CardHeader>
                 <CardContent>
@@ -708,7 +708,7 @@ const ClientDashboardContent = () => {
               {/* Enhanced Recent Activity */}
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-headline">Recent Activity</CardTitle>
+                  <CardTitle className="text-xl font-body">Recent Activity</CardTitle>
                   <p className="text-sm text-muted-foreground">Your latest legal interactions</p>
                 </CardHeader>
                 <CardContent>
@@ -717,7 +717,7 @@ const ClientDashboardContent = () => {
                       <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
                         <Clock className="w-8 h-8 text-muted-foreground" />
                       </div>
-                      <h3 className="font-headline font-semibold text-foreground mb-2">No Recent Activity</h3>
+                      <h3 className="font-body font-semibold text-foreground mb-2">No Recent Activity</h3>
                       <p className="text-sm text-muted-foreground mb-4 max-w-sm">Your consultations, case updates, and legal interactions will appear here</p>
                       <Button variant="outline" size="sm" onClick={() => setActiveTab('consultations')}>
                         Start Your Legal Journey
@@ -770,7 +770,7 @@ const ClientDashboardContent = () => {
             {/* Featured Legal Services */}
             <Card className="border-border/50 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-headline">Legal Services</CardTitle>
+                <CardTitle className="text-xl font-body">Legal Services</CardTitle>
                 <p className="text-sm text-muted-foreground">Explore our comprehensive legal solutions</p>
               </CardHeader>
               <CardContent>
@@ -779,7 +779,7 @@ const ClientDashboardContent = () => {
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <Scale className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Civil Law</h3>
+                    <h3 className="font-body font-semibold mb-2">Civil Law</h3>
                     <p className="text-sm text-muted-foreground">Property disputes, contracts, and civil matters</p>
                   </div>
 
@@ -787,7 +787,7 @@ const ClientDashboardContent = () => {
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                       <Shield className="w-6 h-6 text-secondary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Criminal Law</h3>
+                    <h3 className="font-body font-semibold mb-2">Criminal Law</h3>
                     <p className="text-sm text-muted-foreground">Criminal defense and legal protection</p>
                   </div>
 
@@ -795,7 +795,7 @@ const ClientDashboardContent = () => {
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <Users className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Family Law</h3>
+                    <h3 className="font-body font-semibold mb-2">Family Law</h3>
                     <p className="text-sm text-muted-foreground">Marriage, divorce, and family matters</p>
                   </div>
                 </div>
@@ -807,7 +807,7 @@ const ClientDashboardContent = () => {
           <TabsContent value="consultations" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-headline font-semibold">My Consultations</h2>
+                <h2 className="text-2xl sm:text-3xl font-body font-bold">My Consultations</h2>
                 <p className="text-muted-foreground">Manage your legal consultations and meetings</p>
               </div>
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold" asChild>
@@ -823,7 +823,7 @@ const ClientDashboardContent = () => {
                 <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                   <Calendar className="w-12 h-12 text-primary" />
                 </div>
-                <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">No Consultations Yet</h3>
+                <h3 className="text-xl sm:text-2xl font-body font-semibold mb-4">No Consultations Yet</h3>
                 <p className="text-muted-foreground mb-8 max-w-md mx-auto">Start your legal journey by booking a consultation with our expert lawyers. Get personalized advice for your legal matters.</p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Button size="lg" asChild>
@@ -886,7 +886,7 @@ const ClientDashboardContent = () => {
           <TabsContent value="cases" className="space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-headline font-semibold">My Legal Cases</h2>
+                <h2 className="text-2xl sm:text-3xl font-body font-bold">My Legal Cases</h2>
                 <p className="text-muted-foreground">Track and manage your ongoing legal matters</p>
               </div>
               <Button size="lg" variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
@@ -899,7 +899,7 @@ const ClientDashboardContent = () => {
               <div className="w-20 h-20 sm:w-24 sm:h-24 bg-secondary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <FileText className="w-12 h-12 text-secondary" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">No Cases Yet</h3>
+              <h3 className="text-xl sm:text-2xl font-body font-semibold mb-4">No Cases Yet</h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">Your legal cases will be organized and tracked here. Start by consulting with a lawyer to begin your legal journey.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="outline">
@@ -918,7 +918,7 @@ const ClientDashboardContent = () => {
               <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <Search className="w-12 h-12 text-primary" />
               </div>
-              <h3 className="text-xl sm:text-2xl font-headline font-semibold mb-4">Find the Right Lawyer</h3>
+              <h3 className="text-xl sm:text-2xl font-body font-semibold mb-4">Find the Right Lawyer</h3>
               <p className="text-muted-foreground mb-8 max-w-lg mx-auto font-body">Browse through our network of verified, experienced lawyers. Filter by specialization, location, and ratings to find the perfect legal expert for your needs.</p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" className="font-body" asChild>

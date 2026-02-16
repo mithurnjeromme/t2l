@@ -256,7 +256,7 @@ function DocumentsPageContent(): JSX.Element {
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
               <motion.h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-headline font-semibold mb-3 sm:mb-4 leading-tight text-foreground"
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-body font-bold mb-3 sm:mb-4 leading-tight text-foreground"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05, duration: 0.5 }}

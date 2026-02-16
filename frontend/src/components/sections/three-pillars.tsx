@@ -10,7 +10,7 @@ export default function ThreePillarsSection() {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-headline font-semibold text-foreground mb-4">
+          <h2 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4">
             Our <span className="text-primary">Three Pillars</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">
@@ -27,7 +27,7 @@ export default function ThreePillarsSection() {
               className=""
             >
               <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
                   Online Client-Lawyer Matchmaking
                 </h2>
                 <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
@@ -41,7 +41,7 @@ export default function ThreePillarsSection() {
           <Link href="/lawgpt" className="block h-full transition-transform hover:scale-[1.02]">
             <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#DF9C49] to-[#C88539] dark:from-[#DF9C49] dark:to-[#C88539] cursor-pointer">
               <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
                   Legal Services with AI Chatbot Access
                 </h2>
                 <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
@@ -55,7 +55,7 @@ export default function ThreePillarsSection() {
           <Link href="/documents" className="block h-full transition-transform hover:scale-[1.02]">
             <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#F5C563] to-[#E8B54D] dark:from-[#F5C563] dark:to-[#E8B54D] cursor-pointer">
               <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-headline mb-4">
+                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
                   Automated Document Drafting
                 </h2>
                 <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">

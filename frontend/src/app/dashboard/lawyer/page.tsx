@@ -203,7 +203,7 @@ const LawyerDashboard = () => {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex-1">
-              <h1 className="text-4xl lg:text-5xl font-headline font-semibold text-foreground mb-4">
+              <h1 className="text-4xl lg:text-5xl font-body font-bold text-foreground mb-4">
                 Welcome, <span className="text-primary">Advocate {user.fullName.split(' ')[0]}</span>
               </h1>
               <p className="text-xl text-muted-foreground mb-6 max-w-2xl font-body">
@@ -260,7 +260,7 @@ const LawyerDashboard = () => {
               <CardHeader className="relative">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-3xl font-headline font-semibold mb-2">
+                    <CardTitle className="text-3xl font-body font-bold mb-2">
                       Welcome to Your Practice Dashboard, Advocate {user.fullName}!
                     </CardTitle>
                     <p className="text-secondary-foreground/90 text-lg max-w-2xl font-body">
@@ -293,7 +293,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Total Clients</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.totalClients}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">{stats.totalClients}</p>
                       <p className="text-xs text-secondary mt-1">Lifetime clients served</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -308,7 +308,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Monthly Earnings</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</p>
                       <p className="text-xs text-secondary mt-1">This month's revenue</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -323,7 +323,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Consultations</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.totalConsultations}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">{stats.totalConsultations}</p>
                       <p className="text-xs text-muted-foreground mt-1">{stats.completedConsultations} completed</p>
                     </div>
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
@@ -338,7 +338,7 @@ const LawyerDashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-1">Success Rating</p>
-                      <p className="text-3xl font-headline font-semibold text-foreground">{stats.rating.toFixed(1)}</p>
+                      <p className="text-3xl font-body font-semibold text-foreground">{stats.rating.toFixed(1)}</p>
                       <p className="text-xs text-secondary mt-1">Client satisfaction</p>
                     </div>
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center">
@@ -354,7 +354,7 @@ const LawyerDashboard = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-sm font-medium text-muted-foreground mb-1">Wallet Balance</p>
-                        <p className="text-3xl font-headline font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</p>
+                        <p className="text-3xl font-body font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</p>
                         <p className="text-xs text-primary mt-1 flex items-center gap-1">
                           <TrendingUp className="w-3 h-3" />
                           View earnings
@@ -374,7 +374,7 @@ const LawyerDashboard = () => {
               {/* Enhanced Quick Actions */}
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-headline">Practice Management</CardTitle>
+                  <CardTitle className="text-xl font-body">Practice Management</CardTitle>
                   <p className="text-sm text-muted-foreground font-body">Manage your legal practice efficiently</p>
                 </CardHeader>
                 <CardContent>
@@ -411,7 +411,7 @@ const LawyerDashboard = () => {
               {/* Enhanced Recent Activity */}
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-headline">Recent Activity</CardTitle>
+                  <CardTitle className="text-xl font-body">Recent Activity</CardTitle>
                   <p className="text-sm text-muted-foreground font-body">Your latest client interactions</p>
                 </CardHeader>
                 <CardContent>
@@ -420,7 +420,7 @@ const LawyerDashboard = () => {
                       <div className="w-16 h-16 bg-muted/50 rounded-2xl flex items-center justify-center mb-4">
                         <Briefcase className="w-8 h-8 text-muted-foreground" />
                       </div>
-                      <h3 className="font-headline font-semibold text-foreground mb-2">No Recent Activity</h3>
+                      <h3 className="font-body font-semibold text-foreground mb-2">No Recent Activity</h3>
                       <p className="text-sm text-muted-foreground mb-4 max-w-sm font-body">Your consultations, client interactions, and practice updates will appear here</p>
                       <Button variant="outline" size="sm" className="font-body" onClick={() => setActiveTab('consultations')}>
                         Start Taking Consultations
@@ -474,7 +474,7 @@ const LawyerDashboard = () => {
             {/* Practice Insights */}
             <Card className="border-border/50 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-headline">Practice Insights</CardTitle>
+                <CardTitle className="text-xl font-body">Practice Insights</CardTitle>
                 <p className="text-sm text-muted-foreground">Grow your legal practice with data-driven insights</p>
               </CardHeader>
               <CardContent>
@@ -483,7 +483,7 @@ const LawyerDashboard = () => {
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <TrendingUp className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Growth Analytics</h3>
+                    <h3 className="font-body font-semibold mb-2">Growth Analytics</h3>
                     <p className="text-sm text-muted-foreground">Track your practice growth and revenue trends</p>
                   </div>
 
@@ -491,7 +491,7 @@ const LawyerDashboard = () => {
                     <div className="w-12 h-12 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-secondary/30 transition-colors">
                       <UserCheck className="w-6 h-6 text-secondary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Client Satisfaction</h3>
+                    <h3 className="font-body font-semibold mb-2">Client Satisfaction</h3>
                     <p className="text-sm text-muted-foreground">Monitor client feedback and ratings</p>
                   </div>
 
@@ -499,7 +499,7 @@ const LawyerDashboard = () => {
                     <div className="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-primary/30 transition-colors">
                       <Scale className="w-6 h-6 text-primary" />
                     </div>
-                    <h3 className="font-headline font-semibold mb-2">Case Management</h3>
+                    <h3 className="font-body font-semibold mb-2">Case Management</h3>
                     <p className="text-sm text-muted-foreground">Organize and track legal cases efficiently</p>
                   </div>
                 </div>
@@ -511,7 +511,7 @@ const LawyerDashboard = () => {
           <TabsContent value="consultations" className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-headline font-semibold">My Consultations</h2>
+                <h2 className="text-2xl font-body font-bold">My Consultations</h2>
                 <p className="text-muted-foreground">Manage your scheduled appointments and client meetings</p>
               </div>
               <Button className="bg-primary hover:bg-primary/90">
@@ -524,7 +524,7 @@ const LawyerDashboard = () => {
               <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center mb-6">
                 <Calendar className="w-10 h-10 text-primary" />
               </div>
-              <h3 className="text-xl font-headline font-semibold mb-2">No Consultations Scheduled</h3>
+              <h3 className="text-xl font-body font-semibold mb-2">No Consultations Scheduled</h3>
               <p className="text-muted-foreground mb-6 max-w-md">Your upcoming consultations will appear here. Set your availability to start receiving bookings from clients.</p>
               <Button size="lg" className="bg-primary hover:bg-primary/90">
                 <Clock className="mr-2 h-5 w-5" />
@@ -537,7 +537,7 @@ const LawyerDashboard = () => {
           <TabsContent value="clients" className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-headline font-semibold">My Clients</h2>
+                <h2 className="text-2xl font-body font-bold">My Clients</h2>
                 <p className="text-muted-foreground">Manage your client relationships and case history</p>
               </div>
               <Button variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
@@ -550,7 +550,7 @@ const LawyerDashboard = () => {
               <div className="w-20 h-20 bg-secondary/20 rounded-3xl flex items-center justify-center mb-6">
                 <Users className="w-10 h-10 text-secondary" />
               </div>
-              <h3 className="text-xl font-headline font-semibold mb-2">No Clients Yet</h3>
+              <h3 className="text-xl font-body font-semibold mb-2">No Clients Yet</h3>
               <p className="text-muted-foreground mb-6 max-w-md">Your client list will appear here as you start taking consultations. Build your practice by connecting with clients who need legal expertise.</p>
               <Button size="lg" variant="outline" className="border-secondary/50 text-secondary hover:bg-secondary/10">
                 <BookOpen className="mr-2 h-5 w-5" />
@@ -563,7 +563,7 @@ const LawyerDashboard = () => {
           <TabsContent value="earnings" className="space-y-6">
             <div className="flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-headline font-semibold">Earnings & Analytics</h2>
+                <h2 className="text-2xl font-body font-bold">Earnings & Analytics</h2>
                 <p className="text-muted-foreground">Track your practice revenue and financial performance</p>
               </div>
               <Button variant="outline" className="border-border/50 hover:bg-card">
@@ -575,12 +575,12 @@ const LawyerDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-headline">This Month</CardTitle>
+                  <CardTitle className="text-lg font-body">This Month</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</div>
+                      <div className="text-3xl font-body font-semibold text-foreground">₹{stats.monthlyEarnings.toLocaleString('en-IN')}</div>
                       <p className="text-sm text-muted-foreground">{stats.totalConsultations} consultations</p>
                       <p className="text-xs text-secondary mt-1">Monthly revenue</p>
                     </div>
@@ -593,12 +593,12 @@ const LawyerDashboard = () => {
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-headline">Wallet Balance</CardTitle>
+                  <CardTitle className="text-lg font-body">Wallet Balance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</div>
+                      <div className="text-3xl font-body font-semibold text-foreground">₹{stats.walletBalance.toLocaleString('en-IN')}</div>
                       <p className="text-sm text-muted-foreground">Available balance</p>
                       <p className="text-xs text-muted-foreground mt-1">Ready to withdraw</p>
                     </div>
@@ -611,12 +611,12 @@ const LawyerDashboard = () => {
 
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg font-headline">Total Earnings</CardTitle>
+                  <CardTitle className="text-lg font-body">Total Earnings</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-3xl font-headline font-semibold text-foreground">₹{stats.totalEarnings.toLocaleString('en-IN')}</div>
+                      <div className="text-3xl font-body font-semibold text-foreground">₹{stats.totalEarnings.toLocaleString('en-IN')}</div>
                       <p className="text-sm text-muted-foreground">All time revenue</p>
                       <p className="text-xs text-secondary mt-1">Your practice income</p>
                     </div>
@@ -631,7 +631,7 @@ const LawyerDashboard = () => {
             {/* Earnings Analytics */}
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-headline">Revenue Analytics</CardTitle>
+                <CardTitle className="text-xl font-body">Revenue Analytics</CardTitle>
                 <p className="text-sm text-muted-foreground">Detailed breakdown of your practice earnings</p>
               </CardHeader>
               <CardContent>
@@ -639,7 +639,7 @@ const LawyerDashboard = () => {
                   <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center mb-6">
                     <BarChart3 className="w-8 h-8 text-primary" />
                   </div>
-                  <h3 className="text-lg font-headline font-semibold mb-2">No Revenue Data Yet</h3>
+                  <h3 className="text-lg font-body font-semibold mb-2">No Revenue Data Yet</h3>
                   <p className="text-muted-foreground mb-6 max-w-md">Start taking consultations to see detailed analytics about your practice revenue, client trends, and growth patterns.</p>
                   <div className="flex gap-3">
                     <Button onClick={() => setActiveTab('consultations')} className="bg-primary hover:bg-primary/90">
@@ -658,7 +658,7 @@ const LawyerDashboard = () => {
           <TabsContent value="profile" className="space-y-6">
             <Card className="border-border/50 bg-card/50 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-xl font-headline">Professional Profile</CardTitle>
+                <CardTitle className="text-xl font-body">Professional Profile</CardTitle>
                 <p className="text-sm text-muted-foreground">Manage your professional information and credentials</p>
               </CardHeader>
               <CardContent className="space-y-6">

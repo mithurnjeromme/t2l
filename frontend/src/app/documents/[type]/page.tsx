@@ -324,7 +324,7 @@ export default function DocumentCreatePage() {
           </Button>
         </div>
 
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6">
           {displayName} Generator
         </h1>
 

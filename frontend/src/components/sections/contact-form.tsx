@@ -80,7 +80,7 @@ export default function ContactForm() {
       <div className="container mx-auto px-6">
         {state.lawyers && state.lawyers.length > 0 ? (
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-headline font-semibold mb-4">
+            <h2 className="text-2xl sm:text-3xl font-body font-bold mb-4">
               {state.message}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8">
@@ -101,7 +101,7 @@ export default function ContactForm() {
             <div>
               {/* Section Header */}
               <div className="mb-8">
-                <h2 className="text-3xl lg:text-4xl font-body font-semibold text-foreground mb-4 leading-tight">
+                <h2 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4 leading-tight">
                   Send us a <span className="text-primary">message</span>
                 </h2>
                 <p className="text-muted-foreground text-base font-body">
@@ -190,7 +190,7 @@ export default function ContactForm() {
             <div className="lg:pl-8">
               {/* Section Header */}
               <div className="mb-8">
-                <h3 className="text-3xl lg:text-4xl font-body font-semibold text-foreground mb-4 leading-tight">
+                <h3 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4 leading-tight">
                   Get in <span className="text-primary">touch</span>
                 </h3>
                 <p className="text-muted-foreground mt-4">

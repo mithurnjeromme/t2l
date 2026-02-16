@@ -53,14 +53,14 @@ const Pricing = () => {
 		<section id="pricing" className="py-24 bg-background">
 			<div className="container mx-auto px-6">
 				<div className="text-left mb-16">
-					<h2 className="text-4xl font-headline font-bold">Pricing</h2>
+					<h2 className="text-4xl font-body font-bold">Pricing</h2>
 				</div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 					{/* Free Tier */}
 					<div className="bg-[#373737] border border-white/20 rounded-3xl p-8">
 						<div className="mb-8">
-							<h3 className="text-xl font-headline font-semibold mb-4">Free</h3>
-							<div className="text-5xl font-headline font-bold">₹0</div>
+							<h3 className="text-xl font-body font-semibold mb-4">Free</h3>
+							<div className="text-5xl font-body font-bold">₹0</div>
 						</div>
 						<div className="space-y-3 mb-8">
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
@@ -74,8 +74,8 @@ const Pricing = () => {
 					{/* Essential Tier */}
 					<div className="bg-[#373737] border border-white/20 rounded-3xl p-8 transform md:scale-110 md:shadow-xl">
 						<div className="mb-8">
-							<h3 className="text-xl font-headline font-semibold mb-4">Essential</h3>
-							<div className="text-5xl font-headline font-bold">₹50</div>
+							<h3 className="text-xl font-body font-semibold mb-4">Essential</h3>
+							<div className="text-5xl font-body font-bold">₹50</div>
 						</div>
 						<div className="space-y-3 mb-8">
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
@@ -93,8 +93,8 @@ const Pricing = () => {
 					{/* Premium Tier */}
 					<div className="bg-primary/10 border border-primary/30 rounded-3xl p-8">
 						<div className="mb-8">
-							<h3 className="text-xl font-headline font-semibold mb-4">Premium</h3>
-							<div className="text-5xl font-headline font-bold text-primary">₹250</div>
+							<h3 className="text-xl font-body font-semibold mb-4">Premium</h3>
+							<div className="text-5xl font-body font-bold text-primary">₹250</div>
 						</div>
 						<div className="space-y-3 mb-8">
 							<div className="w-full h-3 bg-white/20 rounded-full"></div>
