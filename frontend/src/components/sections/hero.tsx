@@ -34,7 +34,7 @@ const Hero = () => {
     >
       <div className="container mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
         <div className="text-foreground z-10 relative">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-body font-bold mb-4 sm:mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-headline font-semibold mb-4 sm:mb-6 leading-tight">
             We Simplify Legal Access for{" "}
             <span className="text-primary">Everyone.</span>
           </h1>
