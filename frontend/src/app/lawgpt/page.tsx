@@ -753,7 +753,7 @@ export default function LawGPTPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 180000); // 3 minute timeout
 
-      const lawgptApiUrl = process.env.NEXT_PUBLIC_LAWGPT_API_URL || 'https://turn2law-lawgpt-2.onrender.com';
+      const lawgptApiUrl = process.env.NEXT_PUBLIC_LAWGPT_API_URL || 'https://turn2law-lawgpt-zzj3.onrender.com';
       const response = await fetch(`${lawgptApiUrl}/api/query`, {
         method: "POST",
         headers: {
