@@ -612,6 +612,7 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <span className="text-base">⚖️</span>
                 <span className="font-medium">Navigator</span>
               </Link>
 
