@@ -64,7 +64,7 @@
 ### 3. **EmailJS + Gmail SMTP**
 - **EmailJS:** FREE 200 emails/month (perfect for start)
 - **Gmail SMTP:** FREE 500 emails/day via your Gmail
-- **Alternative:** Brevo (ex-SendinBlue) - 300 emails/day FREE
+- **Email:** Resend (3,000 emails/month FREE on free plan)
 
 ### 4. **Search Strategy**
 - **Start:** PostgreSQL full-text search (FREE)

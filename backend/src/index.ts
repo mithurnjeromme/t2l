@@ -90,7 +90,13 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    services: {
+      supabase:   !!process.env.SUPABASE_URL,
+      openrouter: !!process.env.OPENROUTER_API_KEY,
+      gmail:      !!process.env.GMAIL_USER,
+      resend:     !!process.env.RESEND_API_KEY,
+    }
   });
 });
 
@@ -105,6 +111,7 @@ import queriesRoutes from './api/queries';
 import emailOTPRoutes from './api/email-otp';
 import serviceInquiryRoutes from './api/service-inquiry';
 import serviceRequestsRoutes from './api/service-requests';
+import legalNavigatorRoutes from './api/legal-navigator';
 
 // Removed: app.use('/api/auth', authRoutes); 
 // Auth is now handled by Supabase Auth directly from frontend
@@ -115,6 +122,7 @@ app.use('/api', queriesRoutes);
 app.use('/api/email-otp', emailOTPRoutes); // Custom email OTP verification (routes: /send-otp, /verify-otp)
 app.use('/api', serviceInquiryRoutes); // Service inquiry forms (no auth required)
 app.use('/api/service-requests', serviceRequestsRoutes); // Service tracking (new)
+app.use('/api', legalNavigatorRoutes); // Legal Navigator AI guidance (new)
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

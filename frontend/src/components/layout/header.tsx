@@ -34,6 +34,7 @@ import {
   FileText,
   Building2,
   FileCheck,
+  Scale,
 } from "lucide-react";
 import { useMessages } from "@/lib/messages-context";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -500,6 +501,16 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
             LawGPT
           </Link>
           <Link
+            href="/legal-navigator"
+            className={cn(
+              "hover:text-primary transition-colors font-medium flex items-center gap-1.5",
+              pathname === "/legal-navigator" && "text-primary",
+            )}
+          >
+            <Scale className="h-3.5 w-3.5" />
+            Legal Navigator
+          </Link>
+          <Link
             href="/documents"
             className={cn(
               "hover:text-primary transition-colors",
@@ -593,6 +604,18 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
               >
                 <Search className="w-5 h-5 text-foreground/80" />
                 <span className="font-medium">LawGPT</span>
+              </Link>
+
+              <Link
+                href="/legal-navigator"
+                className={cn(
+                  "flex items-center gap-3 py-3 px-3 rounded-md text-foreground hover:bg-muted",
+                  pathname === "/legal-navigator" && "bg-muted",
+                )}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Scale className="w-5 h-5 text-foreground/80" />
+                <span className="font-medium">Legal Navigator</span>
               </Link>
 
               <Link

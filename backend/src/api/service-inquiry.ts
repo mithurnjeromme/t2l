@@ -1,11 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { createServiceTracking } from '../store/service-tracking.store';
+import { sendEmail } from '../utils/email';
 
 const router = Router();
-
-// Brevo API configuration
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 interface ServiceInquiry {
   serviceName: string;
@@ -22,7 +19,7 @@ interface ServiceInquiry {
 }
 
 /**
- * Send service inquiry email via Brevo (PRODUCTION ONLY)
+ * Send service inquiry email via Resend
  */
 const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
   console.log('='.repeat(80));
@@ -48,38 +45,11 @@ const sendServiceInquiryEmail = async (inquiry: ServiceInquiry) => {
     </html>
   `;
 
-  const response = await fetch(BREVO_API_URL, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      'api-key': BREVO_API_KEY as string,
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      sender: {
-        name: 'Turn2Law Services',
-        email: 'turntwolaw@gmail.com',
-      },
-      to: [
-        {
-          email: 'turntwolaw@gmail.com',
-          name: 'Turn2Law Team',
-        },
-      ],
-      replyTo: {
-        email: inquiry.email,
-        name: inquiry.name,
-      },
-      subject: `New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
-      htmlContent,
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.json();
-    console.error('[SERVICE INQUIRY] Brevo error:', err);
-    throw new Error('Brevo email failed');
-  }
+  await sendEmail(
+    'turntwolaw@gmail.com',
+    `New ${inquiry.serviceName} Inquiry from ${inquiry.name}`,
+    htmlContent
+  );
 
   console.log('[SERVICE INQUIRY] Email sent successfully');
 };
@@ -128,7 +98,7 @@ router.post('/service-inquiry', async (req: Request, res: Response) => {
     if (process.env.NODE_ENV === 'production') {
       await sendServiceInquiryEmail(inquiryData);
     } else {
-      console.log('[DEV MODE] Brevo email skipped');
+      console.log('[DEV MODE] Email skipped (set NODE_ENV=production to send)');
     }
 
     return res.status(200).json({
