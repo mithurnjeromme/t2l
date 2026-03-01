@@ -34,7 +34,6 @@ import {
   FileText,
   Building2,
   FileCheck,
-  Scale,
 } from "lucide-react";
 import { useMessages } from "@/lib/messages-context";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -503,17 +502,16 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
           <Link
             href="/legal-navigator"
             className={cn(
-              "hover:text-primary transition-colors font-medium flex items-center gap-1.5",
+              "hover:text-primary transition-colors font-medium",
               pathname === "/legal-navigator" && "text-primary",
             )}
           >
-            <Scale className="h-3.5 w-3.5" />
             Navigator
           </Link>
           <Link
             href="/documents"
             className={cn(
-              "hover:text-primary transition-colors",
+              "hover:text-primary transition-colors whitespace-nowrap",
               pathname === "/documents" && "text-primary",
             )}
           >
@@ -614,7 +612,6 @@ const Header = ({ hideAuthButtons, leftElement }: HeaderProps) => {
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Scale className="w-5 h-5 text-foreground/80" />
                 <span className="font-medium">Navigator</span>
               </Link>
 
