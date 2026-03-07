@@ -1,69 +1,92 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
-import { WobbleCard } from "@/components/ui/wobble-card";
+import { ArrowUpRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+
+const pillars = [
+  {
+    href: "/consult",
+    title: "Online Client-Lawyer Matchmaking",
+    description:
+      "Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.",
+    gradient: "from-[#83B8B2] via-[#79ADA8] to-[#6AA19C]",
+    accent: "01",
+  },
+  {
+    href: "/lawgpt",
+    title: "Legal Services with AI Chatbot Access",
+    description:
+      "Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.",
+    gradient: "from-[#D8AA69] via-[#CF9A56] to-[#C48743]",
+    accent: "02",
+  },
+  {
+    href: "/documents",
+    title: "Automated Document Drafting",
+    description:
+      "Generate professional legal documents in minutes. Our AI-powered system creates accurate, customized legal documents tailored to your needs.",
+    gradient: "from-[#E3C989] via-[#DAB96F] to-[#D2A957]",
+    accent: "03",
+  },
+];
 
 export default function ThreePillarsSection() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="pt-12 md:pt-16 pb-24 md:pb-32 bg-background">
+    <section className="bg-background pt-12 pb-24 md:pt-16 md:pb-32">
       <div className="container mx-auto px-6">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="mb-12 text-center"
+        >
+          <h2 className="mb-4 text-3xl font-body font-bold text-foreground lg:text-4xl">
             Our <span className="text-primary">Three Pillars</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body">
+          <p className="mx-auto max-w-2xl text-lg font-body text-muted-foreground">
             Turn2Law revolutionizes legal services through three innovative solutions
           </p>
-        </div>
+        </motion.div>
 
-        {/* Wobble Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 max-w-7xl mx-auto w-full">
-          {/* Pillar 1: Client-Lawyer Matchmaking */}
-          <Link href="/consult" className="block h-full transition-transform hover:scale-[1.02]">
-            <WobbleCard
-              containerClassName="col-span-1 h-full bg-gradient-to-br from-[#6DBDB7] to-[#5DA9A4] dark:from-[#6DBDB7] dark:to-[#5DA9A4] cursor-pointer"
-              className=""
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+          {pillars.map((pillar, index) => (
+            <motion.div
+              key={pillar.title}
+              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 24, scale: prefersReducedMotion ? 1 : 0.985 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.5, delay: index * 0.09, ease: "easeOut" }}
+              className="h-full"
             >
-              <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
-                  Online Client-Lawyer Matchmaking
-                </h2>
-                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
-                  Connect with the right legal expert instantly. Our intelligent matching system pairs you with qualified lawyers based on your specific legal needs and case requirements.
-                </p>
-              </div>
-            </WobbleCard>
-          </Link>
+              <Link href={pillar.href} className="group block h-full">
+                <div className="relative h-full overflow-hidden rounded-2xl border border-border/35 bg-background/85 p-5 shadow-[0_24px_40px_-30px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_28px_46px_-28px_rgba(0,0,0,0.45)] sm:p-6">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${pillar.gradient} opacity-[0.82] transition-opacity duration-300 group-hover:opacity-[0.9]`} />
+                  <div className="absolute inset-0 bg-[linear-gradient(140deg,rgba(255,255,255,0.18),transparent_40%,rgba(0,0,0,0.12))]" />
+                  <div className="absolute right-4 top-4 rounded-full border border-white/35 bg-white/15 px-2.5 py-1 text-xs font-semibold tracking-[0.12em] text-[#1B2430]/85">
+                    {pillar.accent}
+                  </div>
 
-          {/* Pillar 2: Legal Services & Chatbot */}
-          <Link href="/lawgpt" className="block h-full transition-transform hover:scale-[1.02]">
-            <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#DF9C49] to-[#C88539] dark:from-[#DF9C49] dark:to-[#C88539] cursor-pointer">
-              <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
-                  Legal Services with AI Chatbot Access
-                </h2>
-                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
-                  Get instant legal guidance 24/7. Our AI-powered legal chatbot provides immediate answers to your legal questions and helps you understand complex legal concepts.
-                </p>
-              </div>
-            </WobbleCard>
-          </Link>
+                  <div className="relative z-10 flex h-full flex-col">
+                    <h3 className="mb-4 max-w-[16ch] text-left text-balance text-2xl font-body font-semibold leading-tight tracking-[-0.015em] text-[#1E2732]">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-left text-base font-body leading-relaxed text-[#2A3644]/88">
+                      {pillar.description}
+                    </p>
 
-          {/* Pillar 3: Document Drafting */}
-          <Link href="/documents" className="block h-full transition-transform hover:scale-[1.02]">
-            <WobbleCard containerClassName="col-span-1 h-full bg-gradient-to-br from-[#F5C563] to-[#E8B54D] dark:from-[#F5C563] dark:to-[#E8B54D] cursor-pointer">
-              <div className="flex flex-col py-6 h-full">
-                <h2 className="text-left text-balance text-xl lg:text-2xl font-semibold tracking-[-0.015em] text-gray-900 dark:text-gray-900 font-body mb-4">
-                  Automated Document Drafting
-                </h2>
-                <p className="text-left text-sm lg:text-base text-gray-800 dark:text-gray-800 font-body leading-relaxed">
-                  Generate professional legal documents in minutes. Our AI-powered system creates accurate, customized legal documents tailored to your needs.
-                </p>
-              </div>
-            </WobbleCard>
-          </Link>
+                    <div className="mt-6 flex items-center text-sm font-semibold tracking-[0.01em] text-[#1F2A36]">
+                      Learn more
+                      <ArrowUpRight className="ml-1.5 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

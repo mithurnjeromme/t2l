@@ -1,35 +1,42 @@
 "use client";
+
+import { motion, useReducedMotion } from "motion/react";
+
 const Banner = () => {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <section className="py-8 sm:py-12 md:py-16 bg-background">
-      <div className="w-full bg-[#DF9C49] dark:bg-[#008882] py-3 sm:py-4 overflow-hidden">
+    <motion.section
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="bg-background py-8 sm:py-12 md:py-16"
+    >
+      <div className="w-full overflow-hidden bg-[#DF9C49] py-3 sm:py-4 dark:bg-[#008882]">
         <div className="animate-scroll whitespace-nowrap">
-          <div className="inline-flex items-center gap-8 sm:gap-12 md:gap-16 text-white dark:text-white">
+          <div className="inline-flex items-center gap-8 text-white sm:gap-12 md:gap-16">
             {[
               "SELECT FROM EXPERT LAWYERS",
               "TRUSTED BY 100+ USERS",
               "MADE FOR INDIANS",
             ].map((text, i) => (
               <div key={i} className="flex items-center gap-3 sm:gap-4">
-                <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 bg-white rounded-full"></div>
-                <span className="text-lg sm:text-xl md:text-2xl font-bold font-body tracking-wide">
+                <div className="h-2.5 w-2.5 rounded-full bg-white sm:h-3 sm:w-3" />
+                <span className="font-body text-lg font-bold tracking-wide sm:text-xl md:text-2xl">
                   {text}
                 </span>
               </div>
             ))}
 
-            {/* Duplicate for seamless scroll */}
             {[
               "SELECT FROM EXPERT LAWYERS",
               "TRUSTED BY 100+ USERS",
               "MADE FOR INDIANS",
             ].map((text, i) => (
-              <div
-                key={`dup-${i}`}
-                className="flex items-center gap-3 sm:gap-4"
-              >
-                <div className="w-2.5 sm:w-3 h-2.5 sm:h-3 bg-white rounded-full"></div>
-                <span className="text-lg sm:text-xl md:text-2xl font-bold font-body tracking-wide">
+              <div key={`dup-${i}`} className="flex items-center gap-3 sm:gap-4">
+                <div className="h-2.5 w-2.5 rounded-full bg-white sm:h-3 sm:w-3" />
+                <span className="font-body text-lg font-bold tracking-wide sm:text-xl md:text-2xl">
                   {text}
                 </span>
               </div>
@@ -38,7 +45,6 @@ const Banner = () => {
         </div>
       </div>
 
-      {/* Animation style */}
       <style jsx>{`
         @keyframes scroll {
           0% {
@@ -56,11 +62,17 @@ const Banner = () => {
 
         @media (max-width: 768px) {
           .animate-scroll {
-            animation-duration: 30s; /* slower on mobile */
+            animation-duration: 30s;
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .animate-scroll {
+            animation: none;
           }
         }
       `}</style>
-    </section>
+    </motion.section>
   );
 };
 

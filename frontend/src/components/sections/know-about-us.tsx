@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
 
 const faqData = [
   {
@@ -33,80 +34,84 @@ const faqData = [
 
 const KnowAboutUs = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   const toggleAccordion = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
 
   return (
-    <section id="know-about-us" className="py-16 md:py-20 bg-background">
+    <section id="know-about-us" className="bg-background py-16 md:py-20">
       <div className="container mx-auto px-6">
-        {/* Section Header */}
-        <div className="mb-8">
-          <h2 className="text-3xl lg:text-4xl font-body font-bold text-foreground mb-4">
+        <motion.div
+          initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="mb-8"
+        >
+          <h2 className="mb-4 text-3xl font-body font-bold text-foreground lg:text-4xl">
             Know about <span className="text-primary">us</span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl font-body">
+          <p className="max-w-2xl font-body text-lg text-muted-foreground">
             Get answers to frequently asked questions about our platform and
             services
           </p>
-        </div>
+        </motion.div>
 
-        {/* FAQ Accordion */}
-        <div className="space-y-3 max-w-4xl">
+        <div className="max-w-4xl space-y-3">
           {faqData.map((faq, index) => (
-            <div
+            <motion.div
               key={index}
-              className={`border rounded-xl overflow-hidden transition-all duration-300 ${
+              initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: index * 0.05, ease: "easeOut" }}
+              className={`overflow-hidden rounded-xl border transition-all duration-300 ${
                 activeIndex === index
-                  ? "bg-muted/30 dark:bg-[#0E0E0E] border-border/40"
-                  : "bg-background border-border/20 hover:border-border/40"
+                  ? "border-border/40 bg-muted/30 dark:bg-[#0E0E0E]"
+                  : "border-border/20 bg-background hover:border-border/40"
               }`}
             >
-              {/* Question Header */}
               <button
                 onClick={() => toggleAccordion(index)}
-                className="w-full text-left px-6 py-5 flex items-center gap-4"
+                className="flex w-full items-center gap-4 px-6 py-5 text-left"
               >
-                {/* Question Number Badge */}
-                <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-xl flex-shrink-0">
-                  <span className="text-primary font-semibold text-sm">
+                <div className="flex-shrink-0 rounded-xl bg-primary/10 p-3 dark:bg-primary/20">
+                  <span className="text-sm font-semibold text-primary">
                     {index + 1}
                   </span>
                 </div>
 
-                {/* Question Text */}
-                <span className="flex-1 font-semibold text-base font-body text-foreground">
+                <span className="flex-1 font-body text-base font-semibold text-foreground">
                   {faq.question}
                 </span>
 
-                {/* Chevron Icon */}
                 <div
                   className={`flex-shrink-0 text-muted-foreground transition-transform duration-300 ${
                     activeIndex === index ? "rotate-180" : ""
                   }`}
                 >
-                  <ChevronDown className="w-5 h-5" />
+                  <ChevronDown className="h-5 w-5" />
                 </div>
               </button>
 
-              {/* Answer Content */}
               <div
-                className={`transition-all duration-300 ease-in-out ${
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${
                   activeIndex === index
                     ? "max-h-[500px] opacity-100"
                     : "max-h-0 opacity-0"
-                } overflow-hidden`}
+                }`}
               >
                 <div className="px-6 pb-5 pt-2">
-                  <div className="pl-16 pr-4 pt-3 border-t border-border/20">
-                    <p className="text-muted-foreground text-sm leading-relaxed font-body">
+                  <div className="border-t border-border/20 pl-16 pr-4 pt-3">
+                    <p className="font-body text-sm leading-relaxed text-muted-foreground">
                       {faq.answer}
                     </p>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

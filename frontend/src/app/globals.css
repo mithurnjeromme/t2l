@@ -67,9 +67,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  section {
-    @apply animate-fade-in-up;
-  }
 }
 
 @layer utilities {
